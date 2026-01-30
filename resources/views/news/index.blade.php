@@ -18,7 +18,7 @@
                 <h5 class="card-title">{{ $item->title }}</h5>
                 <p class="card-text text-muted small"><i class="far fa-calendar-alt me-1"></i> {{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d M Y') : '-' }}</p>
                 <p class="card-text">{{ Str::limit(strip_tags($item->content), 100) }}</p>
-                <a href="{{ route('berita.show', $item->slug) }}" class="btn btn-outline-primary stretched-link">Baca Selengkapnya</a>
+                <a href="{{ route('news.show', $item->slug) }}" class="btn btn-outline-primary stretched-link">Baca Selengkapnya</a>
             </div>
         </div>
     </div>

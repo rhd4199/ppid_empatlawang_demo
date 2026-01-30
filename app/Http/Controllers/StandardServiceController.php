@@ -11,7 +11,7 @@ class StandardServiceController extends Controller
      */
     public function index()
     {
-        $documents = \App\Models\Document::where('category', 'standar_layanan')->get();
+        $documents = \App\Models\Document::where('category', 'like', 'standar_layanan%')->get();
         return view('standard_service.index', compact('documents'));
     }
 }

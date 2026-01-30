@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('procurements', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->enum('category', ['info', 'regulasi', 'biro', 'daftar_hitam']);
+            $table->string('slug')->unique();
+            $table->string('category'); // Changed from enum to string for flexibility or update enum values
             $table->text('content')->nullable();
             $table->string('file_path')->nullable();
+            $table->string('status')->default('open');
             $table->timestamps();
         });
     }

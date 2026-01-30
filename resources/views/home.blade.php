@@ -1,36 +1,307 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(rgba(0, 77, 64, 0.85), rgba(0, 77, 64, 0.7)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Kantor_Bupati_Empat_Lawang.jpg/1200px-Kantor_Bupati_Empat_Lawang.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0 150px;
+        position: relative;
+        margin-bottom: 0;
+    }
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+    .hero-search {
+        background: white;
+        padding: 10px;
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        max-width: 700px;
+        margin: 0 auto;
+        display: flex;
+    }
+    .hero-search input {
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        width: 100%;
+        border-radius: 50px 0 0 50px;
+        outline: none;
+    }
+    .hero-search button {
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    /* Feature Cards */
+    .features-container {
+        margin-top: -80px;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 60px;
+    }
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        border-bottom: 4px solid var(--primary-color);
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background-color: #e0f2f1;
+        color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto 20px;
+        transition: 0.3s;
+    }
+    .feature-card:hover .feature-icon {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .feature-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--text-dark);
+    }
+
+    /* News Card */
+    .news-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: 0.3s;
+        height: 100%;
+    }
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .news-img-wrapper {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    .news-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 0.5s;
+    }
+    .news-card:hover .news-img-wrapper img {
+        transform: scale(1.1);
+    }
+    .news-date {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: var(--secondary-color);
+        color: #000;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .news-body {
+        padding: 20px;
+    }
+    .news-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+    .news-title a {
+        color: var(--text-dark);
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .news-title a:hover {
+        color: var(--primary-color);
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 60px 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300695c' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: var(--secondary-color);
+    }
+    .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="p-5 mb-4 bg-light rounded-3">
-    <div class="container-fluid py-5">
-      <h1 class="display-5 fw-bold">Selamat Datang di PPID</h1>
-      <p class="col-md-8 fs-4">Pejabat Pengelola Informasi dan Dokumentasi Kabupaten Empat Lawang. Kami berkomitmen memberikan layanan informasi publik yang transparan dan akuntabel.</p>
-      <a href="{{ route('request.create') }}" class="btn btn-primary btn-lg" type="button">Ajukan Permohonan Informasi</a>
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="hero-title">Layanan Informasi Publik<br>Kabupaten Empat Lawang</h1>
+        <p class="lead mb-5" style="opacity: 0.9;">Transparan, Akuntabel, dan Melayani Sepenuh Hati</p>
+        
+        <form action="{{ route('informasi-publik.index') }}" method="GET">
+            <div class="hero-search">
+                <input type="text" name="search" placeholder="Cari informasi publik, dokumen, atau regulasi...">
+                <button type="submit" class="btn btn-warning rounded-pill px-4">Cari</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Feature Shortcuts -->
+<div class="container features-container">
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ route('request.create') }}" class="text-decoration-none">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <h5 class="feature-title">Permohonan Informasi</h5>
+                    <p class="text-muted small mb-0">Ajukan permohonan informasi publik secara online</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ route('complaint.create') }}" class="text-decoration-none">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h5 class="feature-title">Pengajuan Keberatan</h5>
+                    <p class="text-muted small mb-0">Ajukan keberatan atas layanan informasi</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <a href="#" class="text-decoration-none">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <h5 class="feature-title">Cek Status</h5>
+                    <p class="text-muted small mb-0">Pantau status permohonan Anda secara real-time</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <a href="{{ route('informasi-publik.index') }}" class="text-decoration-none">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h5 class="feature-title">Daftar Informasi</h5>
+                    <p class="text-muted small mb-0">Akses dokumen publik yang tersedia setiap saat</p>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="row align-items-md-stretch">
-    <div class="col-md-6">
-      <div class="h-100 p-5 text-white bg-dark rounded-3">
-        <h2>Cari Informasi Publik</h2>
-        <p>Temukan informasi berkala, serta merta, dan setiap saat yang Anda butuhkan melalui portal kami.</p>
-        <a href="{{ route('informasi-publik.index') }}" class="btn btn-outline-light" type="button">Lihat Data</a>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="h-100 p-5 bg-light border rounded-3">
-        <h2>Laporan Penyelenggaraan</h2>
-        <p>Akses laporan kinerja dan laporan keuangan pemerintah daerah secara terbuka.</p>
-        <a href="{{ route('laporan.index') }}" class="btn btn-outline-secondary" type="button">Unduh Laporan</a>
-      </div>
-    </div>
-</div>
+<!-- Latest News -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Berita Terkini</h2>
+            <p>Informasi terbaru seputar kegiatan Pemerintah Kabupaten Empat Lawang</p>
+        </div>
 
-<div class="row mt-5">
-    <div class="col-12">
-        <h3 class="border-bottom pb-2">Berita Terkini</h3>
-        <!-- News Loop would go here -->
-        <div class="alert alert-info">Belum ada berita terbaru.</div>
+        <div class="row g-4">
+            @forelse($news as $item)
+            <div class="col-md-6 col-lg-4">
+                <div class="news-card bg-white">
+                    <div class="news-img-wrapper">
+                        <img src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/600x400?text=News+Image' }}" alt="{{ $item->title }}">
+                        <div class="news-date">{{ $item->created_at->format('d M Y') }}</div>
+                    </div>
+                    <div class="news-body">
+                        <h5 class="news-title">
+                            <a href="{{ route('news.show', $item->slug) }}">{{ Str::limit($item->title, 60) }}</a>
+                        </h5>
+                        <p class="card-text text-muted small">{{ Str::limit(strip_tags($item->content), 100) }}</p>
+                        <a href="{{ route('news.show', $item->slug) }}" class="btn btn-link text-primary p-0 text-decoration-none fw-bold">Baca Selengkapnya <i class="fas fa-arrow-right small ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Belum ada berita terbaru.</p>
+            </div>
+            @endforelse
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{{ route('news.index') }}" class="btn btn-outline-primary rounded-pill px-4">Lihat Semua Berita</a>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- Statistics -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4 col-lg-3">
+                <div class="stat-item">
+                    <div class="stat-number">1,250</div>
+                    <div class="stat-label">Informasi Publik</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <div class="stat-item">
+                    <div class="stat-number">450</div>
+                    <div class="stat-label">Permohonan Selesai</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Indeks Kepuasan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 text-center">
+    <div class="container">
+        <h3 class="fw-bold mb-3">Butuh Informasi Lebih Lanjut?</h3>
+        <p class="text-muted mb-4">Silakan hubungi kami atau datang langsung ke kantor PPID Kabupaten Empat Lawang</p>
+        <a href="{{ route('contact.index') }}" class="btn btn-primary rounded-pill px-5 py-2">Hubungi Kami</a>
+    </div>
+</section>
 @endsection

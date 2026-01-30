@@ -29,62 +29,10 @@
         body {
             font-family: 'Inter', sans-serif;
             color: var(--text-dark);
-            background-color: #f9fbfd; /* Very subtle blue-ish grey */
+            background-color: #fcfcfc;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Playfair Display', serif;
-            color: var(--primary-color);
-        }
-
-        /* Page Header */
-        .page-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #00251a 100%);
-            color: white;
-            padding: 60px 0;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-        .page-header::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg=='); /* Subtle dot pattern */
-            opacity: 0.3;
-        }
-        .page-header h1 {
-            color: white;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .page-header .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin: 0;
-        }
-        .page-header .breadcrumb-item {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.9rem;
-        }
-        .page-header .breadcrumb-item.active {
-            color: white;
-        }
-        .page-header .breadcrumb-item + .breadcrumb-item::before {
-            color: rgba(255,255,255,0.5);
-        }
-        .page-header a {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-        }
-        .page-header a:hover {
-            color: var(--secondary-color);
         }
 
         /* Top Bar */
@@ -204,41 +152,6 @@
             max-width: 600px;
             margin: 0 auto;
         }
-
-        /* Card Hover */
-        .card-hover {
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        /* Nav Pills */
-        .nav-pills .nav-link {
-            color: var(--text-light);
-            font-weight: 500;
-            padding: 10px 20px;
-            border-radius: 50px;
-            transition: 0.3s;
-        }
-        .nav-pills .nav-link.active, .nav-pills .nav-link:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        /* Table */
-        .table-custom thead th {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        .table-custom tbody tr:hover {
-            background-color: #f1f3f5;
-        }
     </style>
     @stack('styles')
 </head>
@@ -281,7 +194,6 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profil</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="https://empatlawangkab.go.id/" target="_blank">Pemkab Empat Lawang</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'tentang-ppid') }}">Tentang PPID</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'visi-misi') }}">Visi & Misi</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'struktur-organisasi') }}">Struktur Organisasi</a></li>
@@ -291,84 +203,31 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Informasi Publik</a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('informasi-publik.index') }}">Daftar Informasi Publik</a></li>
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'berkala']) }}">Informasi Berkala</a></li>
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'serta-merta']) }}">Informasi Serta Merta</a></li>
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'setiap-saat']) }}">Informasi Setiap Saat</a></li>
-                            <li><a class="dropdown-item" href="{{ route('informasi-publik.index') }}">Daftar Informasi Publik</a></li>
-                            <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'dikecualikan']) }}">Daftar Informasi Dikecualikan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'dikecualikan']) }}">Informasi Dikecualikan</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Standar Layanan</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Layanan</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">Alur Layanan Informasi Publik</a></li>
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">Tata Cara Permohonan Informasi</a></li>
-                            <li><a class="dropdown-item" href="{{ route('request.create') }}">Form Permohonan Informasi Publik</a></li>
-                            <li><a class="dropdown-item" href="{{ route('complaint.create') }}">Tata Cara Pengajuan Keberatan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">Tata Cara Penyelesaian Sengketa</a></li>
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">SOP PPID</a></li>
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">Maklumat Pelayanan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">Waktu dan Biaya Pelayanan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('request.create') }}">Permohonan Informasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('complaint.create') }}">Pengajuan Keberatan</a></li>
+                            <li><a class="dropdown-item" href="#">Cek Status Permohonan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}">Standar Layanan</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Laporan</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('reports.index') }}">Laporan Pemkab Empat Lawang</a></li>
-                            <li><a class="dropdown-item" href="{{ route('reports.index') }}">Laporan PPID</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">INFO</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('news.index') }}">Berita PPID</a></li>
-                            <li><a class="dropdown-item" href="{{ route('galleries.index') }}">Galeri</a></li>
-                            <li><a class="dropdown-item" href="{{ route('events.index') }}">Calendar Event</a></li>
-                            <li><a class="dropdown-item" href="#">Open Data</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Pengadaan</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('procurements.index') }}">Informasi Pengadaan Barang & Jasa</a></li>
-                            <li><a class="dropdown-item" href="#">Regulasi Pengadaan</a></li>
-                            <li><a class="dropdown-item" href="http://lpse.empatlawangkab.go.id/" target="_blank">LPSE Empat Lawang</a></li>
-                            <li><a class="dropdown-item" href="https://sirup.lkpp.go.id/" target="_blank">SiRUP LKPP</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('news.index') }}">Berita</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('contact.index') }}">Kontak</a>
                     </li>
-
-                    <!-- Authentication Links -->
-                    @guest
-                        @if (Route::has('login'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                    Dashboard Admin
-                                </a>
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
-                                </a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </div>
-                        </li>
-                    @endguest
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-primary btn-sm rounded-pill px-3" href="{{ route('request.create') }}">Buat Permohonan</a>
+                    </li>
                 </ul>
             </div>
         </div>

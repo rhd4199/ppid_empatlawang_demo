@@ -6,7 +6,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('berita.index') }}">Berita</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('news.index') }}">Berita</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($news->title, 20) }}</li>
             </ol>
         </nav>
@@ -22,7 +22,7 @@
         @endif
 
         <div class="article-content">
-            {!! nl2br(e($news->content)) !!}
+            {!! $news->content !!}
         </div>
     </div>
 </div>

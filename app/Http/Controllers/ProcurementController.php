@@ -11,7 +11,8 @@ class ProcurementController extends Controller
      */
     public function index()
     {
-        $procurements = \App\Models\Procurement::latest()->paginate(10);
-        return view('procurement.index', compact('procurements'));
+        $procurements = \App\Models\Procurement::where('category', '!=', 'regulasi_pengadaan')->latest()->get();
+        $regulations = \App\Models\Procurement::where('category', 'regulasi_pengadaan')->latest()->get();
+        return view('procurement.index', compact('procurements', 'regulations'));
     }
 }

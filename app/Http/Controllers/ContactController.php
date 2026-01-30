@@ -29,6 +29,13 @@ class ContactController extends Controller
 
         \App\Models\Contact::create($validated);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Pesan Anda berhasil dikirim. Kami akan segera menghubungi Anda.'
+            ]);
+        }
+
         return redirect()->route('contact.index')->with('success', 'Pesan Anda berhasil dikirim. Kami akan segera menghubungi Anda.');
     }
 }

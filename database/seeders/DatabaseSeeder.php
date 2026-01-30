@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             InfoPublicSeeder::class,
             DocumentSeeder::class,
             NewsSeeder::class,
+            GallerySeeder::class,
+            EventSeeder::class,
+            ProcurementSeeder::class,
         ]);
     }
 }
