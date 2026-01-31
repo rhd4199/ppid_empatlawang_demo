@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Laporan Kinerja')
+
 @section('content')
 <!-- Page Header -->
 <div class="page-header">
@@ -119,3 +121,32 @@
     }
 </style>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Activate tab based on hash
+        var hash = window.location.hash;
+        if (hash) {
+            var triggerEl = document.querySelector('button[data-bs-target="' + hash + '"]');
+            if (triggerEl) {
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+
+        // Update hash when tab changes
+        var tabElList = [].slice.call(document.querySelectorAll('button[data-bs-toggle="tab"]'))
+        tabElList.forEach(function (tabEl) {
+            tabEl.addEventListener('shown.bs.tab', function (event) {
+                var target = event.target.getAttribute('data-bs-target');
+                if(history.pushState) {
+                    history.pushState(null, null, target);
+                } else {
+                    window.location.hash = target;
+                }
+            })
+        })
+    });
+</script>
+@endpush

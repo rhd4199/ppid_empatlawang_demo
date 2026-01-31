@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Informasi Publik')
+
 @section('content')
 <!-- Page Header -->
 <div class="page-header">
@@ -56,7 +58,7 @@
 
     <div class="card card-hover border-0 shadow-sm">
         <div class="card-body p-0">
-            <div class="d-flex justify-content-center p-5" id="loading-spinner" style="display: none !important;">
+            <div class="d-flex justify-content-center p-5 d-none" id="loading-spinner">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
@@ -83,6 +85,7 @@
 @push('styles')
 <style>
     .pagination { justify-content: center; margin-top: 30px; margin-bottom: 30px; }
+    .nav-pills .nav-link.active { color: #fff !important; }
 </style>
 @endpush
 
@@ -94,7 +97,7 @@
 
         function fetchInfo(page = 1) {
             $('#info-list').css('opacity', '0.5');
-            $('#loading-spinner').show();
+            $('#loading-spinner').removeClass('d-none');
             
             $.ajax({
                 url: "{{ route('informasi-publik.index') }}",
@@ -106,12 +109,12 @@
                 success: function(data) {
                     $('#info-list').html(data);
                     $('#info-list').css('opacity', '1');
-                    $('#loading-spinner').hide();
+                    $('#loading-spinner').addClass('d-none');
                 },
                 error: function() {
                     alert('Gagal memuat data. Silakan coba lagi.');
                     $('#info-list').css('opacity', '1');
-                    $('#loading-spinner').hide();
+                    $('#loading-spinner').addClass('d-none');
                 }
             });
         }

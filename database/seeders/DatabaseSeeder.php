@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProfileSeeder::class,
             PpidSettingSeeder::class,
-            InfoPublicSeeder::class,
+            // InfoPublicSeeder::class,
             DocumentSeeder::class,
             NewsSeeder::class,
             GallerySeeder::class,

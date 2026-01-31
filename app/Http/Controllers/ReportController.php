@@ -11,7 +11,10 @@ class ReportController extends Controller
      */
     public function index()
     {
-        $reports = \App\Models\Document::whereIn('category', ['laporan_pemda', 'laporan_ppid'])->get();
+        $reports = \App\Models\Document::whereIn('category', ['laporan_pemda', 'laporan_ppid'])
+            ->where('is_published', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('report.index', compact('reports'));
     }
 }

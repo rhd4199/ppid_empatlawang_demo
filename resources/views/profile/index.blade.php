@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Profil Pemerintah')
+
 @section('content')
 <h2 class="mb-4">Profil Pemerintah</h2>
 <div class="row">

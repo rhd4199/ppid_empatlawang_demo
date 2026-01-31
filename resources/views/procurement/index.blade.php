@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Pengadaan Barang & Jasa')
+
 @section('content')
 <!-- Page Header -->
 <div class="page-header">
@@ -10,7 +12,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Pengadaan</li>
+                        <li class="breadcrumb-item active" aria-current="page">Pengadaan Barang & Jasa</li>
                     </ol>
                 </nav>
             </div>
@@ -20,103 +22,109 @@
 
 <div class="container pb-5">
     <div class="row">
-        <div class="col-md-12">
-            <ul class="nav nav-tabs nav-fill mb-4" id="procurementTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active fw-bold py-3" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
-                        <i class="fas fa-bullhorn me-2"></i> Informasi Pengadaan
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold py-3" id="regulasi-tab" data-bs-toggle="tab" data-bs-target="#regulasi" type="button" role="tab">
-                        <i class="fas fa-gavel me-2"></i> Regulasi Pengadaan
-                    </button>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="procurementTabsContent">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 100px; z-index: 1;">
+                <div class="list-group list-group-flush rounded-3">
+                    <a href="#info" class="list-group-item list-group-item-action active py-3" data-bs-toggle="list">
+                        <i class="fas fa-info-circle me-2 w-20"></i> Informasi Pengadaan
+                    </a>
+                    <a href="#regulasi" class="list-group-item list-group-item-action py-3" data-bs-toggle="list">
+                        <i class="fas fa-gavel me-2 w-20"></i> Regulasi/Aturan
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="tab-content" style="min-height: 60vh;">
                 <!-- Informasi Pengadaan -->
-                <div class="tab-pane fade show active" id="info" role="tabpanel">
-                    <div class="row">
-                        @forelse($procurements as $procurement)
-                        <div class="col-md-6 mb-4">
-                            <div class="card card-hover h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <span class="badge bg-{{ $procurement->status == 'open' ? 'success' : 'secondary' }} rounded-pill mb-2">
-                                            {{ ucfirst($procurement->status) }}
-                                        </span>
-                                        <small class="text-muted">{{ $procurement->created_at->format('d M Y') }}</small>
-                                    </div>
-                                    <h5 class="card-title fw-bold">{{ $procurement->title }}</h5>
-                                    <p class="card-text text-muted small mb-3">{{ Str::limit($procurement->content, 100) }}</p>
-                                    <a href="{{ asset('storage/' . $procurement->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill stretched-link" target="_blank">
-                                        <i class="fas fa-file-pdf me-1"></i> Lihat Detail
-                                    </a>
+                <div class="tab-pane fade show active" id="info">
+                    <div class="card card-hover border-0 shadow-sm p-4 mb-4">
+                        <h3 class="mb-4 border-bottom pb-2">Informasi Pengadaan</h3>
+                        <div class="list-group list-group-flush">
+                            @forelse($documents->where('category', 'pengadaan_info') as $doc)
+                            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                <div>
+                                    <h5 class="mb-1">{{ $doc->title }}</h5>
+                                    <p class="mb-0 text-muted small">{{ $doc->description }}</p>
                                 </div>
+                                @if($doc->file_path)
+                                <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                    <i class="fas fa-eye me-1"></i> Lihat
+                                </a>
+                                @endif
                             </div>
+                            @empty
+                            <div class="alert alert-info">Belum ada informasi pengadaan.</div>
+                            @endforelse
                         </div>
-                        @empty
-                        <div class="col-12">
-                            <div class="alert alert-info text-center py-5">
-                                <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
-                                <p>Belum ada informasi pengadaan barang/jasa saat ini.</p>
-                            </div>
-                        </div>
-                        @endforelse
                     </div>
                 </div>
 
-                <!-- Regulasi Pengadaan -->
-                <div class="tab-pane fade" id="regulasi" role="tabpanel">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="list-group list-group-flush">
-                                @forelse($regulations as $regulation)
-                                <div class="list-group-item d-flex justify-content-between align-items-center p-4">
-                                    <div class="d-flex align-items-start">
-                                        <div class="flex-shrink-0 me-3 text-danger">
-                                            <i class="fas fa-file-pdf fa-2x"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="mb-1 fw-bold">{{ $regulation->title }}</h5>
-                                            <p class="mb-0 text-muted small">{{ $regulation->content }}</p>
-                                        </div>
-                                    </div>
-                                    <a href="{{ asset('storage/' . $regulation->file_path) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3" target="_blank">
-                                        <i class="fas fa-download me-1"></i> Unduh
-                                    </a>
+                <!-- Regulasi -->
+                <div class="tab-pane fade" id="regulasi">
+                    <div class="card card-hover border-0 shadow-sm p-4 mb-4">
+                        <h3 class="mb-4 border-bottom pb-2">Regulasi & Aturan</h3>
+                        <div class="list-group list-group-flush">
+                            @forelse($documents->where('category', 'pengadaan_regulasi') as $doc)
+                            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                <div>
+                                    <h5 class="mb-1">{{ $doc->title }}</h5>
+                                    <p class="mb-0 text-muted small">{{ $doc->description }}</p>
                                 </div>
-                                @empty
-                                <div class="p-5 text-center text-muted">
-                                    <i class="fas fa-book fa-3x mb-3"></i>
-                                    <p>Belum ada regulasi yang diunggah.</p>
-                                </div>
-                                @endforelse
+                                @if($doc->file_path)
+                                <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                    <i class="fas fa-gavel me-1"></i> Lihat
+                                </a>
+                                @endif
                             </div>
+                            @empty
+                            <div class="alert alert-info">Belum ada dokumen regulasi.</div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .nav-tabs .nav-link {
-        color: var(--text-light);
-        border: none;
-        border-bottom: 3px solid transparent;
-        transition: 0.3s;
-    }
-    .nav-tabs .nav-link:hover {
-        border-color: #e9ecef;
-        color: var(--primary-color);
-    }
-    .nav-tabs .nav-link.active {
-        color: var(--primary-color);
-        border-bottom: 3px solid var(--primary-color);
-        background: transparent;
-    }
-</style>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle hash in URL for tabs
+        var hash = window.location.hash;
+        var tabTrigger = document.querySelector('.list-group-item[href="' + hash + '"]');
+        if (tabTrigger) {
+            var tab = new bootstrap.Tab(tabTrigger);
+            tab.show();
+        }
+
+        // Update hash when tab changes
+        var tabElements = document.querySelectorAll('[data-bs-toggle="list"]');
+        tabElements.forEach(function(tabEl) {
+            tabEl.addEventListener('shown.bs.tab', function(event) {
+                var hash = event.target.getAttribute('href');
+                history.pushState(null, null, hash);
+            });
+        });
+        
+        // Handle query param 'tab' for initial load if no hash
+        if (!hash) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            if (tabParam) {
+                const targetHash = '#' + tabParam;
+                var tabTrigger = document.querySelector('.list-group-item[href="' + targetHash + '"]');
+                if (tabTrigger) {
+                    var tab = new bootstrap.Tab(tabTrigger);
+                    tab.show();
+                    history.replaceState(null, null, targetHash);
+                }
+            }
+        }
+    });
+</script>
+@endpush
 @endsection

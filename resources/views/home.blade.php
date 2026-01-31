@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <style>
     /* Hero Section */
     .hero-section {
@@ -163,8 +164,36 @@
         font-size: 1rem;
         opacity: 0.9;
     }
+    /* Gallery Card */
+    .gallery-card {
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        height: 250px;
+        transition: all 0.3s ease;
+    }
+    .gallery-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .gallery-card:hover img {
+        transform: scale(1.1);
+    }
+    .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        padding: 20px;
+        color: white;
+    }
 </style>
 @endpush
+
+@section('title', 'Beranda')
 
 @section('content')
 <!-- Hero Section -->
@@ -236,7 +265,7 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="section-title">
-            <h2>Berita Terkini</h2>
+            <a href="{{ route('news.index') }}" style="text-decoration: none"><h2>Berita Terkini</h2></a>
             <p>Informasi terbaru seputar kegiatan Pemerintah Kabupaten Empat Lawang</p>
         </div>
 
@@ -269,6 +298,83 @@
         </div>
     </div>
 </section>
+
+<!-- Gallery Carousel -->
+<section class="py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <a href="{{ route('galleries.index') }}" style="text-decoration: none"><h2>Galeri Kegiatan</h2></a>
+            <p>Dokumentasi aktivitas dan kegiatan Pemerintah Kabupaten Empat Lawang</p>
+        </div>
+
+        @if($galleries->count() > 0)
+        <!-- Swiper -->
+        <div class="swiper gallerySwiper px-4">
+            <div class="swiper-wrapper py-4">
+                @foreach($galleries as $gallery)
+                <div class="swiper-slide">
+                    <a href="{{ route('galleries.show', $gallery->id) }}" class="text-decoration-none">
+                        <div class="gallery-card shadow-sm">
+                            @if($gallery->cover_image)
+                                <img src="{{ asset('storage/' . $gallery->cover_image) }}" alt="{{ $gallery->title }}">
+                            @else
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100" style="min-height: 250px;">
+                                    <i class="fas fa-image fa-3x"></i>
+                                </div>
+                            @endif
+                            <div class="gallery-overlay">
+                                <h5 class="fw-bold mb-1 text-white">{{ Str::limit($gallery->title, 40) }}</h5>
+                                <small class="text-white-50"><i class="fas fa-camera me-1"></i> {{ $gallery->items->count() }} Foto</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+            
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+        @else
+        <div class="text-center py-5">
+            <p class="text-muted">Belum ada galeri kegiatan.</p>
+        </div>
+        @endif
+    </div>
+</section>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper(".gallerySwiper", {
+        slidesPerView: 1,
+        spaceBetween: 24,
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+            dynamicBullets: true,
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 2,
+            },
+            1024: {
+                slidesPerView: 3,
+            },
+        },
+    });
+</script>
+@endpush
 
 <!-- Statistics -->
 <section class="stats-section">

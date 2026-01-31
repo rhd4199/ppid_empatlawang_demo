@@ -11,7 +11,11 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return view('contact.index');
+        $settings = \App\Models\ContactSetting::first();
+        if (!$settings) {
+            $settings = new \App\Models\ContactSetting();
+        }
+        return view('contact.index', compact('settings'));
     }
 
     /**

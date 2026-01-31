@@ -2,7 +2,7 @@
 <tr>
     <td class="ps-4 fw-bold">{{ $info->title }}</td>
     <td class="text-muted">{{ Str::limit($info->description, 60) }}</td>
-    <td><span class="badge bg-light text-dark border"><i class="far fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($info->published_date)->format('d M Y') }}</span></td>
+    <td><span class="badge bg-light text-dark border"><i class="far fa-calendar-alt me-1"></i> {{ $info->created_at->format('d M Y') }}</span></td>
     <td class="pe-4 text-end">
         @if($info->file_path)
         <a href="{{ asset('storage/' . $info->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">

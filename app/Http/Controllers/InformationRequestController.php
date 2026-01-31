@@ -41,7 +41,9 @@ class InformationRequestController extends Controller
 
         \App\Models\InformationRequest::create($validated);
 
-        return redirect()->route('home')->with('success', 'Permohonan berhasil dikirim! Tiket Anda: ' . $validated['ticket_number']);
+        return redirect()->to(route('standard-service.index') . '#permohonan')
+            ->with('success_modal_title', 'Permohonan Berhasil Dikirim!')
+            ->with('success_modal_message', 'Selamat, permohonan Anda berhasil dibuat dan akan diproses oleh Admin PPID. Silakan menunggu informasi lanjutan, admin kami akan menghubungi Anda melalui kontak yang Anda masukkan.<br><br><strong>Nomor Tiket Anda: ' . $validated['ticket_number'] . '</strong>');
     }
 
     public function checkStatus()

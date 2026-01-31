@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Document extends Model
 {
     protected $guarded = [];
+
+    protected $casts = [
+        'is_published' => 'boolean',
+    ];
 }

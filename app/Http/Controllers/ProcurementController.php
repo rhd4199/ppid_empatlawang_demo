@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Document;
 
 class ProcurementController extends Controller
 {
@@ -11,8 +12,14 @@ class ProcurementController extends Controller
      */
     public function index()
     {
-        $procurements = \App\Models\Procurement::where('category', '!=', 'regulasi_pengadaan')->latest()->get();
-        $regulations = \App\Models\Procurement::where('category', 'regulasi_pengadaan')->latest()->get();
-        return view('procurement.index', compact('procurements', 'regulations'));
+        $documents = Document::whereIn('category', [
+            'pengadaan_info',
+            'pengadaan_regulasi'
+        ])
+        ->where('is_published', true)
+        ->latest()
+        ->get();
+        
+        return view('procurement.index', compact('documents'));
     }
 }

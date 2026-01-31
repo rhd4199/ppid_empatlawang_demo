@@ -32,6 +32,8 @@ class ComplaintController extends Controller
 
         \App\Models\Complaint::create($validated);
 
-        return redirect()->route('home')->with('success', 'Pengajuan keberatan berhasil dikirim! Tiket Aduan Anda: ' . $validated['ticket_number']);
+        return redirect()->to(route('standard-service.index') . '#keberatan')
+            ->with('success_modal_title', 'Pengajuan Keberatan Berhasil!')
+            ->with('success_modal_message', 'Selamat, pengajuan keberatan Anda berhasil dibuat dan akan diproses oleh Admin PPID. Silakan menunggu informasi lanjutan, admin kami akan menghubungi Anda melalui kontak yang Anda masukkan.<br><br><strong>Nomor Tiket Aduan Anda: ' . $validated['ticket_number'] . '</strong>');
     }
 }

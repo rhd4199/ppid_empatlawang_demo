@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gallery;
 use Illuminate\Http\Request;
 
 class GalleryController extends Controller
@@ -11,7 +12,15 @@ class GalleryController extends Controller
      */
     public function index()
     {
-        $galleries = \App\Models\Gallery::latest()->paginate(12);
+        $galleries = Gallery::where('is_published', true)->latest()->paginate(12);
         return view('gallery.index', compact('galleries'));
+    }
+
+    public function show($id)
+    {
+        $gallery = Gallery::where('is_published', true)->with(['items' => function($q) {
+            $q->orderBy('order', 'asc');
+        }])->findOrFail($id);
+        return view('gallery.show', compact('gallery'));
     }
 }
