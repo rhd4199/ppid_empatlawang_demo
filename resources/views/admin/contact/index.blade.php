@@ -10,7 +10,6 @@
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fas fa-inbox me-2 text-primary"></i>Kotak Masuk
             </h1>
-            <p class="text-muted mb-0 small">Kelola pesan dan pertanyaan dari pengunjung website.</p>
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-md-end gap-3">
@@ -49,8 +48,8 @@
     <!-- Message List -->
     <div class="card border-0 shadow-lg overflow-hidden">
         <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Pesan Terkini</h6>
-            <span class="badge bg-light text-secondary border">{{ $messages->count() }} Pesan</span>
+            <h6 class="m-0 font-weight-bold text-black fw-bold"><b>Daftar Pesan Terkini</b></h6>
+            <span class="badge bg-light text-primary border">{{ $messages->count() }} Pesan</span>
         </div>
         <div class="list-group list-group-flush">
             @forelse($messages as $message)

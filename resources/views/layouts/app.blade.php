@@ -18,13 +18,39 @@
     
     <style>
         :root {
-            --primary-color: #004d40; /* Deep Green like Jabar/Empat Lawang forests */
+            --primary-color: #0284c7; /* Sky Blue 600 */
             --secondary-color: #ffc107; /* Gold/Yellow for accents */
-            --accent-color: #00695c;
+            --accent-color: #0369a1; /* Sky Blue 700 */
             --text-dark: #212529;
             --text-light: #6c757d;
             --bg-light: #f8f9fa;
+
+            /* Bootstrap Variables */
+            --bs-primary: #0284c7;
+            --bs-primary-rgb: 2, 132, 199;
+            --bs-secondary: #ffc107;
+            --bs-secondary-rgb: 255, 193, 7;
         }
+
+        /* Bootstrap Overrides */
+
+        .btn-primary { 
+            background-color: var(--primary-color) !important; 
+            border-color: var(--primary-color) !important; 
+        }
+        .btn-primary:hover { 
+            background-color: var(--accent-color) !important; 
+            border-color: var(--accent-color) !important; 
+        }
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        .border-primary { border-color: var(--primary-color) !important; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -130,11 +156,12 @@
         .navbar-nav .nav-link {
             color: var(--text-dark);
             font-weight: 500;
-            padding: 8px 18px !important;
-            margin: 0 4px;
+            padding: 8px 12px !important;
+            margin: 0 1px;
             border-radius: 50px; /* Pill Shape */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            font-size: 0.9rem;
         }
 
         /* Hover & Active State (Unified) */
@@ -302,7 +329,7 @@
     <div class="top-bar d-none d-md-block">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex gap-3">
-                <span><i class="fas fa-phone-alt me-2"></i> (0702) 123456</span>
+                <span><i class="fas fa-phone-alt me-2"></i> (0602) 123456</span>
                 <span><i class="fas fa-envelope me-2"></i> ppid@empatlawangkab.go.id</span>
             </div>
             <div class="d-flex gap-3">
@@ -315,14 +342,10 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
+    <nav class="navbar navbar-expand-xl sticky-top">
+        <div class="container-fluid px-4 px-lg-5">
             <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_Kabupaten_Empat_Lawang.png/477px-Logo_Kabupaten_Empat_Lawang.png" alt="Logo">
-                <div>
-                    <div style="font-size: 0.8rem; line-height: 1.2; font-weight: 400; color: #666;">PPID Utama</div>
-                    <div style="line-height: 1;">Kab. Empat Lawang</div>
-                </div>
+                <img src="{{ asset('assets/images/logo-with_name.png') }}" alt="PPID Kabupaten Empat Lawang" style="height: 45px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -423,7 +446,7 @@
             <div class="row gy-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="d-flex align-items-center mb-3">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_Kabupaten_Empat_Lawang.png/477px-Logo_Kabupaten_Empat_Lawang.png" alt="Logo" style="height: 50px; margin-right: 10px; filter: brightness(0) invert(1);">
+                        <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="height: 50px; margin-right: 10px; filter: brightness(0) invert(1);">
                         <div>
                             <h5 class="mb-0 text-white border-0 p-0">PPID KABUPATEN</h5>
                             <small class="text-white-50">Empat Lawang</small>
@@ -453,9 +476,7 @@
                     <ul class="list-unstyled">
                         <li><a href="{{ route('request.create') }}">Permohonan Informasi</a></li>
                         <li><a href="{{ route('complaint.create') }}">Pengajuan Keberatan</a></li>
-                        <li><a href="#">Cek Status Permohonan</a></li>
                         <li><a href="{{ route('standard-service.index') }}">Standar Operasional (SOP)</a></li>
-                        <li><a href="#">Laporan Layanan</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">

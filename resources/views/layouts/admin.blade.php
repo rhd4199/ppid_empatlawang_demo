@@ -19,12 +19,39 @@
     
     <style>
         :root {
-            --primary-color: #004d40;
+            --primary-color: #0284c7;
             --secondary-color: #ffc107;
-            --accent-color: #00695c;
+            --accent-color: #0369a1;
+            
+            /* Bootstrap Variables */
+            --bs-primary: #0284c7;
+            --bs-primary-rgb: 2, 132, 199;
+            --bs-secondary: #ffc107;
+            --bs-secondary-rgb: 255, 193, 7;
+
             --sidebar-width: 280px;
             --header-height: 70px;
         }
+
+        /* Bootstrap Overrides */
+
+        .btn-primary { 
+            background-color: var(--primary-color) !important; 
+            border-color: var(--primary-color) !important; 
+        }
+        .btn-primary:hover { 
+            background-color: var(--accent-color) !important; 
+            border-color: var(--accent-color) !important; 
+        }
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        .border-primary { border-color: var(--primary-color) !important; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -188,7 +215,7 @@
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-            <i class="fas fa-shield-alt me-2 text-warning"></i> Admin Panel
+            <img src="{{ asset('assets/images/logo.png') }}" alt="PPID Empat Lawang" style="max-height: 40px; filter: brightness(0) invert(1);">
         </a>
         
         <div class="sidebar-menu">
@@ -252,29 +279,36 @@
             <a href="{{ route('admin.procurements.index') }}" class="menu-item {{ request()->routeIs('admin.procurements.*') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart"></i> Pengadaan
             </a>
-            <a href="{{ route('admin.contact-settings.index') }}" class="menu-item {{ request()->routeIs('admin.contact-settings.*') ? 'active' : '' }}">
-                <i class="fas fa-cogs"></i> Kontak & Profil
-            </a>
             
             <div class="menu-header">Interaksi</div>
             
-            <a href="{{ route('admin.contact.index') }}" class="menu-item {{ request()->routeIs('admin.contact.*') ? 'active' : '' }}">
-                <i class="fas fa-envelope"></i> Pesan Masuk
+            <!-- Interaksi Dropdown -->
+            <a href="#interactionSubmenu" data-bs-toggle="collapse" class="menu-item dropdown-toggle {{ request()->routeIs('admin.contact.*') || request()->routeIs('admin.requests.*') || request()->routeIs('admin.complaints.*') ? 'active' : '' }}" role="button" aria-expanded="false">
+                <i class="fas fa-comments"></i> Interaksi
             </a>
+            <div class="collapse {{ request()->routeIs('admin.contact.*') || request()->routeIs('admin.requests.*') || request()->routeIs('admin.complaints.*') ? 'show' : '' }}" id="interactionSubmenu">
+                <div class="bg-black bg-opacity-25 py-2">
+                    <a href="{{ route('admin.contact.index') }}" class="menu-item ps-5 py-2 small {{ request()->routeIs('admin.contact.*') ? 'text-warning' : '' }}">
+                        <i class="fas fa-envelope me-2"></i> Pesan Masuk
+                    </a>
+                    <a href="{{ route('admin.requests.index') }}" class="menu-item ps-5 py-2 small {{ request()->routeIs('admin.requests.*') ? 'text-warning' : '' }}">
+                        <i class="fas fa-clipboard-list me-2"></i> Permohonan Info
+                    </a>
+                    <a href="{{ route('admin.complaints.index') }}" class="menu-item ps-5 py-2 small {{ request()->routeIs('admin.complaints.*') ? 'text-warning' : '' }}">
+                        <i class="fas fa-exclamation-circle me-2"></i> Pengajuan Keberatan
+                    </a>
+                </div>
+            </div>
             
-            <a href="{{ route('admin.requests.index') }}" class="menu-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-list"></i> Permohonan Info
-            </a>
-            
-            <a href="{{ route('admin.complaints.index') }}" class="menu-item {{ request()->routeIs('admin.complaints.*') ? 'active' : '' }}">
-                <i class="fas fa-exclamation-circle"></i> Pengajuan Keberatan
+            <div class="menu-header">Pengaturan</div>
+
+            <a href="{{ route('admin.contact-settings.index') }}" class="menu-item {{ request()->routeIs('admin.contact-settings.*') ? 'active' : '' }}">
+                <i class="fas fa-cogs"></i> Kontak & Alamat
             </a>
 
-            
-
-            <div class="menu-header">Sistem</div>
-             <a href="{{ route('home') }}" class="menu-item" target="_blank">
-                <i class="fas fa-external-link-alt"></i> Lihat Website
+            <div class="menu-header">Website</div>
+            <a href="{{ url('/') }}" class="menu-item">
+                <i class="fas fa-home"></i> Kembali ke Website
             </a>
         </div>
     </nav>
@@ -287,7 +321,7 @@
                 <i class="fas fa-bars"></i>
             </button>
             
-            <h5 class="mb-0 d-none d-md-block fw-bold text-dark">@yield('title', 'Dashboard')</h5>
+            <h5 class="mb-0 d-none d-md-block fw-bold text-dark"></h5>
 
             <div class="dropdown user-dropdown">
                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">

@@ -5,28 +5,31 @@
 <style>
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(rgba(0, 77, 64, 0.85), rgba(0, 77, 64, 0.7)), url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Kantor_Bupati_Empat_Lawang.jpg/1200px-Kantor_Bupati_Empat_Lawang.jpg');
+        /* Blue gradient matching #0284c7 theme */
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.95) 0%, rgba(3, 105, 161, 0.9) 100%), url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Kantor_Bupati_Empat_Lawang.jpg/1200px-Kantor_Bupati_Empat_Lawang.jpg');
         background-size: cover;
         background-position: center;
         color: white;
-        padding: 100px 0 150px;
+        padding: 60px 0 120px;
         position: relative;
         margin-bottom: 0;
+        overflow: hidden;
     }
     .hero-title {
         font-family: 'Playfair Display', serif;
         font-weight: 700;
-        font-size: 3rem;
+        font-size: 3.5rem;
         margin-bottom: 20px;
+        line-height: 1.2;
     }
     .hero-search {
-        background: white;
-        padding: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px;
         border-radius: 50px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        max-width: 700px;
-        margin: 0 auto;
+        max-width: 600px;
         display: flex;
+        backdrop-filter: blur(5px);
     }
     .hero-search input {
         border: none;
@@ -35,6 +38,26 @@
         width: 100%;
         border-radius: 50px 0 0 50px;
         outline: none;
+        background: transparent;
+    }
+    
+    /* Animation for Bupati Image */
+    .bupati-img-container {
+        position: relative;
+        z-index: 2;
+        animation: slideUp 1s ease-out;
+    }
+    .bupati-img {
+        max-height: 450px;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+        transition: transform 0.3s ease;
+    }
+    .bupati-img:hover {
+        transform: scale(1.02);
+    }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     .hero-search button {
         border-radius: 50px;
@@ -67,7 +90,7 @@
     .feature-icon {
         width: 70px;
         height: 70px;
-        background-color: #e0f2f1;
+        background-color: #f0f9ff; /* Light Sky Blue 50 */
         color: var(--primary-color);
         border-radius: 50%;
         display: flex;
@@ -197,17 +220,26 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section text-center">
-    <div class="container">
-        <h1 class="hero-title">Layanan Informasi Publik<br>Kabupaten Empat Lawang</h1>
-        <p class="lead mb-5" style="opacity: 0.9;">Transparan, Akuntabel, dan Melayani Sepenuh Hati</p>
-        
-        <form action="{{ route('informasi-publik.index') }}" method="GET">
-            <div class="hero-search">
-                <input type="text" name="search" placeholder="Cari informasi publik, dokumen, atau regulasi...">
-                <button type="submit" class="btn btn-warning rounded-pill px-4">Cari</button>
+<section class="hero-section d-flex align-items-center">
+    <div class="container position-relative z-2">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-center mb-5 mb-lg-0">
+                <h1 class="hero-title text-white fw-bold mb-3">Layanan Informasi Publik<br>Kabupaten Empat Lawang</h1>
+                <p class="lead text-white-50 mb-4 fs-4">Transparan, Akuntabel, dan Melayani Sepenuh Hati</p>
+                
+                <form action="{{ route('informasi-publik.index') }}" method="GET">
+                    <div class="hero-search mx-auto">
+                        <input type="text" name="search" placeholder="Cari informasi publik, dokumen, atau regulasi..." aria-label="Search">
+                        <button type="submit" class="btn btn-warning rounded-pill px-4 text-dark fw-bold">Cari</button>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <div class="bupati-img-container">
+                    <img src="{{ asset('assets/images/bupati.png') }}" alt="Bupati Empat Lawang" class="img-fluid bupati-img">
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

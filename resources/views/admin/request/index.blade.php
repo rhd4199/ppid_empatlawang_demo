@@ -6,7 +6,6 @@
 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
     <div class="card-header bg-gradient bg-primary text-white py-4">
         <h5 class="mb-1 fw-bold"><i class="fas fa-clipboard-list me-2"></i>Daftar Permohonan Informasi</h5>
-        <p class="mb-0 text-white-50 small">Kelola permohonan informasi publik dari masyarakat.</p>
     </div>
     
     <div class="card-body p-0">

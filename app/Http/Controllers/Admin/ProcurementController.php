@@ -30,6 +30,11 @@ class ProcurementController extends Controller
         return view('admin.procurement.index', compact('documents'));
     }
 
+    public function create()
+    {
+        return redirect()->route('admin.procurements.index')->with('open_create_modal', true);
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([

@@ -36,6 +36,11 @@ class StandardServiceController extends Controller
         return view('admin.standard_service.index', compact('documents'));
     }
 
+    public function create()
+    {
+        return redirect()->route('admin.standard-service.index')->with('open_create_modal', true);
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([

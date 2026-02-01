@@ -6,7 +6,6 @@
 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
     <div class="card-header bg-gradient bg-danger text-white py-4">
         <h5 class="mb-1 fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Daftar Pengajuan Keberatan</h5>
-        <p class="mb-0 text-white-50 small">Kelola pengajuan keberatan informasi publik.</p>
     </div>
     
     <div class="card-body p-0">

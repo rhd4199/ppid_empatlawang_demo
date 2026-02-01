@@ -7,7 +7,6 @@
     <div class="card-header bg-gradient bg-primary text-white py-4 d-flex justify-content-between align-items-center">
         <div>
             <h5 class="mb-1 fw-bold"><i class="fas fa-file-contract me-2"></i>Laporan Kinerja</h5>
-            <p class="mb-0 text-white-50 small">Kelola dokumen laporan kinerja (LAKIP, Laporan Tahunan, dll).</p>
         </div>
         <button type="button" class="btn btn-light shadow-sm fw-bold text-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createModal">
             <i class="fas fa-plus-circle me-2"></i> Tambah Laporan
@@ -58,22 +57,22 @@
                             <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this)">
                         </th>
                         <th class="px-4 py-3 border-0">
-                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'title', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-secondary">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'title', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-black">
                                 Dokumen <i class="fas fa-sort{{ request('sort_field') == 'title' ? (request('sort_direction') == 'asc' ? '-up' : '-down') : '' }} ms-1"></i>
                             </a>
                         </th>
                         <th class="px-4 py-3 border-0">
-                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'category', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-secondary">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'category', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-black">
                                 Kategori <i class="fas fa-sort{{ request('sort_field') == 'category' ? (request('sort_direction') == 'asc' ? '-up' : '-down') : '' }} ms-1"></i>
                             </a>
                         </th>
                         <th class="px-4 py-3 border-0">
-                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'created_at', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-secondary">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'created_at', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-black">
                                 Tanggal <i class="fas fa-sort{{ request('sort_field') == 'created_at' ? (request('sort_direction') == 'asc' ? '-up' : '-down') : '' }} ms-1"></i>
                             </a>
                         </th>
                         <th class="px-4 py-3 border-0 text-center">
-                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'is_published', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-secondary">
+                            <a href="{{ request()->fullUrlWithQuery(['sort_field' => 'is_published', 'sort_direction' => request('sort_direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-black">
                                 Status <i class="fas fa-sort{{ request('sort_field') == 'is_published' ? (request('sort_direction') == 'asc' ? '-up' : '-down') : '' }} ms-1"></i>
                             </a>
                         </th>

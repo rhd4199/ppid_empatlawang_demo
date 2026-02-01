@@ -14,7 +14,7 @@
                             <div class="bg-pattern position-absolute top-0 start-0 w-100 h-100 opacity-10"></div>
                             <div class="p-5 text-center position-relative" style="z-index: 1;">
                                 <div class="mb-4">
-                                    <i class="fas fa-landmark fa-4x text-warning"></i>
+                                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="height: 80px; filter: brightness(0) invert(1);">
                                 </div>
                                 <h2 class="fw-bold mb-3 text-white">PPID Empat Lawang</h2>
                                 <p class="lead mb-4 opacity-75">Sistem Informasi Pejabat Pengelola Informasi dan Dokumentasi.</p>
