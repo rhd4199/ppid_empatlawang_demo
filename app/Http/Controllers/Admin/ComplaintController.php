@@ -31,7 +31,7 @@ class ComplaintController extends Controller
 
         $complaint->update($validated);
 
-        return redirect()->route('admin.complaints.show', $id)
+        return redirect()->back()
             ->with('success', 'Status keberatan berhasil diperbarui.');
     }
 

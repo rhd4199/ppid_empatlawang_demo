@@ -77,6 +77,14 @@
                         </td>
                         <td class="px-4 py-3 text-end">
                             <div class="d-flex justify-content-end gap-2">
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-success rounded-circle shadow-sm" 
+                                        style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#statusModal{{ $item->id }}"
+                                        title="Update Status">
+                                    <i class="fas fa-edit fa-xs"></i>
+                                </button>
                                 <a href="{{ route('admin.requests.show', $item->id) }}" 
                                    class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
                                    style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
@@ -91,6 +99,41 @@
                                         title="Hapus">
                                     <i class="fas fa-trash-alt fa-xs"></i>
                                 </button>
+                            </div>
+
+                            <!-- Status Update Modal -->
+                            <div class="modal fade text-start" id="statusModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                                        <div class="modal-header bg-light border-0">
+                                            <h5 class="modal-title fw-bold">Update Status Permohonan</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ route('admin.requests.update', $item->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-body p-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label small text-muted fw-bold text-uppercase">Status Saat Ini</label>
+                                                    <select name="status" class="form-select">
+                                                        <option value="pending" {{ $item->status == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                                                        <option value="processed" {{ $item->status == 'processed' ? 'selected' : '' }}>Diproses</option>
+                                                        <option value="approved" {{ $item->status == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                                        <option value="rejected" {{ $item->status == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label small text-muted fw-bold text-uppercase">Catatan Admin (Opsional)</label>
+                                                    <textarea name="admin_note" class="form-control" rows="3" placeholder="Tambahkan catatan untuk pemohon...">{{ $item->admin_note }}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0 bg-light p-3">
+                                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Simpan Perubahan</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Delete Confirmation Modal -->

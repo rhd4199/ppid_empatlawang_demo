@@ -31,7 +31,7 @@ class InformationRequestController extends Controller
 
         $infoRequest->update($validated);
 
-        return redirect()->route('admin.requests.show', $id)
+        return redirect()->back()
             ->with('success', 'Status permohonan berhasil diperbarui.');
     }
 
