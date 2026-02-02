@@ -110,9 +110,11 @@
                         <p class="text-muted small mb-0">Sabtu - Minggu: Tutup</p>
                     @endif
                 </div>
-                <div class="card-footer bg-transparent border-0 pb-3 pt-0">
-                    <span class="badge bg-success-subtle text-success rounded-pill px-3">Buka Sekarang</span>
-                </div>
+                <center>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0 ">
+                        <span class="badge bg-success-subtle text-success rounded-pill ">Buka Sekarang</span>
+                    </div>
+                </center>
             </div>
         </div>
     </div>
@@ -140,8 +142,7 @@
                         <div class="d-flex align-items-center">
                             <i class="fab fa-instagram fa-2x me-3"></i>
                             <div>
-                                <h6 class="mb-0 fw-bold">Instagram</h6>
-                                <small class="opacity-75">Dokumentasi & Berita Visual</small>
+                                <h6 class="mb-0 fw-bold text-white"><b>Instagram</b></h6>
                             </div>
                         </div>
                         <i class="fas fa-arrow-right opacity-50"></i>
@@ -204,8 +205,7 @@
                         <div class="d-flex align-items-center">
                             <i class="fab fa-facebook fa-2x me-3"></i>
                             <div>
-                                <h6 class="mb-0 fw-bold">Facebook Page</h6>
-                                <small class="opacity-75">Komunitas & Informasi</small>
+                                <h6 class="mb-0 fw-bold text-white"><b>Facebook Page</b></h6>
                             </div>
                         </div>
                         <i class="fas fa-arrow-right opacity-50"></i>
@@ -242,24 +242,54 @@
                 <!-- Other Channels Grid -->
                 <div class="row g-3">
                     @forelse($others as $other)
-                    <div class="col-6">
-                        <a href="{{ $other['url'] ?? '#' }}" target="_blank" class="card h-100 border-0 shadow-sm hover-scale text-decoration-none overflow-hidden">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="icon-sm {{ ($other['color'] ?? false) ? str_replace('text-', 'bg-', $other['color']) : 'bg-dark' }} text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
-                                    <i class="{{ $other['icon'] ?? 'fas fa-link' }}"></i>
+                    @if ($other['platform'] == 'youtube')
+                        <div class="col-6">
+                            <a href="{{ $other['url'] ?? '#' }}" target="_blank" class="card h-100 border-0 shadow-sm hover-scale text-decoration-none overflow-hidden">
+                                <div class="card-body p-3 d-flex align-items-center">
+                                    <div class="icon-sm bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="background-color: red !important">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark small">{{ $other['name'] }}</h6>
+                                        <small class="text-muted x-small">{{ $other['username'] ?? '' }}</small>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold text-dark small">{{ $other['name'] }}</h6>
-                                    <small class="text-muted x-small">{{ $other['username'] ?? '' }}</small>
+                            </a>
+                        </div>
+                    @elseif ($other['platform'] == 'twitter')
+                        <div class="col-6">
+                            <a href="{{ $other['url'] ?? '#' }}" target="_blank" class="card h-100 border-0 shadow-sm hover-scale text-decoration-none overflow-hidden">
+                                <div class="card-body p-3 d-flex align-items-center">
+                                    <div class="icon-sm bg-dark text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                        <i class="fab fa-twitter"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark small">{{ $other['name'] }}</h6>
+                                        <small class="text-muted x-small">{{ $other['username'] ?? '' }}</small>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
+                            </a>
+                        </div>
+                    @else
+                        <div class="col-6">
+                            <a href="{{ $other['url'] ?? '#' }}" target="_blank" class="card h-100 border-0 shadow-sm hover-scale text-decoration-none overflow-hidden">
+                                <div class="card-body p-3 d-flex align-items-center">
+                                    <div class="icon-sm {{ ($other['color'] ?? false) ? str_replace('text-', 'bg-', $other['color']) : 'bg-dark' }} text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                        <i class="{{ $other['icon'] ?? 'fas fa-link' }}"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark small">{{ $other['name'] }}</h6>
+                                        <small class="text-muted x-small">{{ $other['username'] ?? '' }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endif
                     @empty
                     <div class="col-6">
                         <a href="#" class="card h-100 border-0 shadow-sm hover-scale text-decoration-none overflow-hidden">
                             <div class="card-body p-3 d-flex align-items-center">
-                                <div class="icon-sm bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                <div class="icon-sm bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="background-color: red !important">
                                     <i class="fab fa-youtube"></i>
                                 </div>
                                 <div>
@@ -304,8 +334,7 @@
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden position-sticky" style="top: 100px;">
                 <div class="card-header bg-primary text-white p-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="mb-1 fw-bold"><i class="fas fa-paper-plane me-2"></i> Kirim Pesan</h3>
-                        <p class="mb-0 text-white-50 small">Punya pertanyaan atau masukan? Tulis kepada kami.</p>
+                        <h3 class="mb-1 fw-bold text-white"><i class="fas fa-paper-plane me-2"></i> Kirim Pesan</h3>
                     </div>
                     <div class="bg-white bg-opacity-10 p-2 rounded-circle">
                         <i class="fas fa-comments fa-2x text-white"></i>
@@ -316,35 +345,35 @@
                         @csrf
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label for="name" class="form-label fw-bold text-secondary text-uppercase x-small ls-1">Nama Lengkap</label>
+                                <label for="name" class="form-label fw-bold text-black text-uppercase x-small ls-1">Nama Lengkap</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-user"></i></span>
                                     <input type="text" class="form-control bg-light border-start-0 ps-0" id="name" name="name" placeholder="Nama Anda" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="email" class="form-label fw-bold text-secondary text-uppercase x-small ls-1">Alamat Email</label>
+                                <label for="email" class="form-label fw-bold text-black text-uppercase x-small ls-1">Alamat Email</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-envelope"></i></span>
                                     <input type="email" class="form-control bg-light border-start-0 ps-0" id="email" name="email" placeholder="email@contoh.com" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="form-label fw-bold text-secondary text-uppercase x-small ls-1">Nomor Telepon / WA</label>
+                                <label for="phone" class="form-label fw-bold text-black text-uppercase x-small ls-1">Nomor Telepon / WA</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-phone"></i></span>
                                     <input type="text" class="form-control bg-light border-start-0 ps-0" id="phone" name="phone" placeholder="08xxx">
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="subject" class="form-label fw-bold text-secondary text-uppercase x-small ls-1">Subjek Pesan</label>
+                                <label for="subject" class="form-label fw-bold text-black text-uppercase x-small ls-1">Subjek Pesan</label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-tag"></i></span>
                                     <input type="text" class="form-control bg-light border-start-0 ps-0" id="subject" name="subject" placeholder="Topik..." required>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label for="message" class="form-label fw-bold text-secondary text-uppercase x-small ls-1">Isi Pesan</label>
+                                <label for="message" class="form-label fw-bold text-black text-uppercase x-small ls-1">Isi Pesan</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0 text-muted pt-3 align-items-start"><i class="fas fa-pen"></i></span>
                                     <textarea class="form-control bg-light border-start-0 ps-0" id="message" name="message" rows="5" placeholder="Tuliskan pesan Anda secara detail..." required></textarea>

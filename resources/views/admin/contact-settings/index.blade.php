@@ -45,7 +45,7 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="mb-4">
-                                    <label class="form-label fw-semibold text-secondary small text-uppercase ls-1">Alamat Lengkap</label>
+                                    <label class="form-label fw-semibold text-black small text-uppercase ls-1">Alamat Lengkap</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light border-end-0"><i class="fas fa-building text-muted"></i></span>
                                         <textarea class="form-control border-start-0 ps-0 bg-light" name="address" rows="3" placeholder="Masukkan alamat lengkap kantor...">{{ old('address', $settings->address) }}</textarea>
@@ -209,7 +209,7 @@
         <!-- Action Buttons -->
         <div class="card border-0 shadow-sm rounded-4 mt-4 mb-5">
             <div class="card-body p-4 d-flex justify-content-end align-items-center">
-                <button type="reset" class="btn btn-light rounded-pill px-4 fw-bold me-2 text-secondary">
+                <button type="reset" class="btn btn-light rounded-pill px-4 fw-bold me-2 text-black">
                     <i class="fas fa-undo me-2"></i> Reset
                 </button>
                 <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm hover-scale py-2">
