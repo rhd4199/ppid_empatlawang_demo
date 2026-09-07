@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\PpidSetting;
 
@@ -13,9 +12,9 @@ class PpidSettingSeeder extends Seeder
      */
     public function run(): void
     {
-        PpidSetting::create(['key' => 'site_name', 'value' => 'PPID Kabupaten Empat Lawang']);
-        PpidSetting::create(['key' => 'address', 'value' => 'Jl. Poros No. 1, Tebing Tinggi, Empat Lawang']);
-        PpidSetting::create(['key' => 'email', 'value' => 'ppid@empatlawangkab.go.id']);
-        PpidSetting::create(['key' => 'phone', 'value' => '(0702) 123456']);
+        PpidSetting::firstOrCreate(['key' => 'site_name'], ['value' => 'PPID Kabupaten Empat Lawang']);
+        PpidSetting::firstOrCreate(['key' => 'address'], ['value' => 'Jl. Poros No. 1, Tebing Tinggi, Empat Lawang']);
+        PpidSetting::firstOrCreate(['key' => 'email'], ['value' => 'ppid@empatlawangkab.go.id']);
+        PpidSetting::firstOrCreate(['key' => 'phone'], ['value' => '(0702) 123456']);
     }
 }
