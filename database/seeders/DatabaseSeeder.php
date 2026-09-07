@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             OfficialSeeder::class,
             ProfileSeeder::class,
             PpidSettingSeeder::class,
+            ContactSettingSeeder::class,
             // InfoPublicSeeder::class,
             DocumentSeeder::class,
             InfoBerkalaChecklistSeeder::class,
