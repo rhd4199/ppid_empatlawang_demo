@@ -513,19 +513,19 @@
         <div class="row g-4 justify-content-center">
             <div class="col-md-4 col-lg-3">
                 <div class="stat-item">
-                    <div class="stat-number">1,250</div>
+                    <div class="stat-number">{{ number_format($stats['informasi_publik']) }}</div>
                     <div class="stat-label">Informasi Publik</div>
                 </div>
             </div>
             <div class="col-md-4 col-lg-3">
                 <div class="stat-item">
-                    <div class="stat-number">450</div>
+                    <div class="stat-number">{{ number_format($stats['permohonan_selesai']) }}</div>
                     <div class="stat-label">Permohonan Selesai</div>
                 </div>
             </div>
             <div class="col-md-4 col-lg-3">
                 <div class="stat-item">
-                    <div class="stat-number">98%</div>
+                    <div class="stat-number">{{ $stats['satisfaction_index'] }}</div>
                     <div class="stat-label">Indeks Kepuasan</div>
                 </div>
             </div>

@@ -92,6 +92,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Contact Settings
     Route::get('/pengaturan-kontak', [App\Http\Controllers\Admin\ContactSettingController::class, 'index'])->name('contact-settings.index');
     Route::put('/pengaturan-kontak', [App\Http\Controllers\Admin\ContactSettingController::class, 'update'])->name('contact-settings.update');
+    Route::put('/pengaturan-kontak/statistik', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateStats'])->name('contact-settings.update-stats');
 
     // Account Settings
     Route::get('/akun', [App\Http\Controllers\Admin\AccountController::class, 'index'])->name('account.index');

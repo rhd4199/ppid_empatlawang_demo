@@ -7,6 +7,8 @@ use App\Models\News;
 use App\Models\Gallery;
 use App\Models\Document;
 use App\Models\ContactSetting;
+use App\Models\PpidSetting;
+use App\Models\InformationRequest;
 
 class HomeController extends Controller
 {
@@ -32,6 +34,19 @@ class HomeController extends Controller
 
         $contactSettings = ContactSetting::first();
 
-        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings'));
+        // Homepage stats — Informasi Publik & Permohonan Selesai computed live from data,
+        // Indeks Kepuasan is admin-editable (no survey data source exists yet).
+        $stats = [
+            'informasi_publik' => Document::whereIn('category', [
+                'informasi-publik-berkala',
+                'informasi-publik-serta-merta',
+                'informasi-publik-setiap-saat',
+                'informasi-publik-dikecualikan',
+            ])->where('is_published', true)->count(),
+            'permohonan_selesai' => InformationRequest::whereIn('status', ['approved', 'rejected'])->count(),
+            'satisfaction_index' => PpidSetting::where('key', 'stat_satisfaction_index')->value('value') ?? '98%',
+        ];
+
+        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings', 'stats'));
     }
 }

@@ -328,26 +328,6 @@
 </head>
 <body>
 
-    <!-- Top Bar -->
-    <div class="top-bar d-none d-md-block">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex gap-3">
-                <span><i class="fas fa-phone-alt me-2"></i> (0602) 123456</span>
-                <span><i class="fas fa-envelope me-2"></i> ppid@empatlawangkab.go.id</span>
-            </div>
-            <div class="d-flex gap-3">
-                @forelse(($contactSettings->social_media ?? []) as $social)
-                    <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }}"></i></a>
-                @empty
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                @endforelse
-            </div>
-        </div>
-    </div>
-
     <!-- Navigation -->
     <nav class="navbar navbar-expand-xl sticky-top">
         <div class="container-fluid px-4 px-lg-5">
