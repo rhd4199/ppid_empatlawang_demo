@@ -306,7 +306,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="news-card bg-white">
                     <div class="news-img-wrapper">
-                        <img src="{{ $item->image ? asset('storage/' . $item->image) : 'https://via.placeholder.com/600x400?text=News+Image' }}" alt="{{ $item->title }}">
+                        <img src="{{ $item->image ? storage_url($item->image) : 'https://via.placeholder.com/600x400?text=News+Image' }}" alt="{{ $item->title }}">
                         <div class="news-date">{{ $item->created_at->format('d M Y') }}</div>
                     </div>
                     <div class="news-body">
@@ -348,7 +348,7 @@
                     <a href="{{ route('galleries.show', $gallery->id) }}" class="text-decoration-none">
                         <div class="gallery-card shadow-sm">
                             @if($gallery->cover_image)
-                                <img src="{{ asset('storage/' . $gallery->cover_image) }}" alt="{{ $gallery->title }}">
+                                <img src="{{ storage_url($gallery->cover_image) }}" alt="{{ $gallery->title }}">
                             @else
                                 <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100" style="min-height: 250px;">
                                     <i class="fas fa-image fa-3x"></i>

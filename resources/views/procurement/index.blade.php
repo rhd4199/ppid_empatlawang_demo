@@ -49,7 +49,7 @@
                                     <p class="mb-0 text-muted small">{{ $doc->description }}</p>
                                 </div>
                                 @if($doc->file_path)
-                                <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
                                     <i class="fas fa-eye me-1"></i> Lihat
                                 </a>
                                 @endif
@@ -73,7 +73,7 @@
                                     <p class="mb-0 text-muted small">{{ $doc->description }}</p>
                                 </div>
                                 @if($doc->file_path)
-                                <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
+                                <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
                                     <i class="fas fa-gavel me-1"></i> Lihat
                                 </a>
                                 @endif

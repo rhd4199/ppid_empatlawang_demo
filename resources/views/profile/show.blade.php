@@ -34,12 +34,12 @@
                 @if($profile->image)
                     @if ($profile->type == 'struktur')
                         <div class="position-relative">
-                            <img src="{{ asset('storage/' . $profile->image) }}" class="img-fluid w-100 object-fit-cover"  alt="{{ $profile->title }}">
+                            <img src="{{ storage_url($profile->image) }}" class="img-fluid w-100 object-fit-cover"  alt="{{ $profile->title }}">
                             <div class="position-absolute bottom-0 start-0 w-100 bg-gradient-to-t from-black-50 p-4"></div>
                         </div>    
                     @else
                         <div class="position-relative">
-                            <img src="{{ asset('storage/' . $profile->image) }}" class="img-fluid w-100 object-fit-cover" style="max-height: 500px;" alt="{{ $profile->title }}">
+                            <img src="{{ storage_url($profile->image) }}" class="img-fluid w-100 object-fit-cover" style="max-height: 500px;" alt="{{ $profile->title }}">
                             <div class="position-absolute bottom-0 start-0 w-100 bg-gradient-to-t from-black-50 p-4"></div>
                         </div>
                     @endif

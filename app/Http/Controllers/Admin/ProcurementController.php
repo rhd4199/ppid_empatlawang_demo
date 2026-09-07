@@ -35,6 +35,23 @@ class ProcurementController extends Controller
         return redirect()->route('admin.procurements.index')->with('open_create_modal', true);
     }
 
+    public function edit($id)
+    {
+        $document = Document::findOrFail($id);
+
+        $categories = [
+            'pengadaan_info' => 'Informasi Pengadaan',
+            'pengadaan_regulasi' => 'Regulasi Pengadaan',
+        ];
+
+        return view('admin.document.edit', [
+            'document' => $document,
+            'categories' => $categories,
+            'backRoute' => 'admin.procurements.index',
+            'updateRoute' => 'admin.procurements.update',
+        ]);
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([
@@ -50,8 +67,8 @@ class ProcurementController extends Controller
         if ($action === 'delete') {
             $documents = Document::whereIn('id', $ids)->get();
             foreach ($documents as $document) {
-                if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                    Storage::delete('public/' . $document->file_path);
+                if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                    Storage::disk('public')->delete($document->file_path);
                 }
                 $document->delete();
             }
@@ -106,8 +123,8 @@ class ProcurementController extends Controller
         ]);
 
         if ($request->hasFile('file_path')) {
-            if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                Storage::delete('public/' . $document->file_path);
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
             }
             $document->file_path = $request->file('file_path')->store('documents', 'public');
         }
@@ -124,8 +141,8 @@ class ProcurementController extends Controller
     public function destroy($id)
     {
         $document = Document::findOrFail($id);
-        if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-            Storage::delete('public/' . $document->file_path);
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
         $document->delete();
 

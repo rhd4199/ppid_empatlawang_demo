@@ -41,6 +41,29 @@ class StandardServiceController extends Controller
         return redirect()->route('admin.standard-service.index')->with('open_create_modal', true);
     }
 
+    public function edit($id)
+    {
+        $document = Document::findOrFail($id);
+
+        $categories = [
+            'standar_layanan_alur' => 'Alur Layanan',
+            'standar_layanan_tata_cara' => 'Tata Cara Permohonan',
+            'standar_layanan_permohonan' => 'Formulir Permohonan',
+            'standar_layanan_keberatan' => 'Formulir Keberatan',
+            'standar_layanan_sengketa' => 'Penyelesaian Sengketa',
+            'standar_layanan_sop' => 'SOP',
+            'standar_layanan_maklumat' => 'Maklumat Pelayanan',
+            'standar_layanan_biaya' => 'Waktu & Biaya',
+        ];
+
+        return view('admin.document.edit', [
+            'document' => $document,
+            'categories' => $categories,
+            'backRoute' => 'admin.standard-service.index',
+            'updateRoute' => 'admin.standard-service.update',
+        ]);
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([
@@ -56,8 +79,8 @@ class StandardServiceController extends Controller
         if ($action === 'delete') {
             $documents = Document::whereIn('id', $ids)->get();
             foreach ($documents as $document) {
-                if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                    Storage::delete('public/' . $document->file_path);
+                if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                    Storage::disk('public')->delete($document->file_path);
                 }
                 $document->delete();
             }
@@ -120,8 +143,8 @@ class StandardServiceController extends Controller
 
         if ($request->hasFile('file_path')) {
             // Delete old file
-            if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                Storage::delete('public/' . $document->file_path);
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
             }
             
             $path = $request->file('file_path')->store('documents', 'public');
@@ -146,8 +169,8 @@ class StandardServiceController extends Controller
     {
         $document = Document::findOrFail($id);
         
-        if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-            Storage::delete('public/' . $document->file_path);
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
         
         $document->delete();

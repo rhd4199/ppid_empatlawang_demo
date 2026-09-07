@@ -32,6 +32,25 @@ class InfoPublicController extends Controller
         return view('admin.info_public.index', compact('documents'));
     }
 
+    public function edit($id)
+    {
+        $document = Document::findOrFail($id);
+
+        $categories = [
+            'informasi-publik-berkala' => 'Berkala',
+            'informasi-publik-serta-merta' => 'Serta Merta',
+            'informasi-publik-setiap-saat' => 'Setiap Saat',
+            'informasi-publik-dikecualikan' => 'Dikecualikan',
+        ];
+
+        return view('admin.document.edit', [
+            'document' => $document,
+            'categories' => $categories,
+            'backRoute' => 'admin.info-public.index',
+            'updateRoute' => 'admin.info-public.update',
+        ]);
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([
@@ -47,8 +66,8 @@ class InfoPublicController extends Controller
         if ($action === 'delete') {
             $documents = Document::whereIn('id', $ids)->get();
             foreach ($documents as $document) {
-                if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                    Storage::delete('public/' . $document->file_path);
+                if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                    Storage::disk('public')->delete($document->file_path);
                 }
                 $document->delete();
             }
@@ -108,8 +127,8 @@ class InfoPublicController extends Controller
 
         if ($request->hasFile('file_path')) {
             // Delete old file
-            if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                Storage::delete('public/' . $document->file_path);
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
             }
             
             $path = $request->file('file_path')->store('documents', 'public');
@@ -134,8 +153,8 @@ class InfoPublicController extends Controller
     {
         $document = Document::findOrFail($id);
         
-        if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-            Storage::delete('public/' . $document->file_path);
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
         
         $document->delete();

@@ -35,7 +35,7 @@
                     <div class="row g-0 h-100">
                         <div class="col-md-8 position-relative">
                             @if($featured->image)
-                                <img src="{{ asset('storage/' . $featured->image) }}" class="img-fluid w-100 h-100 object-fit-cover" alt="{{ $featured->title }}" style="min-height: 400px;">
+                                <img src="{{ storage_url($featured->image) }}" class="img-fluid w-100 h-100 object-fit-cover" alt="{{ $featured->title }}" style="min-height: 400px;">
                             @else
                                 <div class="bg-secondary w-100 h-100 d-flex align-items-center justify-content-center" style="min-height: 400px;">
                                     <i class="fas fa-newspaper fa-5x opacity-50"></i>
@@ -72,7 +72,7 @@
                     <article class="card h-100 border-0 shadow-sm card-hover hover-lift">
                         <div class="card-img-wrapper position-relative overflow-hidden">
                             @if($item->image)
-                                <img src="{{ asset('storage/' . $item->image) }}" class="card-img-top" alt="{{ $item->title }}">
+                                <img src="{{ storage_url($item->image) }}" class="card-img-top" alt="{{ $item->title }}">
                             @else
                                 <div class="bg-light text-muted d-flex align-items-center justify-content-center card-img-top">
                                     <i class="fas fa-newspaper fa-3x opacity-25"></i>

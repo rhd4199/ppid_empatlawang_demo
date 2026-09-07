@@ -106,7 +106,7 @@
                             <i class="fas fa-id-card fa-2x text-secondary me-3"></i>
                             <div>
                                 <h6 class="mb-1">File KTP Pemohon</h6>
-                                <a href="{{ asset('storage/' . $request->ktp_file) }}" target="_blank" class="text-primary text-decoration-none small fw-bold">
+                                <a href="{{ storage_url($request->ktp_file) }}" target="_blank" class="text-primary text-decoration-none small fw-bold">
                                     <i class="fas fa-external-link-alt me-1"></i> Lihat / Unduh Dokumen
                                 </a>
                             </div>

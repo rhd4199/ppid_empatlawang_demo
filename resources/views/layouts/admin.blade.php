@@ -7,6 +7,9 @@
 
     <title>{{ config('app.name', 'Admin PPID') }} - Admin Panel</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/Lambang_Empat_Lawang.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/Lambang_Empat_Lawang.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,6 +78,11 @@
 
         .sidebar { z-index: 1200 !important; }
         .top-header { z-index: 1100 !important; }
+
+        /* Bootstrap modals/backdrops must sit above sidebar (1200) and top-header (1100),
+           otherwise every admin modal (edit/create dialogs) renders clipped under them. */
+        .modal { z-index: 1300 !important; }
+        .modal-backdrop { z-index: 1290 !important; }
 
         /* FullCalendar jangan boleh punya z-index yang menang */
         .fc, .fc * { z-index: auto; }
@@ -242,6 +250,9 @@
                     </a>
                     <a href="{{ route('admin.profiles.edit', 'tugas-fungsi') }}" class="menu-item ps-5 py-2 small {{ request()->is('admin/profil/tugas-fungsi/edit') ? 'text-warning' : '' }}">
                         <i class="fas fa-angle-right fa-xs me-2"></i> Tugas & Fungsi
+                    </a>
+                    <a href="{{ route('admin.officials.index') }}" class="menu-item ps-5 py-2 small {{ request()->routeIs('admin.officials.*') ? 'text-warning' : '' }}">
+                        <i class="fas fa-angle-right fa-xs me-2"></i> Pejabat & Pejabat Struktural
                     </a>
                 </div>
             </div>

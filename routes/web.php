@@ -17,6 +17,7 @@ use App\Http\Controllers\ComplaintController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/profil', [ProfileController::class, 'index'])->name('profiles.index');
+Route::get('/profil-pejabat', [App\Http\Controllers\OfficialController::class, 'index'])->name('officials.index');
 Route::get('/profil/{slug}', [ProfileController::class, 'show'])->name('profiles.show');
 
 Route::resource('informasi-publik', InfoPublicController::class);
@@ -48,6 +49,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Profiles
     Route::get('/profil/{slug}/edit', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profiles.edit');
     Route::put('/profil/{id}', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profiles.update');
+
+    // Pejabat / Pejabat Struktural
+    Route::post('/pejabat/{id}/toggle-status', [App\Http\Controllers\Admin\OfficialController::class, 'toggleStatus'])->name('officials.toggle-status');
+    Route::resource('pejabat', App\Http\Controllers\Admin\OfficialController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('officials');
 
     // Documents Management
     Route::post('/informasi-publik/bulk-action', [App\Http\Controllers\Admin\InfoPublicController::class, 'bulkAction'])->name('info-public.bulk-action');

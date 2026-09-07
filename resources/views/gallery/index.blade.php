@@ -28,7 +28,7 @@
                 <div class="card h-100 border-0 shadow-sm gallery-card overflow-hidden">
                     <div class="gallery-img-wrapper position-relative">
                         @if($gallery->cover_image)
-                            <img src="{{ Str::startsWith($gallery->cover_image, ['http://', 'https://']) ? $gallery->cover_image : asset('storage/' . $gallery->cover_image) }}" class="card-img-top" alt="{{ $gallery->title }}">
+                            <img src="{{ Str::startsWith($gallery->cover_image, ['http://', 'https://']) ? $gallery->cover_image : storage_url($gallery->cover_image) }}" class="card-img-top" alt="{{ $gallery->title }}">
                         @else
                             <div class="bg-light text-muted d-flex align-items-center justify-content-center card-img-top">
                                 <i class="fas fa-images fa-3x opacity-25"></i>

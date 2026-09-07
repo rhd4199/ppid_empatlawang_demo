@@ -126,91 +126,20 @@
                         </td>
                         <td class="px-4 py-3 text-end">
                             <div class="d-flex justify-content-end gap-2">
-                                <button type="button" 
-                                        class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
+                                <a href="{{ route('admin.procurements.edit', $item->id) }}"
+                                        class="btn btn-sm btn-outline-primary rounded-circle shadow-sm"
                                         style="width: 32px; height: 32px; padding: 0;"
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#editModal{{ $item->id }}"
                                         title="Edit">
                                     <i class="fas fa-pen fa-xs"></i>
-                                </button>
-                                <button type="button" 
-                                        class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" 
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger rounded-circle shadow-sm"
                                         style="width: 32px; height: 32px; padding: 0;"
                                         data-bs-toggle="modal"
                                         data-bs-target="#deleteModal{{ $item->id }}"
                                         title="Hapus">
                                     <i class="fas fa-trash-alt fa-xs"></i>
                                 </button>
-                            </div>
-
-                            <!-- Edit Modal -->
-                            <div class="modal fade text-start" id="editModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content border-0 shadow-lg rounded-4">
-                                        <div class="modal-header bg-light border-bottom-0 py-3">
-                                            <h5 class="modal-title fw-bold text-primary"><i class="fas fa-edit me-2"></i>Edit Dokumen</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form action="{{ route('admin.procurements.update', $item->id) }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="modal-body p-4">
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase text-muted">Judul Dokumen</label>
-                                                    <input type="text" class="form-control bg-light border-0" name="title" value="{{ $item->title }}" required>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase text-muted">Kategori</label>
-                                                    <select class="form-select bg-light border-0" name="category" required>
-                                                        <option value="pengadaan_info" {{ $item->category == 'pengadaan_info' ? 'selected' : '' }}>Informasi Pengadaan</option>
-                                                        <option value="pengadaan_regulasi" {{ $item->category == 'pengadaan_regulasi' ? 'selected' : '' }}>Regulasi/Aturan</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase text-muted">Deskripsi</label>
-                                                    <textarea class="form-control bg-light border-0" name="description" rows="3">{{ $item->description }}</textarea>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase text-muted">Status</label>
-                                                    <select class="form-select bg-light border-0" name="is_published" required>
-                                                        <option value="1" {{ $item->is_published ? 'selected' : '' }}>Published</option>
-                                                        <option value="0" {{ !$item->is_published ? 'selected' : '' }}>Draft</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase text-muted">File Dokumen</label>
-                                                    @if($item->file_path)
-                                                        <div class="card bg-success bg-opacity-10 border-success border-opacity-25 mb-2">
-                                                            <div class="card-body p-3 d-flex align-items-center">
-                                                                <div class="bg-success text-white rounded-circle p-2 me-3">
-                                                                    <i class="fas fa-check"></i>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6 class="mb-0 fw-bold text-success">File Tersedia</h6>
-                                                                    <small class="text-muted">Dokumen sudah diupload.</small>
-                                                                </div>
-                                                                <a href="{{ asset('storage/' . $item->file_path) }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3">
-                                                                    <i class="fas fa-eye me-1"></i> Preview
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                    <input class="form-control" type="file" name="file_path">
-                                                    <div class="form-text small"><i class="fas fa-info-circle me-1"></i> Upload file baru untuk mengganti yang lama. Max 10MB.</div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
-                                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">Simpan Perubahan</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Delete Confirmation Modal -->

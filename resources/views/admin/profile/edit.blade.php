@@ -14,6 +14,9 @@
         border: 1px solid #dee2e6;
         border-radius: 0.375rem;
     }
+    /* admin .top-header uses z-index:1100, above summernote's default modal (1050) */
+    .note-modal { z-index: 1300 !important; }
+    .note-modal-backdrop { z-index: 1290 !important; }
 </style>
 @endpush
 
@@ -60,7 +63,7 @@
                             <label for="image" class="form-label fw-bold">Gambar Utama (Opsional)</label>
                             @if($profile->image)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $profile->image) }}" alt="Current Image" class="img-thumbnail" style="max-height: 200px">
+                                    <img src="{{ storage_url($profile->image) }}" alt="Current Image" class="img-thumbnail" style="max-height: 200px">
                                     <p class="text-muted small mt-1">Gambar saat ini</p>
                                 </div>
                             @endif

@@ -16,10 +16,13 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
+            UserSeeder::class,
+            OfficialSeeder::class,
             ProfileSeeder::class,
             PpidSettingSeeder::class,
             // InfoPublicSeeder::class,
             DocumentSeeder::class,
+            InfoBerkalaChecklistSeeder::class,
             NewsSeeder::class,
             GallerySeeder::class,
             EventSeeder::class,

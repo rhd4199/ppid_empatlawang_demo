@@ -41,7 +41,7 @@
         @if($gallery->cover_image)
             <div class="col-md-4 mb-3 gallery-item">
                 <div class="position-relative overflow-hidden rounded shadow-sm photo-card cursor-pointer" onclick="openLightbox(0)">
-                    <img src="{{ asset('storage/' . $gallery->cover_image) }}" class="img-fluid w-100" alt="Cover">
+                    <img src="{{ storage_url($gallery->cover_image) }}" class="img-fluid w-100" alt="Cover">
                     <div class="photo-overlay">
                         <i class="fas fa-search-plus text-white fa-2x"></i>
                     </div>
@@ -52,7 +52,7 @@
         @foreach($gallery->items as $index => $item)
         <div class="col-md-4 mb-3 gallery-item">
             <div class="position-relative overflow-hidden rounded shadow-sm photo-card cursor-pointer" onclick="openLightbox({{ $gallery->cover_image ? $index + 1 : $index }})">
-                <img src="{{ asset('storage/' . $item->image_path) }}" class="img-fluid w-100" alt="Foto Galeri">
+                <img src="{{ storage_url($item->image_path) }}" class="img-fluid w-100" alt="Foto Galeri">
                 <div class="photo-overlay">
                     <i class="fas fa-search-plus text-white fa-2x"></i>
                 </div>
@@ -79,13 +79,13 @@
                     <div class="carousel-inner">
                         @if($gallery->cover_image)
                         <div class="carousel-item active">
-                            <img src="{{ Str::startsWith($gallery->cover_image, ['http://', 'https://']) ? $gallery->cover_image : asset('storage/' . $gallery->cover_image) }}" class="d-block mx-auto" style="max-height: 90vh; max-width: 100%; object-fit: contain;" alt="Cover">
+                            <img src="{{ Str::startsWith($gallery->cover_image, ['http://', 'https://']) ? $gallery->cover_image : storage_url($gallery->cover_image) }}" class="d-block mx-auto" style="max-height: 90vh; max-width: 100%; object-fit: contain;" alt="Cover">
                         </div>
                         @endif
 
                         @foreach($gallery->items as $item)
                         <div class="carousel-item {{ !$gallery->cover_image && $loop->first ? 'active' : '' }}">
-                            <img src="{{ Str::startsWith($item->image_path, ['http://', 'https://']) ? $item->image_path : asset('storage/' . $item->image_path) }}" class="d-block mx-auto" style="max-height: 90vh; max-width: 100%; object-fit: contain;" alt="Foto Galeri">
+                            <img src="{{ Str::startsWith($item->image_path, ['http://', 'https://']) ? $item->image_path : storage_url($item->image_path) }}" class="d-block mx-auto" style="max-height: 90vh; max-width: 100%; object-fit: contain;" alt="Foto Galeri">
                         </div>
                         @endforeach
                     </div>

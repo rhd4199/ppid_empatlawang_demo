@@ -6,7 +6,7 @@
 <!-- Custom Header for Article -->
 <div class="position-relative bg-dark text-white" style="min-height: 400px;">
     @if($news->image)
-        <img src="{{ asset('storage/' . $news->image) }}" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; opacity: 0.4;" alt="{{ $news->title }}">
+        <img src="{{ storage_url($news->image) }}" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; opacity: 0.4;" alt="{{ $news->title }}">
     @else
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-secondary" style="opacity: 0.4;"></div>
     @endif

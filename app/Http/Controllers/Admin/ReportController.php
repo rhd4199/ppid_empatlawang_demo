@@ -30,6 +30,23 @@ class ReportController extends Controller
         return view('admin.report.index', compact('documents'));
     }
 
+    public function edit($id)
+    {
+        $document = Document::findOrFail($id);
+
+        $categories = [
+            'laporan_pemda' => 'Laporan Pemkab Empat Lawang',
+            'laporan_ppid' => 'Laporan PPID',
+        ];
+
+        return view('admin.document.edit', [
+            'document' => $document,
+            'categories' => $categories,
+            'backRoute' => 'admin.reports.index',
+            'updateRoute' => 'admin.reports.update',
+        ]);
+    }
+
     public function bulkAction(Request $request)
     {
         $request->validate([
@@ -45,8 +62,8 @@ class ReportController extends Controller
         if ($action === 'delete') {
             $documents = Document::whereIn('id', $ids)->get();
             foreach ($documents as $document) {
-                if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                    Storage::delete('public/' . $document->file_path);
+                if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                    Storage::disk('public')->delete($document->file_path);
                 }
                 $document->delete();
             }
@@ -106,8 +123,8 @@ class ReportController extends Controller
 
         if ($request->hasFile('file_path')) {
             // Delete old file
-            if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-                Storage::delete('public/' . $document->file_path);
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
             }
             
             $path = $request->file('file_path')->store('documents', 'public');
@@ -132,8 +149,8 @@ class ReportController extends Controller
     {
         $document = Document::findOrFail($id);
         
-        if ($document->file_path && Storage::exists('public/' . $document->file_path)) {
-            Storage::delete('public/' . $document->file_path);
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
         
         $document->delete();

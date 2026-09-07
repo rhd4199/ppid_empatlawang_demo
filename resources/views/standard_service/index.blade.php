@@ -57,8 +57,76 @@
             <div class="tab-content" style="min-height: 60vh;">
                 <!-- Alur Layanan -->
                 <div class="tab-pane fade show active" id="alur">
+                    <div class="alur-flow-card mb-4">
+                        <h3 class="fw-bold mb-1"><i class="fas fa-diagram-project me-2"></i>Mekanisme Pelayanan Informasi Publik</h3>
+                        <p class="text-white-50 mb-4">Alur pengajuan permohonan informasi publik di PPID Kabupaten Empat Lawang</p>
+
+                        <div class="alur-steps">
+                            <div class="alur-step">
+                                <div class="alur-num">1</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-2"><i class="fas fa-file-signature me-2"></i>Pemohon Mengajukan Permohonan</h6>
+                                    <p class="mb-2 small">Pemohon mengisi formulir permohonan informasi dan melampirkan syarat dokumen kelengkapan:</p>
+                                    <ul class="small mb-0 ps-3">
+                                        <li><strong>Perorangan:</strong> KTP atau Surat Keterangan Kependudukan.</li>
+                                        <li><strong>Kelompok Orang:</strong> Surat kuasa, identitas Pemberi dan Penerima Kuasa.</li>
+                                        <li><strong>Badan Hukum:</strong> KTP perwakilan pengurus, surat kuasa, dan akta pendirian badan hukum yang telah disahkan Kemenkumham.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+
+                            <div class="alur-step">
+                                <div class="alur-num">2</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-2"><i class="fas fa-clipboard-check me-2"></i>Verifikasi Kelengkapan Berkas</h6>
+                                    <p class="mb-0 small">Petugas PPID memeriksa kelengkapan berkas permohonan yang diajukan.</p>
+                                </div>
+                            </div>
+
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+
+                            <div class="alur-branch">
+                                <div class="alur-branch-item alur-branch-ok">
+                                    <div class="alur-num">3</div>
+                                    <div class="alur-box">
+                                        <h6 class="fw-bold mb-1"><i class="fas fa-check-circle me-2"></i>Berkas Lengkap</h6>
+                                        <p class="mb-0 small">Permohonan diproses dan dijawab paling lambat <strong>10 + 7 hari kerja</strong> (apabila informasi belum dikuasai/didokumentasikan).</p>
+                                    </div>
+                                </div>
+                                <div class="alur-branch-item alur-branch-fail">
+                                    <div class="alur-num">4</div>
+                                    <div class="alur-box">
+                                        <h6 class="fw-bold mb-1"><i class="fas fa-times-circle me-2"></i>Berkas Tidak Lengkap</h6>
+                                        <p class="mb-0 small">PPID mengirimkan surat permohonan kelengkapan berkas kepada pemohon.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+
+                            <div class="alur-branch">
+                                <div class="alur-branch-item alur-branch-ok">
+                                    <div class="alur-num">5</div>
+                                    <div class="alur-box">
+                                        <h6 class="fw-bold mb-1"><i class="fas fa-thumbs-up me-2"></i>Selesai - Pemohon Puas</h6>
+                                        <p class="mb-0 small">Informasi diterima dan permohonan selesai.</p>
+                                    </div>
+                                </div>
+                                <div class="alur-branch-item alur-branch-fail">
+                                    <div class="alur-num">6</div>
+                                    <div class="alur-box">
+                                        <h6 class="fw-bold mb-1"><i class="fas fa-gavel me-2"></i>Pemohon Tidak Puas</h6>
+                                        <p class="mb-0 small">Pemohon dapat <a href="{{ route('complaint.create') }}" class="text-white text-decoration-underline">mengajukan Keberatan Informasi</a>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card card-hover border-0 shadow-sm p-4 mb-4">
-                        <h3 class="mb-4 border-bottom pb-2">Alur Layanan Informasi</h3>
+                        <h3 class="mb-4 border-bottom pb-2">Dokumen Alur Layanan</h3>
                         <div class="row">
                             @forelse($documents->where('category', 'standar_layanan_alur') as $doc)
                             <div class="col-md-6 mb-3">
@@ -66,7 +134,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title text-primary">{{ $doc->title }}</h5>
                                         <p class="card-text text-muted small">{{ $doc->description }}</p>
-                                        <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-outline-primary stretched-link" target="_blank">Lihat Dokumen</a>
+                                        <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-primary stretched-link" target="_blank">Lihat Dokumen</a>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +156,7 @@
                                     <h5 class="mb-1">{{ $doc->title }}</h5>
                                     <p class="mb-0 text-muted small">{{ $doc->description }}</p>
                                 </div>
-                                <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank"><i class="fas fa-download me-1"></i> Unduh</a>
+                                <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank"><i class="fas fa-download me-1"></i> Unduh</a>
                             </div>
                             @empty
                             <div class="alert alert-info">Belum ada dokumen tata cara.</div>
@@ -112,7 +180,7 @@
                                 <p class="small text-muted mb-2">Jika Anda lebih memilih untuk mengajukan permohonan secara langsung/offline, silakan unduh formulir berikut:</p>
                                 <div class="list-group list-group-flush">
                                     @foreach($documents->where('category', 'standar_layanan_permohonan') as $doc)
-                                    <a href="{{ asset('storage/' . $doc->file_path) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2" target="_blank">
+                                    <a href="{{ storage_url($doc->file_path) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2" target="_blank">
                                         <span><i class="fas fa-file-pdf text-danger me-2"></i> {{ $doc->title }}</span>
                                         <span class="badge bg-primary rounded-pill">Unduh</span>
                                     </a>
@@ -192,6 +260,62 @@
 
                 <!-- Pengajuan Keberatan (Merged) -->
                 <div class="tab-pane fade" id="keberatan">
+                    <div class="alur-flow-card alur-flow-card-danger mb-4">
+                        <h3 class="fw-bold mb-1"><i class="fas fa-diagram-project me-2"></i>Mekanisme Pengajuan Keberatan Informasi</h3>
+                        <p class="text-white-50 mb-4">Alur penanganan keberatan bila pemohon tidak puas dengan pelayanan informasi</p>
+
+                        <div class="alur-steps">
+                            <div class="alur-step">
+                                <div class="alur-num">1</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1"><i class="fas fa-file-signature me-2"></i>Pemohon Mengisi Formulir Keberatan</h6>
+                                    <p class="mb-0 small">Diajukan melalui website ini (formulir di bawah) atau langsung ke kantor PPID Kabupaten Empat Lawang.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">2</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1"><i class="fas fa-clipboard-list me-2"></i>Registrasi & Verifikasi Berkas</h6>
+                                    <p class="mb-0 small">Petugas PPID mencatat dan mengecek kelengkapan berkas keberatan.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">3</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1"><i class="fas fa-share me-2"></i>Diteruskan ke Atasan PPID</h6>
+                                    <p class="mb-0 small">Petugas PPID menyampaikan pengajuan keberatan kepada Atasan PPID.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">4</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1"><i class="fas fa-reply me-2"></i>Tanggapan Keberatan</h6>
+                                    <p class="mb-0 small">Atasan PPID menyampaikan tanggapan keberatan kepada pemohon paling lambat <strong>30 hari kerja</strong> sejak keberatan diregistrasi.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-branch">
+                                <div class="alur-branch-item alur-branch-ok">
+                                    <div class="alur-num">5</div>
+                                    <div class="alur-box">
+                                        <h6 class="fw-bold mb-1"><i class="fas fa-thumbs-up me-2"></i>Selesai - Pemohon Puas</h6>
+                                        <p class="mb-0 small">Keberatan dianggap terselesaikan.</p>
+                                    </div>
+                                </div>
+                                <div class="alur-branch-item alur-branch-fail">
+                                    <div class="alur-num">6</div>
+                                    <div class="alur-box">
+                                        <h6 class="fw-bold mb-1"><i class="fas fa-landmark me-2"></i>Pemohon Tidak Puas</h6>
+                                        <p class="mb-0 small">Pemohon dapat mengajukan sengketa informasi ke <strong>Komisi Informasi Provinsi Sumatera Selatan</strong> dalam waktu <strong>14 hari kerja</strong> sejak tanggapan keberatan diterima.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card card-hover shadow-sm border-0">
                         <div class="card-header bg-white border-bottom py-3">
                             <h4 class="mb-0 text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Formulir Pengajuan Keberatan Informasi</h4>
@@ -205,7 +329,7 @@
                                 <p class="small text-muted mb-2">Jika Anda lebih memilih untuk mengajukan keberatan secara langsung/offline, silakan unduh formulir berikut:</p>
                                 <div class="list-group list-group-flush">
                                     @foreach($documents->where('category', 'standar_layanan_keberatan') as $doc)
-                                    <a href="{{ asset('storage/' . $doc->file_path) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2" target="_blank">
+                                    <a href="{{ storage_url($doc->file_path) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2" target="_blank">
                                         <span><i class="fas fa-file-pdf text-danger me-2"></i> {{ $doc->title }}</span>
                                         <span class="badge bg-danger rounded-pill">Unduh</span>
                                     </a>
@@ -283,7 +407,7 @@
                                         <td class="fw-bold">{{ $doc->title }}</td>
                                         <td>{{ $doc->description }}</td>
                                         <td class="text-end">
-                                            <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-outline-success rounded-pill" target="_blank">Download</a>
+                                            <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-success rounded-pill" target="_blank">Download</a>
                                         </td>
                                     </tr>
                                     @empty
@@ -298,7 +422,24 @@
                 <!-- Maklumat -->
                 <div class="tab-pane fade" id="maklumat">
                     <div class="card card-hover border-0 shadow-sm p-4 mb-4">
-                        <h3 class="mb-4 border-bottom pb-2">Maklumat Pelayanan</h3>
+                        <h3 class="mb-4 border-bottom pb-2 text-center">Maklumat Pelayanan Informasi Publik</h3>
+                        <p class="text-center text-muted mb-4">PPID Kabupaten Empat Lawang menyatakan komitmen untuk:</p>
+                        <ol class="maklumat-list mb-0">
+                            <li>Memberikan pelayanan informasi yang prima berdasarkan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik, sejalan dengan misi Pemerintah Kabupaten Empat Lawang yang berorientasi pada pelayanan publik;</li>
+                            <li>Memberikan kemudahan kepada publik dalam mendapatkan informasi secara sederhana dan berbiaya ringan;</li>
+                            <li>Menyediakan dan memberikan informasi publik yang dikuasai secara akurat, benar, dan tidak menyesatkan;</li>
+                            <li>Memberikan jawaban permohonan informasi publik dan tanggapan pernyataan keberatan sesuai jangka waktu yang telah ditetapkan;</li>
+                            <li>Menyediakan Daftar Informasi Publik untuk informasi yang wajib disediakan dan diumumkan;</li>
+                            <li>Bertindak proaktif dalam memenuhi kebutuhan informasi masyarakat serta menjamin seluruh informasi publik dan fasilitas pelayanan sesuai ketentuan yang berlaku;</li>
+                            <li>Menyiapkan sarana dan prasarana yang inklusif, nyaman, dan tertata baik;</li>
+                            <li>Bersikap adil, tidak diskriminatif, dan berperilaku sopan santun dalam memberikan layanan informasi publik;</li>
+                            <li>Tidak melakukan pungutan biaya yang tidak sesuai dengan ketentuan peraturan perundang-undangan dalam memberikan layanan informasi publik;</li>
+                            <li>Melaporkan hasil kinerja atas pelaksanaan pelayanan informasi publik.</li>
+                        </ol>
+                    </div>
+
+                    <div class="card card-hover border-0 shadow-sm p-4 mb-4">
+                        <h3 class="mb-4 border-bottom pb-2">Dokumen Maklumat Pelayanan</h3>
                         @forelse($documents->where('category', 'standar_layanan_maklumat') as $doc)
                         <div class="text-center mb-4">
                             @php
@@ -307,7 +448,7 @@
                             @endphp
 
                             @if($isImage)
-                                <img src="{{ asset('storage/' . $doc->file_path) }}" alt="{{ $doc->title }}" class="img-fluid shadow-sm rounded mb-3" style="max-height: 400px; object-fit: contain;">
+                                <img src="{{ storage_url($doc->file_path) }}" alt="{{ $doc->title }}" class="img-fluid shadow-sm rounded mb-3" style="max-height: 400px; object-fit: contain;">
                             @else
                                 <div class="py-5 bg-light rounded-3 mb-3">
                                     @if(in_array(strtolower($extension), ['pdf']))
@@ -324,7 +465,7 @@
                             
                             <h5>{{ $doc->title }}</h5>
                             <p class="text-muted">{{ $doc->description }}</p>
-                            <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-primary rounded-pill mt-2" target="_blank">Unduh Maklumat</a>
+                            <a href="{{ storage_url($doc->file_path) }}" class="btn btn-primary rounded-pill mt-2" target="_blank">Unduh Maklumat</a>
                         </div>
                         @empty
                         <div class="alert alert-info">Belum ada maklumat pelayanan.</div>
@@ -335,13 +476,38 @@
                 <!-- Biaya -->
                 <div class="tab-pane fade" id="biaya">
                     <div class="card card-hover border-0 shadow-sm p-4 mb-4">
+                        <h3 class="mb-4 border-bottom pb-2">Waktu Layanan</h3>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-clock fa-lg text-primary me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Jam Operasional</strong>
+                                        <p class="text-muted small mb-0">Senin - Jumat: 08:00 - 16:00 WIB<br>Sabtu - Minggu: Tutup</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-calendar-times fa-lg text-primary me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Hari Libur</strong>
+                                        <p class="text-muted small mb-0">Layanan tutup pada hari libur nasional dan cuti bersama sesuai keputusan pemerintah pusat.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-0">Jam operasional dapat berubah sewaktu-waktu, cek info terkini di halaman <a href="{{ route('contact.index') }}">Kontak & Alamat</a>.</p>
+                    </div>
+
+                    <div class="card card-hover border-0 shadow-sm p-4 mb-4">
                         <h3 class="mb-4 border-bottom pb-2">Biaya Pelayanan</h3>
                          @forelse($documents->where('category', 'standar_layanan_biaya') as $doc)
                         <div class="alert alert-warning border-start border-5 border-warning">
                             <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i> {{ $doc->title }}</h4>
                             <p>{{ $doc->description }}</p>
                             <hr>
-                            <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-outline-dark" target="_blank">Lihat Rincian Biaya</a>
+                            <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-dark" target="_blank">Lihat Rincian Biaya</a>
                         </div>
                         @empty
                          <div class="alert alert-success border-start border-5 border-success">
@@ -364,7 +530,7 @@
                             <div class="flex-grow-1 ms-3">
                                 <h5>{{ $doc->title }}</h5>
                                 <p>{{ $doc->description }}</p>
-                                <a href="{{ asset('storage/' . $doc->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">Pelajari Prosedur</a>
+                                <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">Pelajari Prosedur</a>
                             </div>
                         </div>
                         @empty
@@ -405,6 +571,62 @@
     .list-group-item.active {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
+    }
+
+    /* Alur Mekanisme Pelayanan - numbered step infographic */
+    .alur-flow-card {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #012a4a 100%);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        color: #fff;
+    }
+    .alur-flow-card-danger {
+        background: linear-gradient(135deg, #b91c1c 0%, #450a0a 100%);
+    }
+    .alur-flow-card h3,
+    .alur-flow-card h6,
+    .alur-flow-card p,
+    .alur-flow-card li {
+        color: #fff;
+    }
+    .alur-box a { color: #fff; }
+    .maklumat-list { padding-left: 1.5rem; }
+    .maklumat-list li { margin-bottom: 0.75rem; line-height: 1.6; }
+    .alur-steps { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+    .alur-step { display: flex; align-items: flex-start; gap: 1rem; }
+    .alur-num {
+        flex-shrink: 0;
+        width: 42px; height: 42px;
+        border-radius: 50%;
+        background: var(--secondary-color);
+        color: #012a4a;
+        font-weight: 800;
+        font-size: 1.1rem;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .alur-box {
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        flex: 1;
+    }
+    .alur-box ul { color: rgba(255,255,255,0.9); }
+    .alur-arrow {
+        text-align: center;
+        color: var(--secondary-color);
+        font-size: 1.25rem;
+        padding: 0.5rem 0 0.5rem 21px;
+    }
+    .alur-branch { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .alur-branch-item { display: flex; align-items: flex-start; gap: 1rem; flex: 1 1 260px; }
+    .alur-branch-ok .alur-num { background: #22c55e; color: #fff; }
+    .alur-branch-fail .alur-num { background: #ef4444; color: #fff; }
+    .alur-branch-ok .alur-box { border-color: rgba(34,197,94,0.5); }
+    .alur-branch-fail .alur-box { border-color: rgba(239,68,68,0.5); }
+
+    @media (max-width: 767px) {
+        .alur-branch { flex-direction: column; }
     }
 </style>
 @endsection

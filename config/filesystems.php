@@ -38,7 +38,7 @@ return [
             'report' => false,
         ],
 
-        'public' => [
+        'local_public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
@@ -47,15 +47,19 @@ return [
             'report' => false,
         ],
 
-        's3' => [
+        // "public" drives every upload in the app (Storage::disk('public'),
+        // ->store($path, 'public')). Backed by IDCloudHost S3-compatible
+        // storage; swap FILESYSTEM_DISK/S3_* env vars to point elsewhere.
+        'public' => [
             'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'key' => env('S3_ACCESS_KEY_ID'),
+            'secret' => env('S3_SECRET_ACCESS_KEY'),
+            'region' => env('S3_REGION'),
+            'bucket' => env('S3_BUCKET_NAME'),
+            'endpoint' => env('S3_ENDPOINT'),
+            'root' => env('S3_ROOT_DIR'),
+            'use_path_style_endpoint' => env('S3_USE_PATH_STYLE_ENDPOINT', true),
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],

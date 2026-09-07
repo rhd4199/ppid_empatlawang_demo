@@ -7,6 +7,9 @@
 
     <title>@yield('title', config('app.name', 'PPID Kabupaten Empat Lawang'))</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/Lambang_Empat_Lawang.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/Lambang_Empat_Lawang.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -333,10 +336,14 @@
                 <span><i class="fas fa-envelope me-2"></i> ppid@empatlawangkab.go.id</span>
             </div>
             <div class="d-flex gap-3">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
+                @forelse(($contactSettings->social_media ?? []) as $social)
+                    <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }}"></i></a>
+                @empty
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                @endforelse
             </div>
         </div>
     </div>
@@ -363,12 +370,14 @@
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'visi-misi') }}">Visi & Misi</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'struktur-organisasi') }}">Struktur Organisasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'tugas-fungsi') }}">Tugas & Fungsi</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('officials.*') ? 'active' : '' }}" href="{{ route('officials.index') }}">Pejabat & Pejabat Struktural</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('informasi-publik.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Informasi Publik</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'berkala']) }}">Informasi Berkala</a></li>
+                            <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'berkala', 'search' => 'LHKPN']) }}">LHKPN Pimpinan</a></li>
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'serta-merta']) }}">Informasi Serta Merta</a></li>
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index', ['category' => 'setiap-saat']) }}">Informasi Setiap Saat</a></li>
                             <li><a class="dropdown-item" href="{{ route('informasi-publik.index') }}">Daftar Informasi Publik</a></li>
@@ -384,8 +393,9 @@
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#keberatan">Tata Cara Pengajuan Keberatan</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#sengketa">Tata Cara Penyelesaian Sengketa</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#sop">SOP PPID</a></li>
+                            <li><a class="dropdown-item" href="{{ route('contact.index') }}">Kanal Layanan Informasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#biaya">Waktu, Biaya & Hari Libur Layanan</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#maklumat">Maklumat Pelayanan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#biaya">Waktu dan Biaya Pelayanan</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -393,6 +403,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('reports.index') }}#pemda">Laporan Pemkab Empat Lawang</a></li>
                             <li><a class="dropdown-item" href="{{ route('reports.index') }}#ppid">Laporan PPID</a></li>
+                            <li><a class="dropdown-item" href="{{ route('reports.index') }}#statistik">Statistik Layanan Informasi</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -456,9 +467,13 @@
                         Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kabupaten Empat Lawang menyediakan akses informasi publik secara transparan, akuntabel, dan efisien sesuai Undang-Undang KIP.
                     </p>
                     <div class="d-flex gap-2 mt-3">
-                        <a href="#" class="text-white"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
+                        @forelse(($contactSettings->social_media ?? []) as $social)
+                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="text-white"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }} fa-lg"></i></a>
+                        @empty
+                            <a href="#" class="text-white"><i class="fab fa-facebook fa-lg"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
+                        @endforelse
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-6">

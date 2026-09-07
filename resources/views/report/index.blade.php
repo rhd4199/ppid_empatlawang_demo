@@ -32,6 +32,11 @@
                 <i class="fas fa-file-alt me-2"></i> Laporan PPID
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold py-3" id="statistik-tab" data-bs-toggle="tab" data-bs-target="#statistik" type="button" role="tab">
+                <i class="fas fa-chart-pie me-2"></i> Statistik Layanan Informasi
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content" id="reportTabsContent">
@@ -50,7 +55,7 @@
                             <div class="flex-grow-1">
                                 <h5 class="card-title fw-bold">{{ $report->title }}</h5>
                                 <p class="card-text text-muted small mb-3">{{ $report->description }}</p>
-                                <a href="{{ asset('storage/' . $report->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill stretched-link" target="_blank">
+                                <a href="{{ storage_url($report->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill stretched-link" target="_blank">
                                     <i class="fas fa-download me-1"></i> Unduh Laporan
                                 </a>
                             </div>
@@ -83,7 +88,7 @@
                             <div class="flex-grow-1">
                                 <h5 class="card-title fw-bold">{{ $report->title }}</h5>
                                 <p class="card-text text-muted small mb-3">{{ $report->description }}</p>
-                                <a href="{{ asset('storage/' . $report->file_path) }}" class="btn btn-sm btn-outline-success rounded-pill stretched-link" target="_blank">
+                                <a href="{{ storage_url($report->file_path) }}" class="btn btn-sm btn-outline-success rounded-pill stretched-link" target="_blank">
                                     <i class="fas fa-download me-1"></i> Unduh Laporan
                                 </a>
                             </div>
@@ -98,6 +103,51 @@
                     </div>
                 </div>
                 @endforelse
+            </div>
+        </div>
+
+        <!-- Statistik Layanan Informasi (Ringkasan Laporan Layanan Informasi Publik) -->
+        <div class="tab-pane fade" id="statistik" role="tabpanel">
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4">
+                        <i class="fas fa-inbox fa-2x text-primary mb-2"></i>
+                        <h3 class="fw-bold mb-0">{{ $stats['total'] }}</h3>
+                        <p class="text-muted small mb-0">Permohonan Diterima</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4">
+                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                        <h3 class="fw-bold mb-0">{{ $stats['approved'] }}</h3>
+                        <p class="text-muted small mb-0">Dikabulkan Sebagian/Seluruhnya</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4">
+                        <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                        <h3 class="fw-bold mb-0">{{ $stats['rejected'] }}</h3>
+                        <p class="text-muted small mb-0">Ditolak</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm h-100 text-center p-4">
+                        <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                        <h3 class="fw-bold mb-0">{{ $stats['avg_days'] ?? '-' }}</h3>
+                        <p class="text-muted small mb-0">Rata-rata Hari Penyelesaian</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-list me-2 text-danger"></i>Alasan Penolakan Permohonan</h5>
+                    @forelse ($stats['rejection_reasons'] as $reason)
+                        <div class="border-bottom py-2 text-muted small">{{ $reason }}</div>
+                    @empty
+                        <p class="text-muted small mb-0">Belum ada permohonan yang ditolak, atau belum ada catatan alasan penolakan.</p>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
