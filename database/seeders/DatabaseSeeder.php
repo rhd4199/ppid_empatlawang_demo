@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             InfoBerkalaChecklistSeeder::class,
             InfoPublikContentFixSeeder::class,
             RegulasiExternalSeeder::class,
+            RegulasiKipSeeder::class,
             NewsSeeder::class,
             NewsExternalSeeder::class,
             GallerySeeder::class,

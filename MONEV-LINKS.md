@@ -23,7 +23,7 @@ Base URL: `http://localhost` di dev. Ganti prefix ke domain produksi (mis. `http
 
 | Item | Link |
 |---|---|
-| 10. Peraturan, keputusan, kebijakan Badan Publik | `/informasi-publik?category=setiap-saat`, contoh dokumen: `/informasi-publik/16`, `/informasi-publik/17` |
+| 10. Peraturan, keputusan, kebijakan Badan Publik | `/informasi-publik?category=setiap-saat` — 10 dokumen resmi (Perda APBD, LKPD, LAKIP, dll, seed dari empatlawangkab.go.id/dokumen) + 2 dokumen di atas |
 
 ## Digitalisasi (PPID)
 
@@ -38,7 +38,7 @@ Base URL: `http://localhost` di dev. Ganti prefix ke domain produksi (mis. `http
 | 4a. Tata Cara Permohonan Informasi | `/standar-layanan#tata-cara` |
 | 4b. Tata Cara Pengajuan Keberatan | `/standar-layanan#keberatan` |
 | 4c. Tata Cara Permohonan Penyelesaian Sengketa ke KI | `/standar-layanan#sengketa` |
-| 5. Regulasi Keterbukaan Informasi Publik | `/informasi-publik?category=setiap-saat` — ⚠️ belum ada dokumen regulasi KIP spesifik ter-upload, tambahkan di admin |
+| 5. Regulasi Keterbukaan Informasi Publik | `/informasi-publik/35` (UU No. 14/2008), `/informasi-publik/36` (PP No. 61/2010) — link ke peraturan.bpk.go.id |
 | 6. Media sosial | `/kontak` |
 
 ## Standar Layanan (tambahan, sering diminta form sejenis)

@@ -122,15 +122,15 @@
 
         /* Navbar social icons — compact circles, replaces the old top-bar strip */
         .nav-social a {
-            width: 34px;
-            height: 34px;
+            width: 28px;
+            height: 28px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             background: rgba(2, 132, 199, 0.08);
             color: var(--primary-color);
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             transition: 0.2s;
         }
         .nav-social a:hover {
@@ -146,7 +146,7 @@
             transition: all 0.3s ease;
         }
         .navbar-brand img {
-            height: 45px;
+            height: 38px;
             margin-right: 12px;
         }
         .navbar-brand {
@@ -161,12 +161,13 @@
         .navbar-nav .nav-link {
             color: var(--text-dark);
             font-weight: 500;
-            padding: 8px 12px !important;
-            margin: 0 1px;
+            padding: 8px 10px !important;
+            margin: 0;
             border-radius: 50px; /* Pill Shape */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
+            white-space: nowrap;
         }
 
         /* Hover & Active State (Unified) */
@@ -425,7 +426,7 @@
                     @endguest
                 </ul>
 
-                <div class="nav-social d-flex align-items-center gap-2 ms-xl-3 mt-3 mt-xl-0">
+                <div class="nav-social d-flex align-items-center gap-1 ms-xl-2 mt-3 mt-xl-0">
                     @forelse(($contactSettings->social_media ?? []) as $social)
                         <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" title="{{ $social['name'] ?? '' }}"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }}"></i></a>
                     @empty
