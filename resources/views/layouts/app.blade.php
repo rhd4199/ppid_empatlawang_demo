@@ -422,6 +422,17 @@
                         </li>
                     @endguest
                 </ul>
+
+                <div class="nav-social d-flex align-items-center gap-2 ms-xl-3 mt-3 mt-xl-0">
+                    @forelse(($contactSettings->social_media ?? []) as $social)
+                        <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" title="{{ $social['name'] ?? '' }}"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }}"></i></a>
+                    @empty
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    @endforelse
+                </div>
             </div>
         </div>
     </nav>
