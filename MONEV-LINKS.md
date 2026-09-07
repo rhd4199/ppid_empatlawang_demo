@@ -1,61 +1,61 @@
 # Daftar Link — Form Monev Keterbukaan Informasi Publik
 
-Base URL: `http://localhost` di dev. Ganti prefix ke domain produksi (mis. `https://ppid.empatlawangkab.go.id`) saat isi form asli.
+Base URL: `https://ppid.empatlawangkab.go.id`
 
 ## Informasi Berkala (Profil Badan Publik)
 
 | Item | Link |
 |---|---|
-| 7a. Alamat Kantor | `/kontak` |
-| 7b. Tugas Pokok dan Fungsi | `/profil/tugas-fungsi` |
-| 7c. Struktur Organisasi Pemerintahan Kab/Kota | `/profil/struktur-organisasi` — ⚠️ isi halaman masih struktur PPID, perlu diedit dulu jadi struktur Pemkab |
-| 7d. Profil singkat Pejabat dan Pejabat Struktural | `/profil-pejabat` |
-| 7e. LHKPN Pimpinan (Bupati/Wabup/Sekda) | `/informasi-publik/{id}` — ⚠️ **masih Draft** (dokumen ada di admin Informasi Publik kategori Berkala), upload file LHKPN asli dulu lalu publish untuk dapat link aktifnya |
-| 8a-d. Ringkasan Laporan Layanan Informasi (jumlah diterima/dikabulkan/waktu/alasan tolak) | `/laporan#statistik` |
+| 7a. Alamat Kantor | https://ppid.empatlawangkab.go.id/kontak |
+| 7b. Tugas Pokok dan Fungsi | https://ppid.empatlawangkab.go.id/profil/tugas-fungsi |
+| 7c. Struktur Organisasi Pemerintahan Kab/Kota | https://ppid.empatlawangkab.go.id/profil/struktur-organisasi — ⚠️ isi halaman masih struktur PPID, edit dulu jadi struktur Pemkab |
+| 7d. Profil singkat Pejabat dan Pejabat Struktural | https://ppid.empatlawangkab.go.id/profil-pejabat |
+| 7e. LHKPN Pimpinan (Bupati/Wabup/Sekda) | https://ppid.empatlawangkab.go.id/informasi-publik?category=berkala&search=LHKPN — ⚠️ **status Draft**, upload file LHKPN asli dulu di admin lalu publish |
+| 8a-d. Ringkasan Laporan Layanan Informasi (jumlah diterima/dikabulkan/waktu/alasan tolak) | https://ppid.empatlawangkab.go.id/laporan#statistik |
 
 ## Informasi Serta Merta
 
 | Item | Link |
 |---|---|
-| 9. Prosedur peringatan dini & evakuasi darurat | `/informasi-publik/14` (Peringatan Dini Cuaca Ekstrem), `/informasi-publik/15` (Panduan Evakuasi Bencana) |
+| 9. Prosedur peringatan dini & evakuasi darurat | https://ppid.empatlawangkab.go.id/informasi-publik/14 (Peringatan Dini Cuaca Ekstrem), https://ppid.empatlawangkab.go.id/informasi-publik/15 (Panduan Evakuasi Bencana) |
 
 ## Informasi Tersedia Setiap Saat
 
 | Item | Link |
 |---|---|
-| 10. Peraturan, keputusan, kebijakan Badan Publik | `/informasi-publik?category=setiap-saat` — 10 dokumen resmi (Perda APBD, LKPD, LAKIP, dll, seed dari empatlawangkab.go.id/dokumen) + 2 dokumen di atas |
+| 10. Peraturan, keputusan, kebijakan Badan Publik | https://ppid.empatlawangkab.go.id/informasi-publik?category=setiap-saat — 10 dokumen resmi (Perda APBD, LKPD, LAKIP, dll) |
 
 ## Digitalisasi (PPID)
 
 | Item | Link |
 |---|---|
-| 1. Website khusus PPID | `/` |
-| 2. Website PPID terhubung website resmi | `/` (menu Profil → link ke `https://empatlawangkab.go.id`) |
-| 3a. Profil singkat organisasi PPID | `/profil/tentang-ppid` |
-| 3b. Tugas dan Fungsi PPID | `/profil/tugas-fungsi` |
-| 3c. Struktur Organisasi PPID | `/profil/struktur-organisasi` |
-| 3d. Visi dan Misi PPID | `/profil/visi-misi` |
-| 4a. Tata Cara Permohonan Informasi | `/standar-layanan#tata-cara` |
-| 4b. Tata Cara Pengajuan Keberatan | `/standar-layanan#keberatan` |
-| 4c. Tata Cara Permohonan Penyelesaian Sengketa ke KI | `/standar-layanan#sengketa` |
-| 5. Regulasi Keterbukaan Informasi Publik | `/informasi-publik/35` (UU No. 14/2008), `/informasi-publik/36` (PP No. 61/2010) — link ke peraturan.bpk.go.id |
-| 6. Media sosial | `/kontak` |
+| 1. Website khusus PPID | https://ppid.empatlawangkab.go.id/ |
+| 2. Website PPID terhubung website resmi | https://ppid.empatlawangkab.go.id/ (menu Profil → link ke empatlawangkab.go.id) |
+| 3a. Profil singkat organisasi PPID | https://ppid.empatlawangkab.go.id/profil/tentang-ppid |
+| 3b. Tugas dan Fungsi PPID | https://ppid.empatlawangkab.go.id/profil/tugas-fungsi |
+| 3c. Struktur Organisasi PPID | https://ppid.empatlawangkab.go.id/profil/struktur-organisasi |
+| 3d. Visi dan Misi PPID | https://ppid.empatlawangkab.go.id/profil/visi-misi |
+| 4a. Tata Cara Permohonan Informasi | https://ppid.empatlawangkab.go.id/standar-layanan#tata-cara |
+| 4b. Tata Cara Pengajuan Keberatan | https://ppid.empatlawangkab.go.id/standar-layanan#keberatan |
+| 4c. Tata Cara Permohonan Penyelesaian Sengketa ke KI | https://ppid.empatlawangkab.go.id/standar-layanan#sengketa |
+| 5. Regulasi Keterbukaan Informasi Publik | https://ppid.empatlawangkab.go.id/informasi-publik/32 (UU No.14/2008), https://ppid.empatlawangkab.go.id/informasi-publik/33 (PP No.61/2010) |
+| 6. Media sosial | https://ppid.empatlawangkab.go.id/kontak |
 
-## Standar Layanan (tambahan, sering diminta form sejenis)
+## Standar Layanan (tambahan)
 
 | Item | Link |
 |---|---|
-| Alur Layanan Informasi Publik | `/standar-layanan#alur` |
-| SOP PPID | `/standar-layanan#sop` |
-| Maklumat Pelayanan | `/standar-layanan#maklumat` |
-| Waktu, Biaya & Hari Libur Layanan | `/standar-layanan#biaya` |
-| Form Permohonan Informasi | `/permohonan-informasi` |
-| Form Pengajuan Keberatan | `/pengajuan-keberatan` |
-| Cek Status Permohonan | `/cek-status-permohonan` |
+| Alur Layanan Informasi Publik | https://ppid.empatlawangkab.go.id/standar-layanan#alur |
+| SOP PPID | https://ppid.empatlawangkab.go.id/standar-layanan#sop |
+| Maklumat Pelayanan | https://ppid.empatlawangkab.go.id/standar-layanan#maklumat |
+| Waktu, Biaya & Hari Libur Layanan | https://ppid.empatlawangkab.go.id/standar-layanan#biaya |
+| Form Permohonan Informasi | https://ppid.empatlawangkab.go.id/permohonan-informasi |
+| Form Pengajuan Keberatan | https://ppid.empatlawangkab.go.id/pengajuan-keberatan |
+| Cek Status Permohonan | https://ppid.empatlawangkab.go.id/cek-status-permohonan |
 
 ---
 
 **Catatan:**
-- Item bertanda ⚠️ perlu tindakan admin dulu (upload file / edit konten) sebelum link ini valid dipakai di form.
-- `/informasi-publik/{id}` adalah halaman detail permanen per-item (baru dibuat) — link ini stabil dipakai berkali-kali walau kontennya nanti diedit. Cek ID sebenarnya di admin → Informasi Publik.
-- Item yang kontennya sudah punya halaman sendiri (Alamat Kantor, Tugas Pokok, Struktur Organisasi, Profil Pejabat) **tidak** didaftarkan sebagai Document di Informasi Publik — langsung pakai link halaman aslinya, biar gak dobel maintenance.
+- ⚠️ = perlu tindakan admin dulu (upload file/edit konten) sebelum link valid dipakai di form.
+- ID di `/informasi-publik/{id}` bisa berubah kalau database di-reset (`migrate:fresh`) — cek ulang ID-nya di admin → Informasi Publik kalau link ternyata 404.
+- Item yang kontennya sudah punya halaman sendiri (Alamat Kantor, Tugas Pokok, Struktur Organisasi, Profil Pejabat) tidak didaftarkan sebagai Document terpisah — langsung pakai link halaman aslinya.
