@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\Gallery;
 use App\Models\Document;
+use App\Models\ContactSetting;
 
 class HomeController extends Controller
 {
@@ -29,6 +30,8 @@ class HomeController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('home', compact('news', 'galleries', 'emergencyInfo'));
+        $contactSettings = ContactSetting::first();
+
+        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings'));
     }
 }

@@ -66,6 +66,41 @@
         text-transform: uppercase;
     }
 
+    /* Hero hours + CTA buttons */
+    .hero-hours {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 8px 18px;
+        font-size: 0.95rem;
+        color: #fff;
+    }
+    .btn-hero-action {
+        background: var(--secondary-color);
+        color: #012a4a;
+        font-weight: 700;
+        padding: 14px 24px;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+    }
+    .btn-hero-action:hover { transform: translateY(-2px); color: #012a4a; }
+    .btn-hero-action-alt {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .btn-hero-action-alt:hover { color: #fff; }
+
+    /* Pencarian section (moved out of hero) */
+    .search-section {
+        max-width: 700px;
+        margin-top: -35px;
+        margin-bottom: 50px;
+        position: relative;
+        z-index: 3;
+    }
+
     /* Feature Cards */
     .features-container {
         margin-top: -80px;
@@ -223,16 +258,25 @@
 <section class="hero-section d-flex align-items-center">
     <div class="container position-relative z-2">
         <div class="row align-items-center">
-            <div class="col-lg-7 text-center mb-5 mb-lg-0">
+            <div class="col-lg-7 text-center text-lg-start mb-5 mb-lg-0">
                 <h1 class="hero-title text-white fw-bold mb-3">Layanan Informasi Publik<br>Kabupaten Empat Lawang</h1>
-                <p class="lead text-white-50 mb-4 fs-4">Transparan, Akuntabel, dan Melayani Sepenuh Hati</p>
-                
-                <form action="{{ route('informasi-publik.index') }}" method="GET">
-                    <div class="hero-search mx-auto">
-                        <input type="text" name="search" placeholder="Cari informasi publik, dokumen, atau regulasi..." aria-label="Search">
-                        <button type="submit" class="btn btn-warning rounded-pill px-4 text-dark fw-bold">Cari</button>
-                    </div>
-                </form>
+                <p class="lead text-white-50 mb-3 fs-4">Transparan, Akuntabel, dan Melayani Sepenuh Hati</p>
+
+                @if($contactSettings && !empty($contactSettings->working_hours))
+                <div class="hero-hours d-inline-flex align-items-center mb-4">
+                    <i class="fas fa-clock me-2"></i>
+                    <span><strong>Jam Layanan:</strong> {{ $contactSettings->working_hours[0] }}</span>
+                </div>
+                @endif
+
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{{ route('request.create') }}" class="btn btn-hero-action">
+                        <i class="fas fa-file-signature me-2"></i> Form Permohonan Informasi Publik
+                    </a>
+                    <a href="{{ route('complaint.create') }}" class="btn btn-hero-action btn-hero-action-alt">
+                        <i class="fas fa-gavel me-2"></i> Form Pengajuan Keberatan
+                    </a>
+                </div>
             </div>
             <div class="col-lg-5 text-center d-none d-lg-block">
                 <div class="bupati-img-container">
@@ -242,6 +286,18 @@
         </div>
     </div>
 </section>
+
+<!-- Pencarian -->
+<div class="container">
+    <div class="search-section mx-auto">
+        <form action="{{ route('informasi-publik.index') }}" method="GET">
+            <div class="hero-search mx-auto">
+                <input type="text" name="search" placeholder="Cari informasi publik, dokumen, atau regulasi..." aria-label="Search">
+                <button type="submit" class="btn btn-warning rounded-pill px-4 text-dark fw-bold">Cari</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Feature Shortcuts -->
 <div class="container features-container">
@@ -292,6 +348,49 @@
         </div>
     </div>
 </div>
+
+<!-- Informasi Serta Merta: Peringatan Dini & Evakuasi Darurat -->
+@if($emergencyInfo->isNotEmpty())
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-danger-subtle text-danger fw-bold mb-2 px-3 py-2 rounded-pill">Informasi Serta Merta</span>
+        <h2 class="fw-bold">Peringatan Dini & Kesiapsiagaan Bencana</h2>
+        <p class="text-muted">Informasi penting yang wajib diketahui masyarakat sewaktu-waktu</p>
+    </div>
+
+    @foreach($emergencyInfo as $i => $info)
+    <div class="row align-items-center g-4 {{ !$loop->last ? 'mb-5' : '' }} {{ $i % 2 == 1 ? 'flex-row-reverse' : '' }}">
+        <div class="col-md-5">
+            <div class="emergency-illustration {{ $i % 2 == 0 ? 'bg-warning-subtle' : 'bg-danger-subtle' }}">
+                <i class="fas {{ $i % 2 == 0 ? 'fa-cloud-showers-heavy text-warning' : 'fa-person-walking-arrow-right text-danger' }}"></i>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h4 class="fw-bold mb-3">{{ $info->title }}</h4>
+            <p class="text-muted mb-4">{{ Str::limit(strip_tags($info->description), 220) }}</p>
+            <a href="{{ route('informasi-publik.show', $info->id) }}" class="btn btn-primary rounded-pill px-4">
+                <i class="fas fa-eye me-2"></i>Lihat Panduan
+            </a>
+        </div>
+    </div>
+    @endforeach
+</div>
+<style>
+    .emergency-illustration {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        max-width: 260px;
+        margin: 0 auto;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .emergency-illustration i { font-size: 5rem; }
+    .bg-warning-subtle { background: #fff3cd; }
+    .bg-danger-subtle { background: #f8d7da; }
+</style>
+@endif
 
 <!-- Latest News -->
 <section class="py-5 bg-light">
