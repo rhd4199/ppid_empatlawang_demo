@@ -218,6 +218,28 @@
             </div>
         </div>
     </form>
+
+    <!-- Statistik Beranda -->
+    <div class="card border-0 shadow-sm rounded-4 mb-5">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-chart-simple me-2 text-primary"></i>Statistik Beranda</h5>
+            <small class="text-muted">"Informasi Publik" &amp; "Permohonan Selesai" dihitung otomatis dari data. Indeks Kepuasan diisi manual (hasil survei/SKM).</small>
+        </div>
+        <form action="{{ route('admin.contact-settings.update-stats') }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="card-body p-4">
+                <label class="form-label fw-bold">Indeks Kepuasan Masyarakat (%)</label>
+                <input type="text" name="stat_satisfaction_index" class="form-control" style="max-width:200px"
+                       value="{{ $satisfactionIndex }}" placeholder="mis. 98%">
+            </div>
+            <div class="card-footer bg-white text-end p-3">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                    <i class="fas fa-save me-2"></i> Simpan
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @push('styles')

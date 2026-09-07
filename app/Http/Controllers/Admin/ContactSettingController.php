@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContactSetting;
+use App\Models\PpidSetting;
 use Illuminate\Http\Request;
 
 class ContactSettingController extends Controller
@@ -20,7 +21,24 @@ class ContactSettingController extends Controller
                 'working_hours' => []
             ]);
         }
-        return view('admin.contact-settings.index', compact('settings'));
+
+        $satisfactionIndex = PpidSetting::where('key', 'stat_satisfaction_index')->value('value') ?? '98%';
+
+        return view('admin.contact-settings.index', compact('settings', 'satisfactionIndex'));
+    }
+
+    public function updateStats(Request $request)
+    {
+        $data = $request->validate([
+            'stat_satisfaction_index' => 'nullable|string|max:20',
+        ]);
+
+        PpidSetting::updateOrCreate(
+            ['key' => 'stat_satisfaction_index'],
+            ['value' => $data['stat_satisfaction_index'] ?? '98%', 'description' => 'Indeks Kepuasan Masyarakat ditampilkan di beranda']
+        );
+
+        return redirect()->route('admin.contact-settings.index')->with('success', 'Statistik beranda berhasil diperbarui.');
     }
 
     public function update(Request $request)
