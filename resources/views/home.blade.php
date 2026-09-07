@@ -66,14 +66,28 @@
         text-transform: uppercase;
     }
 
-    /* Hero hours + CTA buttons */
-    .hero-hours {
+    /* Hero info (jam layanan / alamat / telepon) + CTA buttons */
+    .hero-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+    .hero-info-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 50px;
         padding: 8px 18px;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #fff;
+        max-width: 100%;
+    }
+    .hero-info-item i { color: var(--secondary-color); width: 16px; text-align: center; }
+    @media (min-width: 992px) {
+        .hero-info { align-items: flex-start; }
     }
     .btn-hero-action {
         background: var(--secondary-color);
@@ -262,10 +276,26 @@
                 <h1 class="hero-title text-white fw-bold mb-3">Layanan Informasi Publik<br>Kabupaten Empat Lawang</h1>
                 <p class="lead text-white-50 mb-3 fs-4">Transparan, Akuntabel, dan Melayani Sepenuh Hati</p>
 
-                @if($contactSettings && !empty($contactSettings->working_hours))
-                <div class="hero-hours d-inline-flex align-items-center mb-4">
-                    <i class="fas fa-clock me-2"></i>
-                    <span><strong>Jam Layanan:</strong> {{ $contactSettings->working_hours[0] }}</span>
+                @if($contactSettings)
+                <div class="hero-info mb-4">
+                    @if(!empty($contactSettings->working_hours))
+                    <div class="hero-info-item">
+                        <i class="fas fa-clock"></i>
+                        <span><strong>Jam Layanan:</strong> {{ $contactSettings->working_hours[0] }}</span>
+                    </div>
+                    @endif
+                    @if($contactSettings->address)
+                    <div class="hero-info-item">
+                        <i class="fas fa-location-dot"></i>
+                        <span>{{ $contactSettings->address }}</span>
+                    </div>
+                    @endif
+                    @if(!empty($contactSettings->phones))
+                    <div class="hero-info-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>{{ $contactSettings->phones[0] }}</span>
+                    </div>
+                    @endif
                 </div>
                 @endif
 

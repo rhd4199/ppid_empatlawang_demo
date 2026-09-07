@@ -15,13 +15,11 @@ class NewsSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
-
-        // Clear existing data
-        News::truncate();
+        // Real curated news only — no truncate (would wipe NewsExternalSeeder's
+        // data too) and no Faker-generated lorem-ipsum filler.
 
         // Specific Important News 1
-        News::create([
+        News::firstOrCreate(['slug' => 'kunjungan-kerja-bupati-ke-kecamatan-tebing-tinggi'], [
             'title' => 'Kunjungan Kerja Bupati ke Kecamatan Tebing Tinggi',
             'slug' => 'kunjungan-kerja-bupati-ke-kecamatan-tebing-tinggi',
             'content' => '<p>Bupati Empat Lawang melakukan kunjungan kerja dalam rangka memantau pembangunan infrastruktur di Kecamatan Tebing Tinggi. Dalam kunjungan ini, Bupati didampingi oleh Kepala Dinas PU dan beberapa pejabat terkait.</p><p>Bupati menekankan pentingnya kualitas pembangunan jalan dan jembatan agar dapat bertahan lama dan memberikan manfaat maksimal bagi masyarakat.</p>',
