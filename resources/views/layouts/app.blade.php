@@ -120,20 +120,22 @@
             color: var(--secondary-color);
         }
 
-        /* Top Bar */
-        .top-bar {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 0;
-            font-size: 0.85rem;
+        /* Navbar social icons — compact circles, replaces the old top-bar strip */
+        .nav-social a {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(2, 132, 199, 0.08);
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            transition: 0.2s;
         }
-        .top-bar a {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .top-bar a:hover {
-            color: var(--secondary-color);
+        .nav-social a:hover {
+            background: var(--primary-color);
+            color: #fff;
         }
 
         /* Navbar */
