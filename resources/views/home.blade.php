@@ -96,7 +96,7 @@
     .search-section {
         max-width: 700px;
         margin-top: -35px;
-        margin-bottom: 50px;
+        margin-bottom: 80px;
         position: relative;
         z-index: 3;
     }
