@@ -9,40 +9,17 @@ use Illuminate\Database\Seeder;
 class InfoBerkalaChecklistSeeder extends Seeder
 {
     /**
-     * Seeds editable placeholder documents for Monev checklist items under
-     * "Informasi Berkala" that aren't covered yet (LHKPN per pejabat, alamat
-     * kantor, tupoksi, struktur org Kab/Kota). Draft (unpublished, no file)
-     * until admin uploads the real document via the new WYSIWYG edit page.
+     * Seeds LHKPN placeholder documents per pejabat for the Monev checklist
+     * item "Informasi Berkala" (7e). Draft (unpublished, no file) until admin
+     * uploads the real LHKPN document via the WYSIWYG edit page.
+     *
+     * Other checklist items under this section (alamat kantor, tupoksi,
+     * struktur organisasi, profil pimpinan) already have a dedicated page
+     * elsewhere on the site (Kontak, Profil, Pejabat) — those are NOT
+     * duplicated here as documents, see MONEV-LINKS.md for the direct links.
      */
     public function run(): void
     {
-        $placeholders = [
-            [
-                'title' => 'Alamat Kantor Badan Publik',
-                'description' => 'Alamat lengkap kantor Pemerintah Kabupaten Empat Lawang dan PPID.',
-            ],
-            [
-                'title' => 'Tugas Pokok dan Fungsi Badan Publik',
-                'description' => 'Uraian tugas pokok dan fungsi Pemerintah Kabupaten Empat Lawang.',
-            ],
-            [
-                'title' => 'Struktur Organisasi Pemerintahan Kabupaten Empat Lawang',
-                'description' => 'Bagan struktur organisasi Pemerintah Kabupaten Empat Lawang (bukan struktur PPID).',
-            ],
-        ];
-
-        foreach ($placeholders as $item) {
-            Document::firstOrCreate(
-                ['title' => $item['title'], 'category' => 'informasi-publik-berkala'],
-                [
-                    'description' => $item['description'],
-                    'file_path' => null,
-                    'is_published' => false,
-                ]
-            );
-        }
-
-        // LHKPN per pejabat (satu dokumen per Official yang sudah ada)
         foreach (Official::all() as $official) {
             Document::firstOrCreate(
                 [

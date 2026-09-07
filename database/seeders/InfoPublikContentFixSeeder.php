@@ -8,28 +8,15 @@ use Illuminate\Database\Seeder;
 class InfoPublikContentFixSeeder extends Seeder
 {
     /**
-     * Some "Informasi Publik" checklist items don't need their own file —
-     * the content already lives on a dedicated page elsewhere on the site
-     * (Kontak, Profil), or is better shown as a written section than a PDF
-     * download. This points/fills those in instead of leaving dead
-     * placeholder documents (draft, no file, no content).
+     * "Peringatan Dini" and "Panduan Evakuasi" have no dedicated page
+     * elsewhere on the site, so instead of a fake/missing PDF they get
+     * real written content here (shown on their own /informasi-publik/{id}
+     * page). Items that DO duplicate an existing page (alamat kantor,
+     * tupoksi, struktur organisasi, profil pimpinan) are not seeded as
+     * documents at all — see MONEV-LINKS.md for their direct links.
      */
     public function run(): void
     {
-        // Duplicates an existing page — link out instead of requiring a file.
-        $linkOuts = [
-            'Alamat Kantor Badan Publik' => '/kontak',
-            'Tugas Pokok dan Fungsi Badan Publik' => '/profil/tugas-fungsi',
-            'Struktur Organisasi Pemerintahan Kabupaten Empat Lawang' => '/profil/struktur-organisasi',
-        ];
-
-        foreach ($linkOuts as $title => $url) {
-            Document::where('title', $title)->update([
-                'external_url' => $url,
-                'is_published' => true,
-            ]);
-        }
-
         // No dedicated page needed — the description itself (rich text) is the content.
         Document::where('title', 'Peringatan Dini Cuaca Ekstrem')->update([
             'file_path' => null,

@@ -42,9 +42,9 @@
 
                     @if ($info->external_url)
                         <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-2">
-                            <span><i class="fas fa-arrow-up-right-from-square me-2"></i>Informasi ini tersedia lengkap di halaman lain di website ini.</span>
-                            <a href="{{ $info->external_url }}" class="btn btn-primary rounded-pill px-4">
-                                Buka Halaman <i class="fas fa-arrow-right ms-1"></i>
+                            <span><i class="fas fa-arrow-up-right-from-square me-2"></i>Dokumen/tautan lengkap tersedia di link berikut.</span>
+                            <a href="{{ $info->external_url }}" target="_blank" rel="noopener" class="btn btn-primary rounded-pill px-4">
+                                Buka Dokumen <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>
                     @endif
