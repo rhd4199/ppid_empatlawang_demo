@@ -23,9 +23,11 @@ class DatabaseSeeder extends Seeder
             // InfoPublicSeeder::class,
             DocumentSeeder::class,
             InfoBerkalaChecklistSeeder::class,
+            InfoPublikContentFixSeeder::class,
             NewsSeeder::class,
             NewsExternalSeeder::class,
             GallerySeeder::class,
+            GalleryExternalSeeder::class,
             EventSeeder::class,
             ProcurementSeeder::class,
         ]);

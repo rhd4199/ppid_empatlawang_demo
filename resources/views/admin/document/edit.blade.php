@@ -62,6 +62,12 @@
                 <div class="form-text">Upload file baru untuk mengganti yang lama. Max 10MB.</div>
             </div>
 
+            <div class="mb-4">
+                <label class="form-label fw-bold">Link Halaman/Section (opsional)</label>
+                <input type="text" name="external_url" class="form-control" value="{{ old('external_url', $document->external_url) }}" placeholder="mis. /kontak atau /profil/tugas-fungsi">
+                <div class="form-text text-muted">Isi jika info ini sudah punya halaman/section sendiri di web (mis. Alamat Kantor &rarr; halaman Kontak) — publik akan diarahkan ke sana, tidak perlu upload file lagi.</div>
+            </div>
+
             <div class="form-check form-switch mb-4">
                 <input class="form-check-input" type="checkbox" name="is_published" value="1" {{ old('is_published', $document->is_published) ? 'checked' : '' }}>
                 <label class="form-check-label fw-bold">Published (tampil di halaman publik)</label>

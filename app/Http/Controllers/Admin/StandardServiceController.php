@@ -131,6 +131,7 @@ class StandardServiceController extends Controller
             'category' => 'required|in:standar_layanan_alur,standar_layanan_tata_cara,standar_layanan_permohonan,standar_layanan_keberatan,standar_layanan_sengketa,standar_layanan_sop,standar_layanan_maklumat,standar_layanan_biaya',
             'file_path' => 'nullable|file|mimes:pdf,doc,docx,xls,csv,xlsx,jpg,png|max:10240',
             'description' => 'nullable|string',
+            'external_url' => 'nullable|string|max:255',
             'is_published' => 'nullable|boolean',
         ]);
 
@@ -138,6 +139,7 @@ class StandardServiceController extends Controller
             'title' => $request->title,
             'category' => $request->category,
             'description' => $request->description,
+            'external_url' => $request->external_url,
             'is_published' => $request->has('is_published') ? $request->is_published : $document->is_published,
         ];
 

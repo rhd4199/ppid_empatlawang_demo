@@ -119,6 +119,7 @@ class ProcurementController extends Controller
             'category' => 'required|in:pengadaan_info,pengadaan_regulasi',
             'file_path' => 'nullable|file|mimes:pdf,doc,docx,xls,csv,xlsx,jpg,png|max:10240', // 10MB max
             'description' => 'nullable|string',
+            'external_url' => 'nullable|string|max:255',
             'is_published' => 'nullable|boolean',
         ]);
 
@@ -131,6 +132,7 @@ class ProcurementController extends Controller
 
         $document->title = $request->title;
         $document->category = $request->category;
+        $document->external_url = $request->external_url;
         $document->description = $request->description;
         $document->is_published = $request->has('is_published') ? $request->is_published : true;
         $document->save();

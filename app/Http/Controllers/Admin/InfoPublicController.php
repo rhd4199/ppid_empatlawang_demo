@@ -115,6 +115,7 @@ class InfoPublicController extends Controller
             'category' => 'required|in:informasi-publik-berkala,informasi-publik-serta-merta,informasi-publik-setiap-saat,informasi-publik-dikecualikan',
             'file_path' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:10240',
             'description' => 'nullable|string',
+            'external_url' => 'nullable|string|max:255',
             'is_published' => 'nullable|boolean',
         ]);
 
@@ -122,6 +123,7 @@ class InfoPublicController extends Controller
             'title' => $request->title,
             'category' => $request->category,
             'description' => $request->description,
+            'external_url' => $request->external_url,
             'is_published' => $request->has('is_published') ? $request->is_published : $document->is_published,
         ];
 

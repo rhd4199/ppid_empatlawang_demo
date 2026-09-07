@@ -51,4 +51,16 @@ class InfoPublicController extends Controller
 
         return view('info_public.index', compact('infos'));
     }
+
+    /**
+     * Detail page — gives every checklist item a stable, linkable URL
+     * (needed for the Monev/self-assessment form, which asks for a link
+     * per item, not just a category listing).
+     */
+    public function show($id)
+    {
+        $info = Document::where('is_published', true)->findOrFail($id);
+
+        return view('info_public.show', ['info' => $info]);
+    }
 }

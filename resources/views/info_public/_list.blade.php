@@ -1,16 +1,14 @@
 @forelse($infos as $info)
 <tr>
-    <td class="ps-4 fw-bold">{{ $info->title }}</td>
-    <td class="text-muted">{{ Str::limit($info->description, 60) }}</td>
+    <td class="ps-4 fw-bold">
+        <a href="{{ route('informasi-publik.show', $info->id) }}" class="text-decoration-none">{{ $info->title }}</a>
+    </td>
+    <td class="text-muted">{{ Str::limit(strip_tags($info->description), 60) }}</td>
     <td><span class="badge bg-light text-dark border"><i class="far fa-calendar-alt me-1"></i> {{ $info->created_at->format('d M Y') }}</span></td>
     <td class="pe-4 text-end">
-        @if($info->file_path)
-        <a href="{{ storage_url($info->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">
-            <i class="fas fa-download me-1"></i> Download
+        <a href="{{ route('informasi-publik.show', $info->id) }}" class="btn btn-sm btn-outline-primary rounded-pill">
+            <i class="fas fa-eye me-1"></i> Lihat
         </a>
-        @else
-        <span class="text-muted small">Tidak ada file</span>
-        @endif
     </td>
 </tr>
 @empty
