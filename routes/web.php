@@ -45,6 +45,16 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\AdminController::class, 'index'])->name('dashboard');
+
+    // Summernote image upload (keeps base64 out of TEXT columns); "public" disk = S3
+    Route::post('/editor/upload', function (\Illuminate\Http\Request $request) {
+        $request->validate(['file' => 'required|image|max:5120']);
+
+        return response()->json([
+            'url' => storage_url(\Illuminate\Support\Facades\Storage::disk('public')
+                ->putFile('editor', $request->file('file'), 'public')),
+        ]);
+    })->name('editor.upload');
     
     // Profiles
     Route::get('/profil/{slug}/edit', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profiles.edit');

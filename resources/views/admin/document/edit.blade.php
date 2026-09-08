@@ -83,7 +83,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -99,8 +99,38 @@
                 ['table', ['table']],
                 ['insert', ['link', 'picture', 'video']],
                 ['view', ['fullscreen', 'codeview', 'help']]
-            ]
+            ],
+            callbacks: {
+                onImageUpload: function (files) {
+                    var editor = this;
+                    Array.from(files).forEach(function (file) { uploadEditorImage(file, editor); });
+                },
+                onPaste: function (e) {
+                    var items = (e.originalEvent || e).clipboardData.items, editor = this;
+                    for (var i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') === 0) {
+                            e.preventDefault();
+                            uploadEditorImage(items[i].getAsFile(), editor);
+                        }
+                    }
+                }
+            }
         });
     });
+
+    function uploadEditorImage(file, editor) {
+        var data = new FormData();
+        data.append('file', file);
+        $.ajax({
+            url: '{{ route('admin.editor.upload') }}',
+            method: 'POST',
+            data: data,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            contentType: false,
+            processData: false,
+            success: function (res) { $(editor).summernote('insertImage', res.url); },
+            error: function () { alert('Gagal mengunggah gambar.'); }
+        });
+    }
 </script>
 @endpush
