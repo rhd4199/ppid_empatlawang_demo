@@ -331,6 +331,8 @@
 </head>
 <body>
 
+    <a href="#konten-utama" class="a11y-skip">Lewati ke konten utama</a>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-xl sticky-top">
         <div class="container-fluid px-4 px-lg-5">
@@ -375,6 +377,7 @@
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#permohonan">Form Permohonan Informasi Publik</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#keberatan">Tata Cara Pengajuan Keberatan</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#sengketa">Tata Cara Penyelesaian Sengketa</a></li>
+                            <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#pengaduan">Tata Cara Pengaduan Penyalahgunaan Wewenang</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#sop">SOP PPID</a></li>
                             <li><a class="dropdown-item" href="{{ route('contact.index') }}">Kanal Layanan Informasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#biaya">Waktu, Biaya & Hari Libur Layanan</a></li>
@@ -441,7 +444,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <main id="konten-utama" tabindex="-1">
         @yield('content')
     </main>
 
@@ -486,6 +489,7 @@
                         <li><a href="{{ route('request.create') }}">Permohonan Informasi</a></li>
                         <li><a href="{{ route('complaint.create') }}">Pengajuan Keberatan</a></li>
                         <li><a href="{{ route('standard-service.index') }}">Standar Operasional (SOP)</a></li>
+                        <li><a href="{{ route('standard-service.index') }}#pengaduan">Pengaduan Penyalahgunaan Wewenang</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -511,6 +515,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    @include('partials.accessibility')
     @stack('scripts')
 </body>
 </html>

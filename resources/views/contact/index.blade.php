@@ -119,6 +119,27 @@
         </div>
     </div>
 
+    <!-- Pengaduan Penyalahgunaan Wewenang -->
+    <div class="card border-0 shadow-lg rounded-4 mb-5 overflow-hidden">
+        <div class="card-body p-4 p-md-5 d-md-flex align-items-center gap-4">
+            <div class="flex-shrink-0 text-center mb-3 mb-md-0">
+                <span class="badge bg-danger rounded-circle p-4"><i class="fas fa-bullhorn fa-2x"></i></span>
+            </div>
+            <div class="flex-grow-1">
+                <h3 class="fw-bold mb-2">Pengaduan Penyalahgunaan Wewenang</h3>
+                <p class="text-muted mb-3">
+                    Masyarakat dapat melaporkan dugaan penyalahgunaan wewenang atau pelanggaran yang dilakukan pejabat Badan Publik
+                    melalui SP4N-LAPOR! (<a href="https://www.lapor.go.id" target="_blank" rel="noopener">www.lapor.go.id</a>, SMS <strong>1708</strong>),
+                    Inspektorat Daerah Kabupaten Empat Lawang, kanal PPID di halaman ini, atau Ombudsman RI (telepon <strong>137</strong>).
+                    Identitas pengadu dijamin kerahasiaannya.
+                </p>
+                <a href="{{ route('standard-service.index') }}#pengaduan" class="btn btn-danger rounded-pill px-4">
+                    <i class="fas fa-circle-info me-2"></i>Lihat Tata Cara Pengaduan
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-5">
         @php
             $socials = $settings->social_media ?? [];

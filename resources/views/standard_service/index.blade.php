@@ -37,6 +37,9 @@
                     <a href="#keberatan" class="list-group-item list-group-item-action py-3" data-bs-toggle="list">
                         <i class="fas fa-exclamation-triangle me-2 w-20"></i> Pengajuan Keberatan
                     </a>
+                    <a href="#pengaduan" class="list-group-item list-group-item-action py-3" data-bs-toggle="list">
+                        <i class="fas fa-bullhorn me-2 w-20"></i> Pengaduan Penyalahgunaan Wewenang
+                    </a>
                     <a href="#sop" class="list-group-item list-group-item-action py-3" data-bs-toggle="list">
                         <i class="fas fa-book me-2 w-20"></i> SOP PPID
                     </a>
@@ -385,6 +388,159 @@
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Pengaduan Penyalahgunaan Wewenang -->
+                <div class="tab-pane fade" id="pengaduan">
+                    <div class="alur-flow-card alur-flow-card-danger mb-4">
+                        <h3 class="fw-bold mb-1"><i class="fas fa-bullhorn me-2"></i>Tata Cara Pengaduan Penyalahgunaan Wewenang</h3>
+                        <p class="mb-4 small">Pengaduan atas dugaan penyalahgunaan wewenang atau pelanggaran yang dilakukan pejabat/pegawai di lingkungan Badan Publik Pemerintah Kabupaten Empat Lawang.</p>
+                        <div class="alur-steps">
+                            <div class="alur-step">
+                                <div class="alur-num">1</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1">Siapkan Data Aduan</h6>
+                                    <ul class="small mb-0">
+                                        <li>Identitas pengadu: nama, NIK, alamat, nomor telepon/email aktif</li>
+                                        <li>Nama dan/atau jabatan pejabat yang diadukan</li>
+                                        <li>Uraian kejadian: apa, siapa, kapan, di mana, bagaimana</li>
+                                        <li>Bukti pendukung: dokumen, foto, tangkapan layar, rekaman, saksi</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">2</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1">Sampaikan Melalui Kanal Resmi</h6>
+                                    <p class="small mb-0">Pilih salah satu kanal pengaduan pada tabel di bawah (SP4N-LAPOR!, Inspektorat Daerah, PPID, atau Ombudsman RI). Simpan nomor tiket/registrasi aduan sebagai bukti dan alat pantau.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">3</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1">Verifikasi &amp; Telaah</h6>
+                                    <p class="small mb-0">Aduan diverifikasi kelengkapan dan kewenangannya paling lama <strong>3 hari kerja</strong>, lalu diteruskan kepada unit kerja terkait/Inspektorat Daerah untuk ditelaah.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">4</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1">Tindak Lanjut &amp; Pemeriksaan</h6>
+                                    <p class="small mb-0">Unit kerja menindaklanjuti paling lama <strong>5 hari kerja</strong> sejak aduan diterima. Bila diperlukan pemeriksaan lanjutan, penyelesaian dilakukan paling lama <strong>60 hari kerja</strong> sesuai Perpres 76/2013.</p>
+                                </div>
+                            </div>
+                            <div class="alur-arrow"><i class="fas fa-arrow-down"></i></div>
+                            <div class="alur-step">
+                                <div class="alur-num">5</div>
+                                <div class="alur-box">
+                                    <h6 class="fw-bold mb-1">Jawaban kepada Pengadu</h6>
+                                    <p class="small mb-0">Hasil tindak lanjut disampaikan kepada pengadu melalui kanal yang sama paling lama <strong>10 hari kerja</strong> setelah tindak lanjut. Jika tidak puas, pengadu dapat melanjutkan aduan ke Ombudsman RI atau aparat penegak hukum.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-hover border-0 shadow-sm p-4 mb-4">
+                        <h3 class="mb-4 border-bottom pb-2"><i class="fas fa-headset me-2"></i>Kanal Pengaduan</h3>
+                        <div class="table-responsive">
+                            <table class="table table-custom align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 26%">Kanal</th>
+                                        <th>Alamat / Kontak</th>
+                                        <th style="width: 30%">Jenis Aduan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-semibold"><i class="fas fa-globe me-2 text-primary"></i>SP4N-LAPOR!</td>
+                                        <td>
+                                            <a href="https://www.lapor.go.id" target="_blank" rel="noopener">www.lapor.go.id</a><br>
+                                            SMS ke <strong>1708</strong> (Telkomsel, Indosat, XL) &middot; Aplikasi SP4N-LAPOR! (Android/iOS) &middot; X/Twitter <a href="https://twitter.com/lapor1708" target="_blank" rel="noopener">@lapor1708</a>
+                                        </td>
+                                        <td class="small">Pengaduan pelayanan publik, penyalahgunaan wewenang, pungutan liar, dan dugaan korupsi</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-semibold"><i class="fas fa-building-shield me-2 text-primary"></i>Inspektorat Daerah Kabupaten Empat Lawang</td>
+                                        <td>Jl. Lintas Sumatera, Tebing Tinggi, Kabupaten Empat Lawang &mdash; datang langsung atau surat tertulis pada jam kerja</td>
+                                        <td class="small">Pelanggaran disiplin dan kode etik ASN, penyalahgunaan wewenang pejabat daerah</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-semibold"><i class="fas fa-inbox me-2 text-primary"></i>PPID Kabupaten Empat Lawang</td>
+                                        <td>
+                                            @foreach(($contactSettings->emails ?? ['diskominfo@empatlawangkab.go.id']) as $email)
+                                                <i class="fas fa-envelope me-2 text-muted"></i>{{ is_array($email) ? ($email['email'] ?? '-') : $email }}<br>
+                                            @endforeach
+                                            @foreach(($contactSettings->phones ?? ['(0702) 123456']) as $phone)
+                                                <i class="fas fa-phone me-2 text-muted"></i>{{ is_array($phone) ? ($phone['number'] ?? '-') : $phone }}<br>
+                                            @endforeach
+                                            <a href="{{ route('contact.index') }}">Formulir kontak &amp; alamat lengkap</a>
+                                        </td>
+                                        <td class="small">Aduan layanan informasi publik; aduan lain diteruskan ke Inspektorat Daerah</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-semibold"><i class="fas fa-scale-balanced me-2 text-primary"></i>Ombudsman RI</td>
+                                        <td>
+                                            <a href="https://www.ombudsman.go.id" target="_blank" rel="noopener">www.ombudsman.go.id</a><br>
+                                            Telepon <strong>137</strong> &middot; WhatsApp 0811-9553-737 &middot; Perwakilan Sumatera Selatan
+                                        </td>
+                                        <td class="small">Maladministrasi oleh penyelenggara negara, termasuk penyalahgunaan wewenang</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="card card-hover border-0 shadow-sm h-100 p-4">
+                                <h5 class="fw-bold mb-3"><i class="fas fa-user-shield me-2 text-success"></i>Perlindungan Pengadu</h5>
+                                <ul class="small mb-0 ps-3">
+                                    <li class="mb-2">Identitas pengadu dijaga kerahasiaannya dan hanya diketahui petugas yang menangani aduan.</li>
+                                    <li class="mb-2">Pengadu berhak mendapat perlindungan sebagai pelapor/saksi sesuai UU No. 13 Tahun 2006 jo. UU No. 31 Tahun 2014 tentang Perlindungan Saksi dan Korban.</li>
+                                    <li class="mb-0">Dilarang melakukan pembalasan atau tindakan intimidatif terhadap pengadu.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card card-hover border-0 shadow-sm h-100 p-4">
+                                <h5 class="fw-bold mb-3"><i class="fas fa-gavel me-2 text-primary"></i>Dasar Hukum</h5>
+                                <ul class="small mb-0 ps-3">
+                                    <li class="mb-2">UU No. 25 Tahun 2009 tentang Pelayanan Publik</li>
+                                    <li class="mb-2">UU No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik</li>
+                                    <li class="mb-2">UU No. 30 Tahun 2014 tentang Administrasi Pemerintahan (larangan penyalahgunaan wewenang)</li>
+                                    <li class="mb-2">Perpres No. 76 Tahun 2013 tentang Pengelolaan Pengaduan Pelayanan Publik</li>
+                                    <li class="mb-0">PermenPANRB No. 62 Tahun 2018 tentang Pedoman Sistem Pengelolaan Pengaduan Pelayanan Publik Nasional (SP4N-LAPOR!)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if($documents->where('category', 'standar_layanan_pengaduan')->count())
+                    <div class="card card-hover border-0 shadow-sm p-4 mb-4">
+                        <h3 class="mb-4 border-bottom pb-2">Dokumen Pengaduan</h3>
+                        @foreach($documents->where('category', 'standar_layanan_pengaduan') as $doc)
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="flex-shrink-0">
+                                <span class="badge bg-primary rounded-circle p-3"><i class="fas fa-file-pdf fa-lg"></i></span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>{{ $doc->title }}</h5>
+                                <p>{{ $doc->description }}</p>
+                                <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">Unduh Dokumen</a>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    <div class="alert alert-warning small mb-0">
+                        <i class="fas fa-triangle-exclamation me-2"></i>
+                        Pengaduan yang tidak disertai identitas dan bukti pendukung yang memadai tetap dicatat, namun tindak lanjutnya terbatas. Aduan palsu atau fitnah dapat dikenakan sanksi sesuai ketentuan hukum yang berlaku.
                     </div>
                 </div>
 
