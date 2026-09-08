@@ -37,7 +37,8 @@ class GalleryController extends Controller
             'description' => $request->description,
             'type' => 'photo',
             'cover_image' => $coverPath,
-            'is_published' => $request->has('is_published'),
+            // same rule as Informasi Publik: published unless explicitly unticked
+            'is_published' => $request->has('is_published') ? $request->is_published : true,
         ]);
 
         return redirect()->route('admin.galleries.edit', $gallery->id)->with('success', 'Album berhasil dibuat. Silakan tambahkan foto.');
@@ -66,7 +67,7 @@ class GalleryController extends Controller
         $data = [
             'title' => $request->title,
             'description' => $request->description,
-            'is_published' => $request->has('is_published'),
+            'is_published' => $request->has('is_published') ? $request->is_published : $gallery->is_published,
         ];
 
         if ($request->hasFile('cover_image')) {
@@ -124,6 +125,80 @@ class GalleryController extends Controller
         }
 
         return redirect()->back()->with('success', 'Foto berhasil ditambahkan.');
+    }
+
+    /**
+     * Chunked upload: the browser slices each photo into pieces small enough to
+     * pass upload_max_filesize / post_max_size, we append them and only then
+     * push the assembled file to S3.
+     */
+    public function uploadChunk(Request $request, $id)
+    {
+        $data = $request->validate([
+            'upload_id' => ['required', 'regex:/^[A-Za-z0-9_-]{8,64}$/'],
+            'index' => 'required|integer|min:0',
+            'total' => 'required|integer|min:1|max:5000',
+            'chunk' => 'required|file|max:4096',
+        ]);
+
+        $gallery = Gallery::findOrFail($id);
+
+        $dir = storage_path('app/chunks');
+        if (! is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $tmp = $dir.'/'.$data['upload_id'];
+
+        // ponytail: abandoned uploads leak temp files, so sweep stale ones here
+        // instead of adding a scheduled command for it
+        foreach (glob($dir.'/*') ?: [] as $stale) {
+            if (filemtime($stale) < time() - 6 * 3600) {
+                @unlink($stale);
+            }
+        }
+
+        // First chunk starts a fresh file; a retried upload must not append twice.
+        if ((int) $data['index'] === 0) {
+            @unlink($tmp);
+        } elseif (! is_file($tmp)) {
+            return response()->json(['message' => 'Potongan file hilang, silakan ulangi upload.'], 422);
+        }
+
+        file_put_contents($tmp, file_get_contents($request->file('chunk')->getRealPath()), FILE_APPEND);
+
+        if ((int) $data['index'] + 1 < (int) $data['total']) {
+            return response()->json(['status' => 'chunk-received']);
+        }
+
+        $allowed = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+        ];
+        $mime = mime_content_type($tmp);
+
+        if (! isset($allowed[$mime]) || filesize($tmp) > 20 * 1024 * 1024) {
+            @unlink($tmp);
+
+            return response()->json(['message' => 'File harus gambar (jpg, png, gif, webp) maksimal 20MB.'], 422);
+        }
+
+        $path = 'galleries/items/'.\Illuminate\Support\Str::random(40).'.'.$allowed[$mime];
+        $stream = fopen($tmp, 'r');
+        Storage::disk('public')->put($path, $stream, 'public');
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+        @unlink($tmp);
+
+        $item = GalleryItem::create([
+            'gallery_id' => $gallery->id,
+            'image_path' => $path,
+            'order' => $gallery->items()->count() + 1,
+        ]);
+
+        return response()->json(['id' => $item->id, 'url' => storage_url($path)]);
     }
 
     public function deletePhoto($id)

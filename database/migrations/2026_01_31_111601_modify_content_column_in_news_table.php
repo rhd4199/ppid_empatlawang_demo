@@ -13,8 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         // Change content column to LONGTEXT to support larger content size
-        // Using raw SQL to avoid doctrine/dbal dependency requirement
-        DB::statement('ALTER TABLE news MODIFY content LONGTEXT');
+        // Using raw SQL to avoid doctrine/dbal dependency requirement.
+        // SQLite (used by the test suite) has no MODIFY and stores TEXT unbounded anyway.
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE news MODIFY content LONGTEXT');
+        }
     }
 
     /**
@@ -23,6 +26,8 @@ return new class extends Migration
     public function down(): void
     {
         // Revert back to TEXT
-        DB::statement('ALTER TABLE news MODIFY content TEXT');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE news MODIFY content TEXT');
+        }
     }
 };

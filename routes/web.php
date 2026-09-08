@@ -87,6 +87,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/berita/{id}/toggle-headline', [App\Http\Controllers\Admin\NewsController::class, 'toggleHeadline'])->name('news.toggle-headline');
     Route::resource('berita', App\Http\Controllers\Admin\NewsController::class)->names('news');
     Route::post('/galeri/{id}/upload-photos', [App\Http\Controllers\Admin\GalleryController::class, 'uploadPhotos'])->name('galleries.upload-photos');
+    Route::post('/galeri/{id}/upload-chunk', [App\Http\Controllers\Admin\GalleryController::class, 'uploadChunk'])->name('galleries.upload-chunk');
     Route::delete('/galeri/photo/{id}', [App\Http\Controllers\Admin\GalleryController::class, 'deletePhoto'])->name('galleries.delete-photo');
     Route::post('/galeri/{id}/update-order', [App\Http\Controllers\Admin\GalleryController::class, 'updatePhotoOrder'])->name('galleries.update-order');
     Route::post('/galeri/bulk-action', [App\Http\Controllers\Admin\GalleryController::class, 'bulkAction'])->name('galleries.bulk-action');

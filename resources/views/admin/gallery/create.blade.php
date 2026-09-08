@@ -43,7 +43,7 @@
                 </div>
 
                 <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="is_published" name="is_published" {{ old('is_published') ? 'checked' : '' }}>
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_published" name="is_published" value="1" checked>
                     <label class="form-check-label" for="is_published">Langsung Publikasikan?</label>
                 </div>
 
