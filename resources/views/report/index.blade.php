@@ -54,7 +54,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="card-title fw-bold">{{ $report->title }}</h5>
-                                <p class="card-text text-muted small mb-3">{{ $report->description }}</p>
+                                <p class="card-text text-muted small mb-3">{{ Str::limit(strip_tags($report->description), 120) }}</p>
                                 <a href="{{ storage_url($report->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill stretched-link" target="_blank">
                                     <i class="fas fa-download me-1"></i> Unduh Laporan
                                 </a>
@@ -87,7 +87,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="card-title fw-bold">{{ $report->title }}</h5>
-                                <p class="card-text text-muted small mb-3">{{ $report->description }}</p>
+                                <p class="card-text text-muted small mb-3">{{ Str::limit(strip_tags($report->description), 120) }}</p>
                                 <a href="{{ storage_url($report->file_path) }}" class="btn btn-sm btn-outline-success rounded-pill stretched-link" target="_blank">
                                     <i class="fas fa-download me-1"></i> Unduh Laporan
                                 </a>

@@ -136,7 +136,7 @@
                                 <div class="card h-100 border bg-light">
                                     <div class="card-body">
                                         <h5 class="card-title text-primary">{{ $doc->title }}</h5>
-                                        <p class="card-text text-muted small">{{ $doc->description }}</p>
+                                        <div class="card-text text-muted small rich-text">{!! $doc->description !!}</div>
                                         <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-primary stretched-link" target="_blank">Lihat Dokumen</a>
                                     </div>
                                 </div>
@@ -157,7 +157,7 @@
                             <div class="list-group-item d-flex justify-content-between align-items-center py-3">
                                 <div>
                                     <h5 class="mb-1">{{ $doc->title }}</h5>
-                                    <p class="mb-0 text-muted small">{{ $doc->description }}</p>
+                                    <div class="mb-0 text-muted small rich-text">{!! $doc->description !!}</div>
                                 </div>
                                 <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank"><i class="fas fa-download me-1"></i> Unduh</a>
                             </div>
@@ -530,7 +530,7 @@
                             </div>
                             <div class="flex-grow-1 ms-3">
                                 <h5>{{ $doc->title }}</h5>
-                                <p>{{ $doc->description }}</p>
+                                <div class="rich-text">{!! $doc->description !!}</div>
                                 <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">Unduh Dokumen</a>
                             </div>
                         </div>
@@ -561,7 +561,7 @@
                                     @forelse($documents->where('category', 'standar_layanan_sop') as $doc)
                                     <tr>
                                         <td class="fw-bold">{{ $doc->title }}</td>
-                                        <td>{{ $doc->description }}</td>
+                                        <td><div class="rich-text">{!! $doc->description !!}</div></td>
                                         <td class="text-end">
                                             <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-success rounded-pill" target="_blank">Download</a>
                                         </td>
@@ -620,7 +620,7 @@
                             @endif
                             
                             <h5>{{ $doc->title }}</h5>
-                            <p class="text-muted">{{ $doc->description }}</p>
+                            <div class="text-muted rich-text">{!! $doc->description !!}</div>
                             <a href="{{ storage_url($doc->file_path) }}" class="btn btn-primary rounded-pill mt-2" target="_blank">Unduh Maklumat</a>
                         </div>
                         @empty
@@ -661,7 +661,7 @@
                          @forelse($documents->where('category', 'standar_layanan_biaya') as $doc)
                         <div class="alert alert-warning border-start border-5 border-warning">
                             <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i> {{ $doc->title }}</h4>
-                            <p>{{ $doc->description }}</p>
+                            <div class="rich-text">{!! $doc->description !!}</div>
                             <hr>
                             <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-dark" target="_blank">Lihat Rincian Biaya</a>
                         </div>
@@ -685,7 +685,7 @@
                             </div>
                             <div class="flex-grow-1 ms-3">
                                 <h5>{{ $doc->title }}</h5>
-                                <p>{{ $doc->description }}</p>
+                                <div class="rich-text">{!! $doc->description !!}</div>
                                 <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank">Pelajari Prosedur</a>
                             </div>
                         </div>

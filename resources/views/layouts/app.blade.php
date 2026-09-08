@@ -20,6 +20,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
+        /* WYSIWYG output: keep pasted images/tables inside their container */
+        .rich-text img { max-width: 100%; height: auto; }
+        .rich-text table { max-width: 100%; }
+        .rich-text > :last-child { margin-bottom: 0; }
         :root {
             --primary-color: #0284c7; /* Sky Blue 600 */
             --secondary-color: #ffc107; /* Gold/Yellow for accents */

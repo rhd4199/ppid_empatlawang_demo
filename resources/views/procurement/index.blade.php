@@ -46,7 +46,7 @@
                             <div class="list-group-item d-flex justify-content-between align-items-center py-3">
                                 <div>
                                     <h5 class="mb-1">{{ $doc->title }}</h5>
-                                    <p class="mb-0 text-muted small">{{ $doc->description }}</p>
+                                    <p class="mb-0 text-muted small">{{ Str::limit(strip_tags($doc->description), 120) }}</p>
                                 </div>
                                 @if($doc->file_path)
                                 <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
@@ -70,7 +70,7 @@
                             <div class="list-group-item d-flex justify-content-between align-items-center py-3">
                                 <div>
                                     <h5 class="mb-1">{{ $doc->title }}</h5>
-                                    <p class="mb-0 text-muted small">{{ $doc->description }}</p>
+                                    <p class="mb-0 text-muted small">{{ Str::limit(strip_tags($doc->description), 120) }}</p>
                                 </div>
                                 @if($doc->file_path)
                                 <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
