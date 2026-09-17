@@ -24,7 +24,7 @@
     <div class="row g-4">
         @forelse($galleries as $gallery)
         <div class="col-md-6 col-lg-4">
-            <a href="{{ route('galleries.show', $gallery->id) }}" class="text-decoration-none gallery-card-link">
+            <a href="{{ route('galleries.show', $gallery->slug) }}" class="text-decoration-none gallery-card-link">
                 <div class="card h-100 border-0 shadow-sm gallery-card overflow-hidden">
                     <div class="gallery-img-wrapper position-relative">
                         @if($gallery->cover_image)

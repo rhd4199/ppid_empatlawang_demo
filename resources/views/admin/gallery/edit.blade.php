@@ -290,8 +290,7 @@
                 return;
             }
             // reload so the photo grid and ordering reflect what actually landed
-            if (failed.length) sessionStorage.setItem('galleryUploadFailed', failed.join('
-'));
+            if (failed.length) sessionStorage.setItem('galleryUploadFailed', failed.join('\n'));
             window.location.reload();
         });
     });
@@ -302,8 +301,7 @@
         sessionStorage.removeItem('galleryUploadFailed');
         var alertBox = document.createElement('div');
         alertBox.className = 'alert alert-warning alert-dismissible fade show';
-        alertBox.innerHTML = 'Sebagian foto gagal diunggah:<br>' + leftover.split('
-').join('<br>') +
+        alertBox.innerHTML = 'Sebagian foto gagal diunggah:<br>' + leftover.split('\n').join('<br>') +
             '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
         var container = document.querySelector('.container-fluid');
         if (container) container.insertBefore(alertBox, container.children[1]);

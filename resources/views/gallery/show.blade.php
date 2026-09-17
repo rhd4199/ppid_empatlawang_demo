@@ -2,6 +2,18 @@
 
 @section('title', $gallery->title)
 
+@push('meta')
+    @php($ogImage = $gallery->cover_image ?: optional($gallery->items->first())->image_path)
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ $gallery->title }}">
+    <meta property="og:description" content="{{ Str::limit(strip_tags($gallery->description), 160) }}">
+    <meta property="og:url" content="{{ route('galleries.show', $gallery->slug) }}">
+    @if($ogImage)
+        <meta property="og:image" content="{{ url(Storage::url($ogImage)) }}">
+        <meta name="twitter:card" content="summary_large_image">
+    @endif
+@endpush
+
 @section('content')
 <!-- Page Header -->
 <div class="page-header">

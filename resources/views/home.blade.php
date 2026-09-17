@@ -474,7 +474,7 @@
             <div class="swiper-wrapper py-4">
                 @foreach($galleries as $gallery)
                 <div class="swiper-slide">
-                    <a href="{{ route('galleries.show', $gallery->id) }}" class="text-decoration-none">
+                    <a href="{{ route('galleries.show', $gallery->slug) }}" class="text-decoration-none">
                         <div class="gallery-card shadow-sm">
                             @if($gallery->cover_image)
                                 <img src="{{ storage_url($gallery->cover_image) }}" alt="{{ $gallery->title }}">

@@ -7,6 +7,8 @@
 
     <title>@yield('title', config('app.name', 'PPID Kabupaten Empat Lawang'))</title>
 
+    @stack('meta')
+
     <link rel="icon" type="image/png" href="{{ asset('assets/images/Lambang_Empat_Lawang.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/Lambang_Empat_Lawang.png') }}">
 
