@@ -2,6 +2,19 @@
 
 @section('title', $news->title)
 
+@push('meta')
+    {{-- cover image, else first image inside the article body --}}
+    @php($ogImage = $news->image ? storage_url($news->image) : (preg_match('/<img[^>]+src=["\']([^"\']+)/i', (string) $news->content, $m) ? html_entity_decode($m[1]) : null))
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ $news->title }}">
+    <meta property="og:description" content="{{ Str::limit(trim(html_entity_decode(strip_tags($news->content))), 160) }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if($ogImage)
+        <meta property="og:image" content="{{ url($ogImage) }}">
+        <meta name="twitter:card" content="summary_large_image">
+    @endif
+@endpush
+
 @section('content')
 <!-- Custom Header for Article -->
 <div class="position-relative bg-dark text-white" style="min-height: 400px;">
