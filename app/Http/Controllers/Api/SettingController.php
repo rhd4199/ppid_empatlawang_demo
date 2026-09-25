@@ -42,6 +42,10 @@ class SettingController extends Controller
             }
         }
 
+        if (isset($data['social_media'])) {
+            $data['social_media'] = array_map(fn ($s) => ['platform' => social_platform($s)] + $s, $data['social_media']);
+        }
+
         $settings = $this->showContact();
         $settings->update($data);
 

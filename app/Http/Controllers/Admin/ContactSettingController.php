@@ -73,6 +73,11 @@ class ContactSettingController extends Controller
             $data['social_media'] = array_values(array_filter($data['social_media'], function($item) {
                 return !empty($item['platform']) && !empty($item['name']);
             }));
+            // URL domain wins over the dropdown, see social_platform()
+            foreach ($data['social_media'] as &$item) {
+                $item['platform'] = social_platform($item);
+            }
+            unset($item);
         }
 
         $settings->update($data);

@@ -144,9 +144,9 @@
         @php
             $socials = $settings->social_media ?? [];
             if(!is_array($socials)) $socials = [];
-            $instagrams = array_filter($socials, fn($s) => ($s['platform'] ?? '') === 'instagram');
-            $facebooks = array_filter($socials, fn($s) => ($s['platform'] ?? '') === 'facebook');
-            $others = array_filter($socials, fn($s) => !in_array(($s['platform'] ?? ''), ['instagram', 'facebook']));
+            $instagrams = array_filter($socials, fn($s) => social_platform($s) === 'instagram');
+            $facebooks = array_filter($socials, fn($s) => social_platform($s) === 'facebook');
+            $others = array_filter($socials, fn($s) => !in_array(social_platform($s), ['instagram', 'facebook']));
         @endphp
         <!-- Left Column: Social Media Ecosystem -->
         <div class="col-lg-5">
@@ -296,7 +296,7 @@
                             <a href="{{ $other['url'] ?? '#' }}" target="_blank" class="card h-100 border-0 shadow-sm hover-scale text-decoration-none overflow-hidden">
                                 <div class="card-body p-3 d-flex align-items-center">
                                     <div class="icon-sm {{ ($other['color'] ?? false) ? str_replace('text-', 'bg-', $other['color']) : 'bg-dark' }} text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
-                                        <i class="{{ $other['icon'] ?? 'fas fa-link' }}"></i>
+                                        <i class="{{ social_icon($other) }}"></i>
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-bold text-dark small">{{ $other['name'] }}</h6>

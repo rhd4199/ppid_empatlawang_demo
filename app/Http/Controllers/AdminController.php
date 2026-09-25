@@ -45,6 +45,20 @@ class AdminController extends Controller
             'messages_unread' => Contact::where('is_read', false)->count(),
         ];
 
-        return view('admin.dashboard', compact('stats'));
+        // Informasi Publik bento: per-category counts + latest uploads
+        $infoCategories = [
+            'informasi-publik-berkala' => ['label' => 'Berkala', 'icon' => 'fa-calendar-check', 'color' => 'primary'],
+            'informasi-publik-serta-merta' => ['label' => 'Serta Merta', 'icon' => 'fa-bolt', 'color' => 'danger'],
+            'informasi-publik-setiap-saat' => ['label' => 'Setiap Saat', 'icon' => 'fa-clock', 'color' => 'success'],
+            'informasi-publik-dikecualikan' => ['label' => 'Dikecualikan', 'icon' => 'fa-lock', 'color' => 'secondary'],
+        ];
+        $infoCounts = Document::whereIn('category', array_keys($infoCategories))
+            ->selectRaw('category, count(*) as total, sum(case when is_published then 1 else 0 end) as published')
+            ->groupBy('category')
+            ->get()
+            ->keyBy('category');
+        $infoLatest = Document::whereIn('category', array_keys($infoCategories))->latest()->take(6)->get();
+
+        return view('admin.dashboard', compact('stats', 'infoCategories', 'infoCounts', 'infoLatest'));
     }
 }

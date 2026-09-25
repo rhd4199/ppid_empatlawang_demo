@@ -180,6 +180,9 @@
                                                 <option value="youtube" {{ ($social['platform'] ?? '') == 'youtube' ? 'selected' : '' }}>Youtube</option>
                                                 <option value="twitter" {{ ($social['platform'] ?? '') == 'twitter' ? 'selected' : '' }}>Twitter / X</option>
                                                 <option value="tiktok" {{ ($social['platform'] ?? '') == 'tiktok' ? 'selected' : '' }}>TikTok</option>
+                                                <option value="whatsapp" {{ ($social['platform'] ?? '') == 'whatsapp' ? 'selected' : '' }}>WhatsApp</option>
+                                                <option value="telegram" {{ ($social['platform'] ?? '') == 'telegram' ? 'selected' : '' }}>Telegram</option>
+                                                <option value="linkedin" {{ ($social['platform'] ?? '') == 'linkedin' ? 'selected' : '' }}>LinkedIn</option>
                                                 <option value="website" {{ ($social['platform'] ?? '') == 'website' ? 'selected' : '' }}>Website</option>
                                             </select>
                                         </div>
@@ -187,7 +190,7 @@
                                         <div class="vstack gap-2">
                                             <input type="text" class="form-control form-control-sm border-light bg-light" name="social_media[{{ $index }}][name]" value="{{ $social['name'] ?? '' }}" placeholder="Nama Akun (e.g. Pemkab Empat Lawang)">
                                             <input type="text" class="form-control form-control-sm border-light bg-light" name="social_media[{{ $index }}][username]" value="{{ $social['username'] ?? '' }}" placeholder="Username (e.g. @pemkab4l)">
-                                            <input type="url" class="form-control form-control-sm border-light bg-light" name="social_media[{{ $index }}][url]" value="{{ $social['url'] ?? '' }}" placeholder="https://...">
+                                            <input type="url" class="form-control form-control-sm border-light bg-light" name="social_media[{{ $index }}][url]" value="{{ $social['url'] ?? '' }}" placeholder="https://... (platform terdeteksi otomatis)">
                                         </div>
                                     </div>
                                 </div>
@@ -303,6 +306,9 @@
                             <option value="youtube">Youtube</option>
                             <option value="twitter">Twitter / X</option>
                             <option value="tiktok">TikTok</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="telegram">Telegram</option>
+                            <option value="linkedin">LinkedIn</option>
                             <option value="website">Website</option>
                         </select>
                     </div>
@@ -318,7 +324,7 @@
                         </div>
                         <div>
                             <label class="form-label x-small text-muted text-uppercase fw-bold mb-1">Link / URL Profil</label>
-                            <input type="url" class="form-control form-control-sm border-light bg-light" name="social_media[${uniqueIndex}][url]" placeholder="https://...">
+                            <input type="url" class="form-control form-control-sm border-light bg-light" name="social_media[${uniqueIndex}][url]" placeholder="https://... (platform terdeteksi otomatis)">
                         </div>
                     </div>
                 </div>
@@ -369,11 +375,52 @@
                 icon.className = 'fab fa-tiktok fa-lg';
                 iconBadge.classList.add('bg-dark', 'bg-opacity-10', 'text-dark', 'border-dark');
                 break;
+            case 'whatsapp':
+                icon.className = 'fab fa-whatsapp fa-lg';
+                iconBadge.classList.add('bg-success', 'bg-opacity-10', 'text-success', 'border-success');
+                break;
+            case 'telegram':
+            case 'linkedin':
+                icon.className = select.value === 'telegram' ? 'fab fa-telegram fa-lg' : 'fab fa-linkedin-in fa-lg';
+                iconBadge.classList.add('bg-info', 'bg-opacity-10', 'text-info', 'border-info');
+                break;
             default:
                 icon.className = 'fas fa-globe fa-lg';
                 iconBadge.classList.add('bg-secondary', 'bg-opacity-10', 'text-secondary', 'border-secondary');
         }
     }
+
+    // Same domain map as social_platform() in app/helpers.php
+    const SOCIAL_DOMAINS = {
+        instagram: ['instagram.com', 'instagr.am'],
+        facebook: ['facebook.com', 'fb.com', 'fb.me', 'fb.watch'],
+        youtube: ['youtube.com', 'youtu.be'],
+        twitter: ['twitter.com', 'x.com'],
+        tiktok: ['tiktok.com'],
+        whatsapp: ['wa.me', 'whatsapp.com'],
+        telegram: ['t.me', 'telegram.me', 'telegram.org'],
+        linkedin: ['linkedin.com'],
+    };
+
+    function detectPlatform(url) {
+        let host;
+        try { host = new URL(url.trim()).hostname.toLowerCase(); } catch (e) { return null; }
+        host = host.replace(/^(www|m|web|mobile)\./, '');
+        for (const [platform, domains] of Object.entries(SOCIAL_DOMAINS)) {
+            if (domains.some(d => host === d || host.endsWith('.' + d))) return platform;
+        }
+        return 'website';
+    }
+
+    // Typing/pasting a profile URL picks the platform (and icon) automatically
+    document.getElementById('social-container').addEventListener('input', function (e) {
+        if (!e.target.matches('input[name$="[url]"]')) return;
+        const platform = detectPlatform(e.target.value);
+        if (!platform) return;
+        const select = e.target.closest('.social-item').querySelector('select[name$="[platform]"]');
+        select.value = platform;
+        updateSocialIcon(select);
+    });
 
     // Initialize icons on load
     document.addEventListener('DOMContentLoaded', function() {

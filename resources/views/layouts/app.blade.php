@@ -437,7 +437,7 @@
 
                 <div class="nav-social d-flex align-items-center gap-1 ms-xl-2 mt-3 mt-xl-0">
                     @forelse(($contactSettings->social_media ?? []) as $social)
-                        <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" title="{{ $social['name'] ?? '' }}"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }}"></i></a>
+                        <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" title="{{ $social['name'] ?? '' }}"><i class="{{ social_icon($social) }}"></i></a>
                     @empty
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -471,7 +471,7 @@
                     </p>
                     <div class="d-flex gap-2 mt-3">
                         @forelse(($contactSettings->social_media ?? []) as $social)
-                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="text-white"><i class="{{ $social['icon'] ?? 'fas fa-share-alt' }} fa-lg"></i></a>
+                            <a href="{{ $social['url'] ?? '#' }}" target="_blank" rel="noopener" class="text-white"><i class="{{ social_icon($social) }} fa-lg"></i></a>
                         @empty
                             <a href="#" class="text-white"><i class="fab fa-facebook fa-lg"></i></a>
                             <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
