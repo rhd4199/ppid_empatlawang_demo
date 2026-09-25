@@ -34,19 +34,32 @@ class HomeController extends Controller
 
         $contactSettings = ContactSetting::first();
 
+        // Informasi Publik bento: published count per category + latest uploads
+        $infoCategories = [
+            'informasi-publik-berkala' => ['slug' => 'berkala', 'label' => 'Informasi Berkala', 'desc' => 'Disediakan dan diumumkan secara rutin', 'icon' => 'fa-calendar-check', 'color' => 'primary'],
+            'informasi-publik-serta-merta' => ['slug' => 'serta-merta', 'label' => 'Informasi Serta Merta', 'desc' => 'Menyangkut hajat hidup orang banyak', 'icon' => 'fa-bolt', 'color' => 'danger'],
+            'informasi-publik-setiap-saat' => ['slug' => 'setiap-saat', 'label' => 'Informasi Setiap Saat', 'desc' => 'Tersedia kapan pun diminta', 'icon' => 'fa-clock', 'color' => 'success'],
+            'informasi-publik-dikecualikan' => ['slug' => 'dikecualikan', 'label' => 'Informasi Dikecualikan', 'desc' => 'Tidak dapat diakses publik', 'icon' => 'fa-lock', 'color' => 'secondary'],
+        ];
+        $infoCounts = Document::whereIn('category', array_keys($infoCategories))
+            ->where('is_published', true)
+            ->selectRaw('category, count(*) as total')
+            ->groupBy('category')
+            ->pluck('total', 'category');
+        $infoLatest = Document::whereIn('category', array_keys($infoCategories))
+            ->where('is_published', true)
+            ->latest()
+            ->take(5)
+            ->get();
+
         // Homepage stats — Informasi Publik & Permohonan Selesai computed live from data,
         // Indeks Kepuasan is admin-editable (no survey data source exists yet).
         $stats = [
-            'informasi_publik' => Document::whereIn('category', [
-                'informasi-publik-berkala',
-                'informasi-publik-serta-merta',
-                'informasi-publik-setiap-saat',
-                'informasi-publik-dikecualikan',
-            ])->where('is_published', true)->count(),
+            'informasi_publik' => $infoCounts->sum(),
             'permohonan_selesai' => InformationRequest::whereIn('status', ['approved', 'rejected'])->count(),
             'satisfaction_index' => PpidSetting::where('key', 'stat_satisfaction_index')->value('value') ?? '98%',
         ];
 
-        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings', 'stats'));
+        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings', 'stats', 'infoCategories', 'infoCounts', 'infoLatest'));
     }
 }

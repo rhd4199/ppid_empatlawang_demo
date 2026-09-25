@@ -4,11 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\ContactSetting;
 use App\Models\Document;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class DashboardBentoTest extends TestCase
+class HomeBentoTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -23,7 +22,7 @@ class DashboardBentoTest extends TestCase
         $this->assertSame('fas fa-globe', social_icon(['url' => 'https://empatlawangkab.go.id']));
     }
 
-    public function test_dashboard_shows_info_public_bento_and_parsed_icons(): void
+    public function test_home_shows_published_info_public_bento_and_parsed_icons(): void
     {
         Document::create(['title' => 'SE Tugas Belajar', 'category' => 'informasi-publik-setiap-saat', 'is_published' => true]);
         Document::create(['title' => 'Draft Berkala', 'category' => 'informasi-publik-berkala', 'is_published' => false]);
@@ -31,14 +30,13 @@ class DashboardBentoTest extends TestCase
             ['platform' => 'website', 'name' => 'IG', 'url' => 'https://instagram.com/ppid'],
         ]]);
 
-        $this->actingAs(User::factory()->create())
-            ->get('/admin')
+        // drafts stay off the public page
+        $this->get('/')
             ->assertOk()
             ->assertSee('info-bento', false)
             ->assertSee('SE Tugas Belajar')
-            ->assertSee('Draft')
-            ->assertSee('2 dokumen');
-
-        $this->get('/kontak')->assertOk()->assertSee('fab fa-instagram', false);
+            ->assertDontSee('Draft Berkala')
+            ->assertSee('1 dokumen')
+            ->assertSee('fab fa-instagram', false);
     }
 }

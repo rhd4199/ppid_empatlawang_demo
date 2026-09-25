@@ -422,6 +422,93 @@
 </style>
 @endif
 
+<!-- Informasi Publik (bento) -->
+<section class="py-5">
+    <div class="container">
+        <div class="section-title">
+            <a href="{{ route('informasi-publik.index') }}" style="text-decoration: none"><h2>Informasi Publik</h2></a>
+            <p>Dokumen informasi publik Pemerintah Kabupaten Empat Lawang sesuai UU No. 14 Tahun 2008</p>
+        </div>
+
+        <div class="info-bento">
+            <div class="bento-feature">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-white mb-0"><i class="fas fa-file-alt me-2"></i>Terbaru</h5>
+                    <span class="badge bg-white text-primary rounded-pill px-3 py-2">{{ $infoCounts->sum() }} dokumen</span>
+                </div>
+                <div class="d-flex flex-column gap-2 flex-grow-1">
+                    @forelse($infoLatest as $doc)
+                        <a href="{{ route('informasi-publik.show', $doc->id) }}" class="bento-doc">
+                            <i class="fas {{ $infoCategories[$doc->category]['icon'] }} fa-fw opacity-75"></i>
+                            <div class="flex-grow-1 text-truncate">
+                                <div class="fw-semibold text-truncate">{{ $doc->title }}</div>
+                                <small class="opacity-75">{{ Str::after($infoCategories[$doc->category]['label'], 'Informasi ') }} &middot; {{ $doc->created_at->translatedFormat('d M Y') }}</small>
+                            </div>
+                            <i class="fas fa-chevron-right small opacity-50"></i>
+                        </a>
+                    @empty
+                        <p class="text-white-50 mb-0">Belum ada informasi publik.</p>
+                    @endforelse
+                </div>
+                <a href="{{ route('informasi-publik.index') }}" class="btn btn-light rounded-pill fw-bold mt-3 align-self-start px-4">
+                    Lihat Semua <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            @foreach($infoCategories as $key => $cat)
+                <a href="{{ route('informasi-publik.index', ['category' => $cat['slug']]) }}" class="bento-tile">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="bento-icon bg-{{ $cat['color'] }} bg-opacity-10 text-{{ $cat['color'] }}">
+                            <i class="fas {{ $cat['icon'] }}"></i>
+                        </div>
+                        <span class="fs-2 fw-bold text-dark lh-1">{{ $infoCounts[$key] ?? 0 }}</span>
+                    </div>
+                    <div class="mt-auto pt-3">
+                        <h6 class="fw-bold text-dark mb-1">{{ $cat['label'] }}</h6>
+                        <small class="text-muted">{{ $cat['desc'] }}</small>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+<style>
+    /* Bento: big "Terbaru" tile left, 2x2 category tiles right */
+    .info-bento { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+    .bento-feature {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: #fff; border-radius: 1.25rem; padding: 1.75rem;
+        display: flex; flex-direction: column;
+        box-shadow: 0 10px 30px rgba(2, 132, 199, 0.25);
+    }
+    .bento-doc {
+        display: flex; align-items: center; gap: .75rem;
+        padding: .75rem 1rem; border-radius: .75rem;
+        background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none;
+        transition: background .15s;
+    }
+    .bento-doc:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+    .bento-tile {
+        background: #fff; border: 1px solid #eef2f6; border-radius: 1.25rem; padding: 1.5rem;
+        display: flex; flex-direction: column; min-height: 170px; text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        transition: transform .2s, box-shadow .2s;
+    }
+    .bento-tile:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08); }
+    .bento-icon {
+        width: 48px; height: 48px; border-radius: .9rem;
+        display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+    }
+    @media (min-width: 576px) {
+        .info-bento { grid-template-columns: repeat(2, 1fr); }
+        .bento-feature { grid-column: 1 / -1; }
+    }
+    @media (min-width: 992px) {
+        .info-bento { grid-template-columns: 2fr 1fr 1fr; }
+        .bento-feature { grid-column: 1; grid-row: 1 / span 2; }
+    }
+</style>
+
 <!-- Latest News -->
 <section class="py-5 bg-light">
     <div class="container">
