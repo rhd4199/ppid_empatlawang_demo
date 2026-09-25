@@ -12,4 +12,11 @@ class GalleryItem extends Model
     {
         return $this->belongsTo(Gallery::class);
     }
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return storage_url($this->image_path);
+    }
 }

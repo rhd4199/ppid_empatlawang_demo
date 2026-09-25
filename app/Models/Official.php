@@ -11,4 +11,11 @@ class Official extends Model
     protected $casts = [
         'is_published' => 'boolean',
     ];
+
+    protected $appends = ['photo_url'];
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return storage_url($this->photo);
+    }
 }

@@ -37,4 +37,11 @@ class Gallery extends Model
     {
         return $this->hasMany(GalleryItem::class);
     }
+
+    protected $appends = ['cover_image_url'];
+
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        return storage_url($this->cover_image);
+    }
 }

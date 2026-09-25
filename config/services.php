@@ -18,6 +18,11 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
+    // Static bearer token for /api/* (see API.md)
+    'api' => [
+        'token' => env('API_TOKEN'),
+    ],
+
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],

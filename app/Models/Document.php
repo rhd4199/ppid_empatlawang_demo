@@ -11,4 +11,11 @@ class Document extends Model
     protected $casts = [
         'is_published' => 'boolean',
     ];
+
+    protected $appends = ['file_url'];
+
+    public function getFileUrlAttribute(): ?string
+    {
+        return storage_url($this->file_path);
+    }
 }
