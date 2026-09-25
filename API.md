@@ -644,7 +644,7 @@ Query: `status` (`pending` \| `processed` \| `resolved` \| `rejected`), `ticket_
 | `phones` | optional array of strings |
 | `emails` | optional array of emails |
 | `working_hours` | optional array of strings |
-| `social_media` | optional array of objects; each needs `platform` and `name`; `username`, `url`, `icon`, `color` optional |
+| `social_media` | optional array of objects; each needs `platform` and `name`; `username`, `url`, `icon`, `color` optional. `platform` is overwritten from the `url` domain when recognised (instagram, facebook, youtube, twitter/x, tiktok, whatsapp, telegram, linkedin) |
 
 Arrays **replace** the stored list (empty entries dropped). Omitted keys stay unchanged.
 
