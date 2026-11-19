@@ -26,7 +26,7 @@ class EventController extends Controller
             ->get();
 
         // Data for "This Year" (Timeline/List View)
-        $yearEventsCollection = \App\Models\Event::whereYear('start_date', $currentDate->year)
+        $yearEventsCollection = \App\Models\Event::whereBetween('start_date', [$currentDate->copy()->startOfYear(), $currentDate->copy()->endOfYear()]) // range, not YEAR(), so the start_date index is used
             ->orderBy('start_date')
             ->get();
             
