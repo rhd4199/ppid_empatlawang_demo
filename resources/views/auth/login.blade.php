@@ -73,10 +73,6 @@
                                             <i class="fas fa-sign-in-alt me-2"></i> Masuk Sekarang
                                         </button>
                                     </div>
-
-                                    <div class="text-center">
-                                        <p class="small text-muted mb-0">Belum memiliki akun? <a href="{{ route('register') }}" class="fw-bold text-primary text-decoration-none">Daftar disini</a></p>
-                                    </div>
                                 </form>
                             </div>
                         </div>

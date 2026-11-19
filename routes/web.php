@@ -40,7 +40,8 @@ Route::get('/cek-status-permohonan', [InformationRequestController::class, 'chec
 Route::get('/pengajuan-keberatan', [ComplaintController::class, 'create'])->name('complaint.create');
 Route::post('/pengajuan-keberatan', [ComplaintController::class, 'store'])->name('complaint.store');
 
-Auth::routes();
+// No public sign-up: every account is an admin, so /register let anyone into /admin.
+Auth::routes(['register' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
