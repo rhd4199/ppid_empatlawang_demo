@@ -41,4 +41,23 @@ class ProfileIndexTest extends TestCase
         $this->get('/profil/tugas-fungsi')->assertSee('href="'.route('officials.index').'" rel="next"', false);
         $this->get('/profil/tentang-ppid')->assertDontSee('rel="prev"', false);
     }
+
+    public function test_structure_page_shows_html_chart_without_image_and_zoom_with_image(): void
+    {
+        $profile = Profile::create(['slug' => 'struktur-organisasi', 'type' => 'struktur',
+            'title' => 'Struktur Organisasi', 'content' => '<p>Isi</p>']);
+
+        $this->get('/profil/struktur-organisasi')->assertOk()
+            ->assertSee('class="structure-chart"', false)
+            ->assertSeeInOrder(['Pembina', 'Atasan PPID', 'PPID Utama', 'PPID Pelaksana'])
+            ->assertDontSee('structureModal', false);
+
+        $profile->update(['image' => 'profiles/struktur.png']);
+
+        $this->get('/profil/struktur-organisasi')->assertOk()
+            ->assertSee('id="structureModal"', false)
+            ->assertSee('profiles/struktur.png', false)
+            ->assertSee('Buka file asli')
+            ->assertDontSee('class="structure-chart"', false);
+    }
 }

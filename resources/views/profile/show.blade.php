@@ -47,9 +47,10 @@
 
         <div class="col-lg-9">
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                @if($profile->image)
-                    <img src="{{ storage_url($profile->image) }}" class="img-fluid w-100 object-fit-cover"
-                         @if($profile->type != 'struktur') style="max-height: 500px;" @endif alt="{{ $profile->title }}">
+                @if($profile->type === 'struktur')
+                    @include('profile._structure')
+                @elseif($profile->image)
+                    <img src="{{ storage_url($profile->image) }}" class="img-fluid w-100 object-fit-cover" style="max-height: 500px;" alt="{{ $profile->title }}">
                 @endif
 
                 <div class="card-body p-4 p-md-5 bg-white">
