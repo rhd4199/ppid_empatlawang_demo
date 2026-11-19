@@ -46,7 +46,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-4">
                         <h6 class="fw-bold text-uppercase text-muted small mb-3">Data Pengaju</h6>
-                        <table class="table table-borderless">
+                        <table class="table table-borderless text-break">
                             <tr>
                                 <td class="ps-0 text-muted" style="width: 140px;">Nama Lengkap</td>
                                 <td class="fw-bold">{{ $complaint->name }}</td>
