@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
@@ -144,8 +145,10 @@ class GalleryController extends Controller
     private function purge(Gallery $gallery): void
     {
         $paths = $gallery->items->pluck('image_path')->push($gallery->cover_image)->filter()->all();
+        DB::transaction(function () use ($gallery) {
+            $gallery->items()->delete();
+            $gallery->delete();
+        });
         Storage::disk('public')->delete($paths);
-        $gallery->items()->delete();
-        $gallery->delete();
     }
 }

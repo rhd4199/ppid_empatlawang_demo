@@ -63,8 +63,8 @@ class EventController extends Controller
             }
         }
 
-        $events = Event::latest('start_date')->get();
-        return view('admin.event.index', compact('events'));
+        // calendar loads its events over AJAX (branch above), the page itself needs none
+        return view('admin.event.index');
     }
 
     public function create()

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class NewsController extends Controller
@@ -137,8 +138,10 @@ class NewsController extends Controller
             $message = 'Berita tidak lagi menjadi Berita Utama.';
         } else {
             // If it is not headline, set it as headline and unset others
-            News::where('is_headline', true)->update(['is_headline' => false]);
-            $news->update(['is_headline' => true]);
+            DB::transaction(function () use ($news) {
+                News::where('is_headline', true)->update(['is_headline' => false]);
+                $news->update(['is_headline' => true]);
+            });
             $message = 'Berita berhasil dijadikan Berita Utama.';
         }
 

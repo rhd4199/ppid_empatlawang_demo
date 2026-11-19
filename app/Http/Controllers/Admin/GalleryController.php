@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
@@ -85,20 +86,7 @@ class GalleryController extends Controller
 
     public function destroy($id)
     {
-        $gallery = Gallery::findOrFail($id);
-
-        // Delete all photos
-        foreach ($gallery->items as $item) {
-            Storage::disk('public')->delete($item->image_path);
-            $item->delete();
-        }
-
-        // Delete cover
-        if ($gallery->cover_image) {
-            Storage::disk('public')->delete($gallery->cover_image);
-        }
-
-        $gallery->delete();
+        $this->purge(Gallery::findOrFail($id));
 
         return redirect()->route('admin.galleries.index')->with('success', 'Album berhasil dihapus.');
     }
@@ -253,19 +241,7 @@ class GalleryController extends Controller
                 $message = 'Album yang dipilih berhasil di-unpublish.';
                 break;
             case 'delete':
-                $galleries = Gallery::whereIn('id', $ids)->get();
-                foreach ($galleries as $gallery) {
-                    // Delete all photos
-                    foreach ($gallery->items as $item) {
-                        Storage::disk('public')->delete($item->image_path);
-                        $item->delete();
-                    }
-                    // Delete cover
-                    if ($gallery->cover_image) {
-                        Storage::disk('public')->delete($gallery->cover_image);
-                    }
-                    $gallery->delete();
-                }
+                Gallery::with('items')->whereIn('id', $ids)->get()->each(fn ($gallery) => $this->purge($gallery));
                 $message = 'Album yang dipilih berhasil dihapus.';
                 break;
             default:
@@ -273,5 +249,16 @@ class GalleryController extends Controller
         }
 
         return redirect()->back()->with('success', $message);
+    }
+
+    // Rows go first in one transaction; files are removed only once the delete committed.
+    private function purge(Gallery $gallery): void
+    {
+        $paths = $gallery->items->pluck('image_path')->push($gallery->cover_image)->filter()->all();
+        DB::transaction(function () use ($gallery) {
+            $gallery->items()->delete();
+            $gallery->delete();
+        });
+        Storage::disk('public')->delete($paths);
     }
 }

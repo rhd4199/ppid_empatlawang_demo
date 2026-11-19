@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -82,10 +83,12 @@ class NewsController extends Controller
     // Only one headline at a time.
     public function toggleHeadline(News $news)
     {
-        if (! $news->is_headline) {
-            News::where('is_headline', true)->update(['is_headline' => false]);
-        }
-        $news->update(['is_headline' => ! $news->is_headline]);
+        DB::transaction(function () use ($news) {
+            if (! $news->is_headline) {
+                News::where('is_headline', true)->update(['is_headline' => false]);
+            }
+            $news->update(['is_headline' => ! $news->is_headline]);
+        });
 
         return $news;
     }

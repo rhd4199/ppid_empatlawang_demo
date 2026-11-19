@@ -85,4 +85,22 @@ class GalleryChunkUploadTest extends TestCase
 
         $this->assertSame(0, GalleryItem::where('gallery_id', $gallery->id)->count());
     }
+
+    public function test_bulk_delete_removes_rows_then_files(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('galleries/covers/c.jpg', 'x');
+        Storage::disk('public')->put('galleries/items/p.jpg', 'x');
+
+        $gallery = Gallery::create(['title' => 'Album Hapus', 'type' => 'photo', 'cover_image' => 'galleries/covers/c.jpg']);
+        $gallery->items()->create(['image_path' => 'galleries/items/p.jpg']);
+
+        $this->actingAs(User::factory()->create())
+            ->post(route('admin.galleries.bulk-action'), ['action' => 'delete', 'ids' => [$gallery->id]])
+            ->assertRedirect();
+
+        $this->assertSame(0, Gallery::count());
+        $this->assertSame(0, GalleryItem::count());
+        Storage::disk('public')->assertMissing(['galleries/covers/c.jpg', 'galleries/items/p.jpg']);
+    }
 }
