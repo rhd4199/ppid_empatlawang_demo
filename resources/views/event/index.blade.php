@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Agenda Kegiatan')
+@section('description', 'Agenda kegiatan Pemerintah Kabupaten Empat Lawang dalam kalender.')
 
 @section('content')
 <div class="container py-5">

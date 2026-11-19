@@ -68,3 +68,11 @@ if (! function_exists('social_icon')) {
         ][social_platform($social)] ?? 'fas fa-globe';
     }
 }
+
+if (! function_exists('plain_text')) {
+    /** Rich-text HTML as one line of plain text (meta descriptions); tags become spaces so words don't merge. */
+    function plain_text(?string $html): string
+    {
+        return Illuminate\Support\Str::squish(html_entity_decode(strip_tags(preg_replace('/<[^>]*>/', ' $0 ', (string) $html)), ENT_QUOTES | ENT_HTML5));
+    }
+}

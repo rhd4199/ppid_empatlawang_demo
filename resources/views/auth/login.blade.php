@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Login - PPID Empat Lawang')
+@section('title', 'Login Admin')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
 <div class="auth-container d-flex align-items-center justify-content-center py-5">

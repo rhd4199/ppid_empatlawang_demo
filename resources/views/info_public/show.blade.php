@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', $info->title)
+@section('description', plain_text($info->description) ?: $info->title.' — dokumen informasi publik PPID Kabupaten Empat Lawang.')
 
 @php
     $categoryLabels = [

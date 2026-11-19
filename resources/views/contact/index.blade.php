@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Hubungi Kami')
+@section('description', 'Hubungi PPID Kabupaten Empat Lawang: alamat, telepon, email, media sosial, dan formulir pesan.')
 
 @section('content')
 <!-- Modern Page Header with Animated Background -->

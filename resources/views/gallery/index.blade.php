@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Galeri Kegiatan')
+@section('description', 'Galeri foto dan video dokumentasi kegiatan PPID dan Pemerintah Kabupaten Empat Lawang.')
 
 @section('content')
 <!-- Page Header -->

@@ -265,7 +265,8 @@
 </style>
 @endpush
 
-@section('title', 'Beranda')
+@section('title', 'Pejabat Pengelola Informasi dan Dokumentasi')
+@section('description', 'Portal resmi PPID Kabupaten Empat Lawang: akses informasi publik, ajukan permohonan informasi dan keberatan secara online.')
 
 @section('content')
 <!-- Hero Section -->

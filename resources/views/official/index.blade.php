@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Pejabat & Pejabat Struktural')
+@section('description', 'Daftar pejabat dan pejabat struktural Pemerintah Kabupaten Empat Lawang beserta jabatannya.')
 
 @section('content')
 <!-- Page Header -->

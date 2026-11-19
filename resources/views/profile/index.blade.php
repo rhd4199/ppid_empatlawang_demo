@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Profil Pemerintah')
+@section('description', 'Profil PPID Kabupaten Empat Lawang: tentang PPID, visi dan misi, tugas dan fungsi, serta struktur organisasi.')
 
 @section('content')
 <h2 class="mb-4">Profil Pemerintah</h2>

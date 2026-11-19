@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Informasi Publik')
+@section('description', 'Daftar informasi publik Kabupaten Empat Lawang: informasi berkala, serta merta, setiap saat, dan informasi yang dikecualikan.')
 
 @section('content')
 <!-- Page Header -->
@@ -28,19 +29,19 @@
                     <div class="col-md-8">
                         <ul class="nav nav-pills" id="category-tabs">
                             <li class="nav-item">
-                                <a class="nav-link {{ !request('category') ? 'active' : '' }}" href="#" data-category="">Semua</a>
+                                <a class="nav-link {{ !request('category') ? 'active' : '' }}" href="{{ route('informasi-publik.index', array_filter(['category' => ''])) }}" data-category="">Semua</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('category') == 'berkala' ? 'active' : '' }}" href="#" data-category="berkala">Berkala</a>
+                                <a class="nav-link {{ request('category') == 'berkala' ? 'active' : '' }}" href="{{ route('informasi-publik.index', array_filter(['category' => 'berkala'])) }}" data-category="berkala">Berkala</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('category') == 'serta-merta' ? 'active' : '' }}" href="#" data-category="serta-merta">Serta Merta</a>
+                                <a class="nav-link {{ request('category') == 'serta-merta' ? 'active' : '' }}" href="{{ route('informasi-publik.index', array_filter(['category' => 'serta-merta'])) }}" data-category="serta-merta">Serta Merta</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('category') == 'setiap-saat' ? 'active' : '' }}" href="#" data-category="setiap-saat">Setiap Saat</a>
+                                <a class="nav-link {{ request('category') == 'setiap-saat' ? 'active' : '' }}" href="{{ route('informasi-publik.index', array_filter(['category' => 'setiap-saat'])) }}" data-category="setiap-saat">Setiap Saat</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request('category') == 'dikecualikan' ? 'active' : '' }}" href="#" data-category="dikecualikan">Dikecualikan</a>
+                                <a class="nav-link {{ request('category') == 'dikecualikan' ? 'active' : '' }}" href="{{ route('informasi-publik.index', array_filter(['category' => 'dikecualikan'])) }}" data-category="dikecualikan">Dikecualikan</a>
                             </li>
                         </ul>
                     </div>

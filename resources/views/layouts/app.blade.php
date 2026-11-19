@@ -1,11 +1,59 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'PPID Kabupaten Empat Lawang'))</title>
+    @php
+        $siteName = 'PPID Kabupaten Empat Lawang';
+        // Inline sections are stored HTML-escaped; decode so the echoes below escape only once.
+        $section = fn (string $name) => html_entity_decode(trim($__env->yieldContent($name)), ENT_QUOTES | ENT_HTML5);
+        $pageTitle = $section('title');
+        $fullTitle = $pageTitle !== '' && $pageTitle !== $siteName ? $pageTitle.' | '.$siteName : $siteName;
+        $metaDescription = $section('description') ?: 'PPID Kabupaten Empat Lawang: informasi publik, permohonan informasi, pengajuan keberatan, berita, dan laporan layanan.';
+        // Only query params that select distinct content stay in the canonical URL.
+        $canonicalQuery = http_build_query(array_filter(request()->only(['category', 'tab', 'page']), fn ($v) => is_string($v) && $v !== '' && $v !== '1'));
+        $canonicalUrl = url()->current().($canonicalQuery ? '?'.$canonicalQuery : '');
+        $ogImage = $section('og_image') ?: asset('assets/images/Lambang_Empat_Lawang.png');
+    @endphp
+    <title>{{ $fullTitle }}</title>
+    <meta name="description" content="{{ Str::limit($metaDescription, 160) }}">
+    <meta name="robots" content="@yield('robots', 'index, follow')">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="{{ $pageTitle ?: $siteName }}">
+    <meta property="og:description" content="{{ Str::limit($metaDescription, 200) }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta name="twitter:card" content="{{ $section('og_image') ? 'summary_large_image' : 'summary' }}">
+
+    @if(request()->routeIs('home'))
+        @php
+            // Built in @php: Blade would compile the "@context" key as its @context directive.
+            $orgJsonLd = [
+                '@context' => 'https://schema.org',
+                '@graph' => [
+                    ['@type' => 'WebSite', '@id' => url('/').'#website', 'url' => url('/'), 'name' => $siteName, 'inLanguage' => 'id-ID', 'publisher' => ['@id' => url('/').'#organization']],
+                    array_filter([
+                        '@type' => 'GovernmentOrganization',
+                        '@id' => url('/').'#organization',
+                        'name' => $siteName,
+                        'url' => url('/'),
+                        'logo' => asset('assets/images/Lambang_Empat_Lawang.png'),
+                        'address' => $contactSettings?->address ? plain_text($contactSettings->address) : null,
+                        'telephone' => $contactSettings?->phones[0] ?? null,
+                        'email' => $contactSettings?->emails[0] ?? null,
+                        'sameAs' => array_values(array_filter(array_column($contactSettings?->social_media ?? [], 'url'), fn ($u) => str_starts_with((string) $u, 'http'))) ?: null,
+                    ]),
+                ],
+            ];
+        @endphp
+        <script type="application/ld+json">{!! json_encode($orgJsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+    @endif
 
     @stack('meta')
 

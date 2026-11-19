@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', $profile->title)
+@section('description', plain_text($profile->content) ?: $profile->title.' PPID Kabupaten Empat Lawang.')
 
 @section('content')
 <!-- Page Header -->

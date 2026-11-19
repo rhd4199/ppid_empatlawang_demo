@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Akun Admin')
+@section('robots', 'noindex, nofollow')
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">

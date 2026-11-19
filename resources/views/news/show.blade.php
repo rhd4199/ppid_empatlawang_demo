@@ -1,18 +1,30 @@
 @extends('layouts.app')
 
 @section('title', $news->title)
-
+@section('description', plain_text($news->content))
+@section('og_type', 'article')
+{{-- cover image, else first image inside the article body --}}
+@php
+    $ogImage = $news->image ? storage_url($news->image) : (preg_match('/<img[^>]+src=["\']([^"\']+)/i', (string) $news->content, $m) ? html_entity_decode($m[1]) : null);
+@endphp
+@if($ogImage)
+    @section('og_image', url($ogImage))
+@endif
 @push('meta')
-    {{-- cover image, else first image inside the article body --}}
-    @php($ogImage = $news->image ? storage_url($news->image) : (preg_match('/<img[^>]+src=["\']([^"\']+)/i', (string) $news->content, $m) ? html_entity_decode($m[1]) : null))
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $news->title }}">
-    <meta property="og:description" content="{{ Str::limit(trim(html_entity_decode(strip_tags($news->content))), 160) }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    @if($ogImage)
-        <meta property="og:image" content="{{ url($ogImage) }}">
-        <meta name="twitter:card" content="summary_large_image">
-    @endif
+    @php
+        $articleJsonLd = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'NewsArticle',
+            'headline' => Str::limit($news->title, 110),
+            'mainEntityOfPage' => route('news.show', $news->slug),
+            'image' => $ogImage ? [url($ogImage)] : null,
+            'datePublished' => ($news->published_at ? \Carbon\Carbon::parse($news->published_at) : $news->created_at)?->toIso8601String(),
+            'dateModified' => $news->updated_at?->toIso8601String(),
+            'author' => ['@type' => 'Organization', 'name' => $news->author ?: 'PPID Kabupaten Empat Lawang'],
+            'publisher' => ['@type' => 'GovernmentOrganization', 'name' => 'PPID Kabupaten Empat Lawang', 'logo' => ['@type' => 'ImageObject', 'url' => asset('assets/images/Lambang_Empat_Lawang.png')]],
+        ]);
+    @endphp
+    <script type="application/ld+json">{!! json_encode($articleJsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
 @endpush
 
 @section('content')

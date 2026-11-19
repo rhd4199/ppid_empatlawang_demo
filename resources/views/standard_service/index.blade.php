@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Standar Layanan Publik')
+@section('description', 'Standar layanan informasi publik PPID Kabupaten Empat Lawang: maklumat, tata cara, alur permohonan, keberatan, sengketa, biaya, dan SOP.')
 
 @section('content')
 <!-- Page Header -->

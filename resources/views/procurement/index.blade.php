@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Pengadaan Barang & Jasa')
+@section('description', 'Informasi pengadaan barang dan jasa serta regulasi pengadaan Pemerintah Kabupaten Empat Lawang.')
 
 @section('content')
 <!-- Page Header -->

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Berita & Artikel')
+@section('description', 'Berita dan artikel terbaru seputar keterbukaan informasi publik dan kegiatan Pemerintah Kabupaten Empat Lawang.')
 
 @section('content')
 <!-- Page Header -->

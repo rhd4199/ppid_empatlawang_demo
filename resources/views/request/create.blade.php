@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Permohonan Informasi')
+@section('description', 'Ajukan permohonan informasi publik kepada PPID Kabupaten Empat Lawang secara online.')
 
 @section('content')
 <!-- Page Header -->

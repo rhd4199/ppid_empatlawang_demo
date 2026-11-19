@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Laporan Kinerja')
+@section('description', 'Laporan kinerja dan laporan layanan informasi publik PPID serta Pemerintah Kabupaten Empat Lawang.')
 
 @section('content')
 <!-- Page Header -->
