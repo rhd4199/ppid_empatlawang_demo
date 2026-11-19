@@ -11,14 +11,16 @@ class TentangPpidTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeded_content_renders_icon_cards(): void
+    public function test_seeded_content_renders_clean_sections(): void
     {
         $this->seed(ProfileSeeder::class);
 
         $this->get('/profil/tentang-ppid')->assertOk()
             ->assertSee('class="ab-lead', false)
-            ->assertSeeInOrder(['fa-scale-balanced', 'Dasar Hukum', 'ab-card', 'fa-gavel', 'UU No. 14 Tahun 2008'], false)
-            ->assertSeeInOrder(['fa-handshake', 'Maklumat Pelayanan', 'fa-star', 'Pelayanan prima'], false)
+            ->assertSeeInOrder(['Dasar Hukum', '<dt>UU No. 14 Tahun 2008</dt>', '<dd>Keterbukaan Informasi Publik</dd>'], false)
+            ->assertSeeInOrder(['Maklumat Pelayanan', 'ab-checks', '<strong>Pelayanan prima</strong>'], false)
+            ->assertSeeInOrder(['Prinsip Layanan', 'ab-chips', '<li>Cepat</li>'], false)
+            ->assertDontSee('fa-gavel', false) // no per-item icons
             ->assertSeeInOrder(['<details class="ab-more', 'Latar Belakang', 'Selengkapnya', 'hak asasi manusia'], false)
             ->assertSee('Profil PPID'); // side menu unchanged
     }
@@ -29,7 +31,7 @@ class TentangPpidTest extends TestCase
             'content' => '<p>Teks <strong>bebas</strong>.</p>']);
 
         $this->get('/profil/tentang-ppid')->assertOk()
-            ->assertDontSee('ab-card', false)
+            ->assertDontSee('ab-section', false)
             ->assertSee('<p>Teks <strong>bebas</strong>.</p>', false);
     }
 
