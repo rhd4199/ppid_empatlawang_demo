@@ -58,7 +58,7 @@
                 <!-- Image -->
                 <div class="ratio ratio-16x9 card-img-top overflow-hidden">
                     @if($item->image)
-                        <img src="{{ Storage::url($item->image) }}" alt="{{ $item->title }}" class="object-fit-cover w-100 h-100">
+                        <img src="{{ storage_url($item->image) }}" alt="{{ $item->title }}" class="object-fit-cover w-100 h-100">
                     @else
                         <div class="bg-light d-flex align-items-center justify-content-center text-muted h-100">
                             <i class="fas fa-image fa-3x"></i>

@@ -64,7 +64,7 @@
                             @enderror
                             <div class="mt-2">
                                 <label class="small text-muted">Sampul Saat Ini:</label><br>
-                                <img src="{{ Storage::url($gallery->cover_image) }}" alt="Current Cover" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                                <img src="{{ storage_url($gallery->cover_image) }}" alt="Current Cover" class="img-fluid rounded mb-2" style="max-height: 150px;">
                                 <img id="cover_preview" src="#" alt="Cover Preview" style="display: none; max-height: 150px; max-width: 100%;" class="mt-2 rounded">
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                                     <div class="col-md-4 col-sm-6 mb-4">
                                         <div class="card h-100 border shadow-sm">
                                             <div class="ratio ratio-4x3">
-                                                <img src="{{ Storage::url($item->image_path) }}" class="card-img-top object-fit-cover" alt="Foto">
+                                                <img src="{{ storage_url($item->image_path) }}" class="card-img-top object-fit-cover" alt="Foto">
                                             </div>
                                             <div class="card-body p-2">
                                                 <div class="d-flex justify-content-between align-items-center">

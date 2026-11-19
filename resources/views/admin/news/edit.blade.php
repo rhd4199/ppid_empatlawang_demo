@@ -82,7 +82,7 @@
                                     
                                     <div class="mt-3 text-center">
                                         @if($news->image)
-                                            <img id="image-preview" src="{{ Storage::url($news->image) }}" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                            <img id="image-preview" src="{{ storage_url($news->image) }}" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
                                         @else
                                             <img id="image-preview" src="#" alt="Preview" class="img-fluid rounded d-none" style="max-height: 200px;">
                                         @endif
