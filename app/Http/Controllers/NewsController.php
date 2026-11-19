@@ -36,14 +36,11 @@ class NewsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(News $news) // Route binding using ID for now, or change to slug if model binding updated
+    public function show(News $news) // bound by slug (see routes/web.php)
     {
-         // Assuming route uses resource which expects ID by default unless customized.
-         // But in migration we added slug. Let's use standard find or slug if we customize route.
-         // For simplicity with resource route, let's use implicit binding or find.
-         // If we want slug: Route::resource...->parameters(['berita' => 'news:slug'])
-         // Let's assume standard ID for now or update show method to find by slug if passed.
-         
-         return view('news.show', compact('news'));
+        // drafts and scheduled posts must not be reachable (or indexed) by slug
+        abort_unless($news->is_published && $news->published_at && now()->gte($news->published_at), 404);
+
+        return view('news.show', compact('news'));
     }
 }
