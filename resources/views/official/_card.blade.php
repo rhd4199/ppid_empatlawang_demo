@@ -25,21 +25,47 @@
                     Lihat profil <i class="fas fa-chevron-right ms-1 small"></i>
                 </button>
                 @push('official-modals')
-                <div class="modal fade" id="official-{{ $official->id }}" tabindex="-1" aria-labelledby="official-{{ $official->id }}-title" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content rounded-4 border-0">
-                            <div class="modal-header border-0 pb-0 align-items-start gap-3">
-                                @if ($official->photo)
-                                    <img src="{{ storage_url($official->photo) }}" alt="" class="official-modal-photo rounded-3 flex-shrink-0">
-                                @endif
-                                <div class="me-auto">
-                                    <h2 class="h5 fw-bold mb-1" id="official-{{ $official->id }}-title">{{ $official->name }}</h2>
-                                    <p class="official-position small fw-semibold mb-0">{{ $official->position }}</p>
+                @php
+                    // Fact chips pulled from the bio text, e.g. "periode 2025–2030".
+                    preg_match('/periode\s+(\d{4}\s*[–-]\s*\d{4})/u', $official->bio, $period);
+                    $paragraphs = preg_split('/\n\s*\n/', trim($official->bio));
+                @endphp
+                <div class="modal fade official-modal" id="official-{{ $official->id }}" tabindex="-1" aria-labelledby="official-{{ $official->id }}-title" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                        <div class="modal-content border-0 rounded-4 overflow-hidden">
+                            <div class="om-hero text-white text-center position-relative">
+                                <span class="om-blob om-blob-1" aria-hidden="true"></span>
+                                <span class="om-blob om-blob-2" aria-hidden="true"></span>
+                                <i class="fas fa-landmark om-watermark" aria-hidden="true"></i>
+                                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                <div class="om-photo om-anim mx-auto" style="--d: .05s">
+                                    @if ($official->photo)
+                                        <img src="{{ storage_url($official->photo) }}" alt="Foto {{ $official->name }}">
+                                    @else
+                                        <span class="official-initials" aria-hidden="true">{{ $initials ?: '?' }}</span>
+                                    @endif
+                                    <span class="om-badge"><i class="fas fa-circle-check"></i></span>
                                 </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                <h2 class="om-anim h4 fw-bold mt-3 mb-1" style="--d: .15s" id="official-{{ $official->id }}-title">{{ $official->name }}</h2>
+                                <p class="om-anim om-position mb-0" style="--d: .25s"><i class="fas fa-briefcase me-2"></i>{{ $official->position }}</p>
                             </div>
-                            <div class="modal-body">
-                                <p class="mb-0" style="white-space: pre-line;">{{ $official->bio }}</p>
+                            <div class="modal-body p-4 p-md-5">
+                                <div style="--d: .35s" class="om-anim d-flex flex-wrap justify-content-center gap-2 mb-4">
+                                    <span class="om-chip"><i class="fas {{ $lead ? 'fa-crown' : 'fa-sitemap' }}"></i>{{ $lead ? 'Pimpinan Daerah' : 'Pejabat Struktural' }}</span>
+                                    @if ($period)
+                                        <span class="om-chip"><i class="fas fa-calendar-days"></i>Periode {{ $period[1] }}</span>
+                                    @endif
+                                    <span class="om-chip"><i class="fas fa-location-dot"></i>Kab. Empat Lawang</span>
+                                </div>
+                                <div class="om-anim om-bio" style="--d: .45s">
+                                    <div class="om-bio-label"><i class="fas fa-id-card me-2"></i>Profil Singkat</div>
+                                    @foreach ($paragraphs as $paragraph)
+                                        <p class="{{ $loop->last ? 'mb-0' : '' }}">{{ $paragraph }}</p>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 pt-0 px-4 pb-4 justify-content-center">
+                                <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" data-bs-dismiss="modal"><i class="fas fa-xmark me-2"></i>Tutup</button>
                             </div>
                         </div>
                     </div>

@@ -94,7 +94,43 @@
     .official-card-row .official-position { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .official-card h3 { overflow-wrap: anywhere; }
     .official-bio { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .official-modal-photo { width: 64px; aspect-ratio: 3 / 4; object-fit: cover; object-position: top; }
+
+    /* Profile modal: gradient hero, animated photo ring, staggered fade-up content */
+    .official-modal .modal-dialog { transform: scale(.9) translateY(30px); transition: transform .35s cubic-bezier(.2,.9,.3,1.3); }
+    .official-modal.show .modal-dialog { transform: none; }
+    .official-modal .modal-content { box-shadow: 0 2rem 4rem rgba(0,0,0,.3); }
+    .om-hero { padding: 2.5rem 1.5rem 2rem; background: linear-gradient(135deg, var(--bs-primary), #0b3d91 55%, #f59e0b); background-size: 200% 200%; animation: om-gradient 8s ease infinite; overflow: hidden; }
+    .om-blob { position: absolute; border-radius: 50%; background: rgba(255,255,255,.15); animation: om-float 6s ease-in-out infinite; }
+    .om-blob-1 { width: 180px; height: 180px; top: -60px; left: -50px; }
+    .om-blob-2 { width: 120px; height: 120px; bottom: -40px; right: 10%; animation-delay: -3s; }
+    .om-watermark { position: absolute; right: 1.5rem; bottom: 1rem; font-size: 6rem; opacity: .08; }
+    .om-photo { position: relative; width: 140px; height: 140px; border-radius: 50%; padding: 5px; }
+    .om-photo::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(#fff, #f59e0b, #fff, #38bdf8, #fff); animation: om-spin 6s linear infinite; }
+    .om-photo img, .om-photo .official-initials { position: relative; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: top;
+        border: 4px solid #fff; background: #e0f2fe; }
+    .om-photo .official-initials { font-size: 2.75rem; }
+    .om-badge { position: absolute; right: 6px; bottom: 6px; width: 2rem; height: 2rem; border-radius: 50%; background: #22c55e; color: #fff;
+        display: flex; align-items: center; justify-content: center; border: 3px solid #fff; animation: om-pulse 2s ease-out infinite; }
+    .om-hero h2 { text-shadow: 0 2px 8px rgba(0,0,0,.25); overflow-wrap: anywhere; position: relative; }
+    .om-position { display: inline-block; position: relative; background: rgba(255,255,255,.18); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,.3);
+        border-radius: 999px; padding: .35rem 1rem; font-weight: 600; font-size: .9rem; }
+    .om-chip { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .85rem; border-radius: 999px; font-size: .85rem; font-weight: 600;
+        background: rgba(13,110,253,.08); color: var(--bs-primary); border: 1px solid rgba(13,110,253,.15); }
+    .om-chip:nth-child(2) { background: rgba(245,158,11,.1); color: #b45309; border-color: rgba(245,158,11,.25); }
+    .om-chip:nth-child(3) { background: rgba(34,197,94,.1); color: #15803d; border-color: rgba(34,197,94,.25); }
+    .om-bio { position: relative; background: #f8fafc; border-left: 4px solid var(--bs-primary); border-radius: 1rem; padding: 1.25rem 1.5rem; line-height: 1.8; color: #444; }
+    .om-bio-label { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--bs-primary); margin-bottom: .5rem; }
+    .official-modal .om-anim { opacity: 0; }
+    .official-modal.show .om-anim { animation: om-up .5s ease var(--d, .1s) forwards; }
+    @keyframes om-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes om-spin { to { transform: rotate(360deg); } }
+    @keyframes om-float { 50% { transform: translate(20px, 15px) scale(1.1); } }
+    @keyframes om-gradient { 50% { background-position: 100% 100%; } }
+    @keyframes om-pulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); } 100% { box-shadow: 0 0 0 12px rgba(34,197,94,0); } }
+    @media (prefers-reduced-motion: reduce) {
+        .official-modal *, .official-modal .modal-dialog { animation: none !important; transition: none !important; }
+        .official-modal .om-anim { opacity: 1; }
+    }
 
     @media (max-width: 575.98px) {
         .official-card-lead .card-body { padding: .75rem !important; }

@@ -35,6 +35,9 @@ class OfficialIndexTest extends TestCase
             ->assertSee('officials/bupati.jpg', false)
             ->assertSee('>YN</div>', false) // initials when no photo
             ->assertSee('data-bs-target="#official-', false)
+            ->assertSee('class="om-hero', false)
+            ->assertSee('Periode 2025–2030') // chip parsed from bio
+            ->assertSee('Pimpinan Daerah</span>', false)
             ->assertDontSee('Hidden')
             ->assertDontSee('Data pejabat belum tersedia.');
     }
