@@ -404,38 +404,22 @@
         <small class="d-block mt-3 opacity-75">Sumber: <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="text-white">BMKG</a> (Badan Meteorologi, Klimatologi, dan Geofisika)</small>
     </div>
 
-    @foreach($emergencyInfo as $i => $info)
-    <div class="row align-items-center g-4 {{ !$loop->last ? 'mb-5' : '' }} {{ $i % 2 == 1 ? 'flex-row-reverse' : '' }}">
-        <div class="col-md-5">
-            <div class="emergency-illustration {{ $i % 2 == 0 ? 'bg-warning-subtle' : 'bg-danger-subtle' }}">
-                <i class="fas {{ $i % 2 == 0 ? 'fa-cloud-showers-heavy text-warning' : 'fa-person-walking-arrow-right text-danger' }}"></i>
+    @if($emergencyInfo->isNotEmpty())
+    <div class="row g-4">
+        @foreach($emergencyInfo as $info)
+        <div class="col-md-6">
+            <div class="h-100 p-4 bg-white rounded-4 shadow-sm d-flex flex-column">
+                <h4 class="fw-bold mb-3">{{ $info->title }}</h4>
+                <p class="text-muted mb-4">{{ Str::limit(strip_tags($info->description), 220) }}</p>
+                <a href="{{ route('informasi-publik.show', $info->id) }}" class="btn btn-primary rounded-pill px-4 mt-auto align-self-start">
+                    <i class="fas fa-eye me-2"></i>Lihat Panduan
+                </a>
             </div>
         </div>
-        <div class="col-md-7">
-            <h4 class="fw-bold mb-3">{{ $info->title }}</h4>
-            <p class="text-muted mb-4">{{ Str::limit(strip_tags($info->description), 220) }}</p>
-            <a href="{{ route('informasi-publik.show', $info->id) }}" class="btn btn-primary rounded-pill px-4">
-                <i class="fas fa-eye me-2"></i>Lihat Panduan
-            </a>
-        </div>
+        @endforeach
     </div>
-    @endforeach
+    @endif
 </div>
-<style>
-    .emergency-illustration {
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        max-width: 260px;
-        margin: 0 auto;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .emergency-illustration i { font-size: 5rem; }
-    .bg-warning-subtle { background: #fff3cd; }
-    .bg-danger-subtle { background: #f8d7da; }
-</style>
 
 <!-- Informasi Publik (bento) -->
 <section class="py-5">
