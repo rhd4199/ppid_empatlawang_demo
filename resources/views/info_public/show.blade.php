@@ -58,8 +58,11 @@
 
                     @if ($info->file_path)
                         <div class="mt-4 pt-4 border-top">
-                            <a href="{{ storage_url($info->file_path) }}" target="_blank" class="btn btn-success rounded-pill px-4">
+                            <a href="{{ route('informasi-publik.download', $info->id) }}" class="btn btn-success rounded-pill px-4">
                                 <i class="fas fa-download me-2"></i>Unduh Dokumen
+                            </a>
+                            <a href="{{ storage_url($info->file_path) }}" target="_blank" rel="noopener" class="btn btn-outline-secondary rounded-pill px-4 ms-2">
+                                <i class="fas fa-eye me-2"></i>Lihat PDF
                             </a>
                         </div>
                     @endif

@@ -111,65 +111,7 @@ class DocumentSeeder extends Seeder
             'is_published' => true
         ]);
 
-        // Informasi Publik - Berkala
-        $this->document([
-            'title' => 'Ringkasan Laporan Keuangan 2024',
-            'category' => 'informasi-publik-berkala',
-            'description' => 'Ringkasan laporan keuangan pemerintah daerah tahun anggaran 2024.',
-            'file_path' => 'documents/laporan-keuangan-2024.pdf',
-            'is_published' => true
-        ]);
-        
-        $this->document([
-            'title' => 'Profil Pimpinan Daerah',
-            'category' => 'informasi-publik-berkala',
-            'description' => 'Profil lengkap Bupati dan Wakil Bupati.',
-            'file_path' => 'documents/profil-pimpinan.pdf',
-            'is_published' => true
-        ]);
-
-        // Informasi Publik - Serta Merta
-        $this->document([
-            'title' => 'Peringatan Dini Cuaca Ekstrem',
-            'category' => 'informasi-publik-serta-merta',
-            'description' => 'Informasi mengenai potensi cuaca ekstrem dan banjir.',
-            'file_path' => 'documents/peringatan-cuaca.pdf',
-            'is_published' => true
-        ]);
-
-        $this->document([
-            'title' => 'Panduan Evakuasi Bencana',
-            'category' => 'informasi-publik-serta-merta',
-            'description' => 'Prosedur evakuasi mandiri saat terjadi bencana alam.',
-            'file_path' => 'documents/panduan-evakuasi.pdf',
-            'is_published' => true
-        ]);
-
-        // Informasi Publik - Setiap Saat
-        $this->document([
-            'title' => 'Daftar Aset Daerah 2024',
-            'category' => 'informasi-publik-setiap-saat',
-            'description' => 'Daftar inventaris barang milik daerah.',
-            'file_path' => 'documents/aset-daerah.pdf',
-            'is_published' => true
-        ]);
-
-        $this->document([
-            'title' => 'Dokumen Perjanjian Kerja Sama',
-            'category' => 'informasi-publik-setiap-saat',
-            'description' => 'Salinan dokumen perjanjian kerja sama dengan pihak ketiga.',
-            'file_path' => 'documents/mou-2024.pdf',
-            'is_published' => true
-        ]);
-
-        // Informasi Publik - Dikecualikan
-        $this->document([
-            'title' => 'Daftar Informasi Dikecualikan 2024',
-            'category' => 'informasi-publik-dikecualikan',
-            'description' => 'Keputusan PPID tentang daftar informasi yang dikecualikan.',
-            'file_path' => 'documents/sk-dikecualikan.pdf',
-            'is_published' => true
-        ]);
+        $this->call(InfoPublicDocumentSeeder::class);
     }
 
     /** Idempotent: one row per file_path, and a placeholder PDF on the public disk if the file is missing. */
@@ -182,18 +124,30 @@ class DocumentSeeder extends Seeder
         }
     }
 
-    /** One-page PDF showing the document title (sample data only, no real content). */
-    public static function placeholderPdf(string $title): string
+    /**
+     * One-page A4 PDF: title, optional body lines (wrapped, "## " = sub-heading) and a footer.
+     * Sample data only — no layout engine, ~45 lines fit on the page.
+     */
+    public static function placeholderPdf(string $title, array $lines = [], string $footer = 'Dokumen contoh (placeholder) - PPID Kabupaten Empat Lawang'): string
     {
         $text = fn (string $s) => '(' . strtr(iconv('UTF-8', 'Windows-1252//TRANSLIT', $s) ?: $s, ['\\' => '\\\\', '(' => '\\(', ')' => '\\)']) . ')';
-        $stream = 'BT /F1 18 Tf 60 760 Td ' . $text($title) . ' Tj /F1 11 Tf 0 -30 Td '
-            . $text('Dokumen contoh (placeholder) - PPID Kabupaten Empat Lawang') . ' Tj ET';
+        $stream = 'BT /F2 16 Tf 60 780 Td 18 TL ' . $text($title) . " Tj /F1 11 Tf 15 TL T*\n";
+        foreach ($lines as $line) {
+            $heading = str_starts_with($line, '## ');
+            $stream .= $heading ? "T* /F2 12 Tf\n" : '';
+            foreach (explode("\n", wordwrap($heading ? substr($line, 3) : $line, 92, "\n", true)) as $part) {
+                $stream .= 'T* ' . $text($part) . " Tj\n";
+            }
+            $stream .= $heading ? "/F1 11 Tf\n" : '';
+        }
+        $stream .= 'ET BT /F1 9 Tf 60 40 Td ' . $text($footer) . ' Tj ET';
         $objects = [
             '<< /Type /Catalog /Pages 2 0 R >>',
             '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-            '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+            '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 6 0 R >> >> /Contents 5 0 R >>',
             '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
             '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . "\nendstream",
+            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
         ];
 
         $pdf = "%PDF-1.4\n";

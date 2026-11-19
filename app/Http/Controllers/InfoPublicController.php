@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class InfoPublicController extends Controller
 {
@@ -36,20 +38,35 @@ class InfoPublicController extends Controller
             }
         }
 
-        if ($request->has('search') && $request->search != '') {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+        // Case-insensitive on every driver (Postgres LIKE is case-sensitive); % and _ typed by the user match literally.
+        $search = trim((string) $request->query('search', ''));
+        if ($search !== '') {
+            $term = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower(mb_substr($search, 0, 100))) . '%';
+            $query->where(function ($q) use ($term) {
+                $q->whereRaw("LOWER(title) LIKE ? ESCAPE '!'", [$term])
+                  ->orWhereRaw("LOWER(description) LIKE ? ESCAPE '!'", [$term]);
             });
         }
 
-        $infos = $query->latest()->paginate(10);
+        $infos = $query->latest()->paginate(10)->withQueryString();
 
         if ($request->ajax()) {
             return view('info_public._list', compact('infos'))->render();
         }
 
         return view('info_public.index', compact('infos'));
+    }
+
+    /** Force a file download (also for S3, where the HTML download attribute is ignored cross-origin). */
+    public function download($id)
+    {
+        $info = Document::where('is_published', true)->whereNotNull('file_path')->findOrFail($id);
+        abort_unless(Storage::disk('public')->exists($info->file_path), 404);
+
+        $info->increment('download_count');
+        $name = Str::slug(Str::limit($info->title, 80, '')) . '.' . (pathinfo($info->file_path, PATHINFO_EXTENSION) ?: 'pdf');
+
+        return Storage::disk('public')->download($info->file_path, $name);
     }
 
     /**

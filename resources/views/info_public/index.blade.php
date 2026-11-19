@@ -46,11 +46,16 @@
                         </ul>
                     </div>
                     <div class="col-md-4 mt-3 mt-md-0">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control border-start-0 ps-0" id="search-input" placeholder="Cari informasi...">
-                            <button class="btn btn-primary" type="button" id="search-btn">Cari</button>
-                        </div>
+                        {{-- Plain GET form: works without JS; the script below upgrades it to live search. --}}
+                        <form action="{{ route('informasi-publik.index') }}" method="GET" role="search" id="search-form">
+                            <input type="hidden" name="category" value="{{ request('category') }}" id="search-category">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                                <input type="search" name="search" class="form-control" id="search-input" value="{{ request('search') }}"
+                                       placeholder="Cari judul atau deskripsi..." aria-label="Cari informasi publik" maxlength="100" autocomplete="off">
+                                <button class="btn btn-primary" type="submit">Cari</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -90,64 +95,54 @@
 </style>
 @endpush
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@push('scripts')
 <script>
-    $(document).ready(function() {
-        let currentCategory = '{{ request("category") }}';
-        let currentSearch = '';
+    (function () {
+        const list = document.getElementById('info-list');
+        const form = document.getElementById('search-form');
+        const input = document.getElementById('search-input');
+        const categoryField = document.getElementById('search-category');
+        const spinner = document.getElementById('loading-spinner');
+        const baseUrl = form.action;
+        let timer, controller;
 
-        function fetchInfo(page = 1) {
-            $('#info-list').css('opacity', '0.5');
-            $('#loading-spinner').removeClass('d-none');
-            
-            $.ajax({
-                url: "{{ route('informasi-publik.index') }}",
-                data: {
-                    category: currentCategory,
-                    search: currentSearch,
-                    page: page
-                },
-                success: function(data) {
-                    $('#info-list').html(data);
-                    $('#info-list').css('opacity', '1');
-                    $('#loading-spinner').addClass('d-none');
-                },
-                error: function() {
-                    alert('Gagal memuat data. Silakan coba lagi.');
-                    $('#info-list').css('opacity', '1');
-                    $('#loading-spinner').addClass('d-none');
-                }
-            });
+        function load(params) {
+            const query = new URLSearchParams(Object.entries(params).filter(([, v]) => v));
+            controller?.abort();
+            controller = new AbortController();
+            list.style.opacity = '.5';
+            spinner.classList.remove('d-none');
+            fetch(baseUrl + (query.size ? '?' + query : ''), { headers: { 'X-Requested-With': 'XMLHttpRequest' }, signal: controller.signal })
+                .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+                .then(html => {
+                    list.innerHTML = html;
+                    history.replaceState(null, '', baseUrl + (query.size ? '?' + query : ''));
+                })
+                .catch(e => { if (e.name !== 'AbortError') list.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-danger">Gagal memuat data. Silakan coba lagi.</td></tr>'; })
+                .finally(() => { list.style.opacity = '1'; spinner.classList.add('d-none'); });
         }
 
-        // Handle Category Click
-        $('#category-tabs .nav-link').click(function(e) {
+        const current = (page) => ({ category: categoryField.value, search: input.value.trim(), page });
+
+        document.querySelectorAll('#category-tabs .nav-link').forEach(link => link.addEventListener('click', e => {
             e.preventDefault();
-            $('#category-tabs .nav-link').removeClass('active');
-            $(this).addClass('active');
-            currentCategory = $(this).data('category');
-            fetchInfo();
-        });
+            document.querySelectorAll('#category-tabs .nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            categoryField.value = link.dataset.category;
+            load(current());
+        }));
 
-        // Handle Search
-        $('#search-btn').click(function() {
-            currentSearch = $('#search-input').val();
-            fetchInfo();
-        });
+        form.addEventListener('submit', e => { e.preventDefault(); clearTimeout(timer); load(current()); });
+        // Live search while typing (also fires when the clear button empties the field).
+        input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => load(current()), 350); });
 
-        $('#search-input').keypress(function(e) {
-            if(e.which == 13) {
-                currentSearch = $(this).val();
-                fetchInfo();
-            }
-        });
-
-        // Handle Pagination
-        $(document).on('click', '.pagination a', function(e) {
+        list.addEventListener('click', e => {
+            const link = e.target.closest('.pagination a');
+            if (!link) return;
             e.preventDefault();
-            let page = $(this).attr('href').split('page=')[1];
-            fetchInfo(page);
+            load(current(new URL(link.href).searchParams.get('page')));
         });
-    });
+    })();
 </script>
+@endpush
 @endsection
