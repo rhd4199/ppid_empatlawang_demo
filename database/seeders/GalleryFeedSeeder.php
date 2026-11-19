@@ -26,11 +26,12 @@ class GalleryFeedSeeder extends Seeder
 
         foreach ($months as $month => $items) {
             $title = 'Kegiatan Pemkab Empat Lawang ' . Carbon::parse($month . '-01')->locale('id')->translatedFormat('F Y');
-            if (Gallery::where('title', $title)->exists()) {
+            $paths = $items->map(fn ($post) => $this->upload($dir . '/' . $post['image']))->values();
+
+            if ($existing = Gallery::where('title', $title)->first()) {
+                $this->repair($existing, $items->values(), $paths);
                 continue;
             }
-
-            $paths = $items->map(fn ($post) => $this->upload($dir . '/' . $post['image']))->values();
 
             $gallery = Gallery::create([
                 'title' => $title,
@@ -51,11 +52,31 @@ class GalleryFeedSeeder extends Seeder
         }
     }
 
+    /** Fixed path per asset: re-running only writes files that are missing. */
     private function upload(string $localPath): string
     {
-        $path = 'galleries/items/' . Str::random(20) . '.' . pathinfo($localPath, PATHINFO_EXTENSION);
-        Storage::disk('public')->put($path, file_get_contents($localPath));
+        $path = 'galleries/items/empatlawangkab-' . basename($localPath);
+        if (! Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->put($path, file_get_contents($localPath));
+        }
 
         return $path;
+    }
+
+    /** Point albums seeded earlier (upload never landed, e.g. old dummy S3) at the local files. */
+    private function repair(Gallery $gallery, $items, $paths): void
+    {
+        $missing = fn (?string $path) => ! $path || ! Storage::disk('public')->exists($path);
+
+        if ($missing($gallery->cover_image)) {
+            $gallery->update(['cover_image' => $paths[0]]);
+        }
+
+        foreach ($items as $i => $post) {
+            $item = $gallery->items()->where('caption', $post['title'])->first();
+            if ($item && $missing($item->image_path)) {
+                $item->update(['image_path' => $paths[$i]]);
+            }
+        }
     }
 }

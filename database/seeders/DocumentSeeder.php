@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Document;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentSeeder extends Seeder
 {
@@ -14,7 +15,7 @@ class DocumentSeeder extends Seeder
     public function run(): void
     {
         // Standar Layanan - SOP
-        Document::create([
+        $this->document([
             'title' => 'SOP Pelayanan Informasi Publik',
             'category' => 'standar_layanan_sop',
             'description' => 'Standar Operasional Prosedur pelayanan informasi publik.',
@@ -23,7 +24,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Alur
-        Document::create([
+        $this->document([
             'title' => 'Alur Permohonan Informasi',
             'category' => 'standar_layanan_alur',
             'description' => 'Bagan alur proses permohonan informasi publik.',
@@ -31,7 +32,7 @@ class DocumentSeeder extends Seeder
             'is_published' => true
         ]);
 
-        Document::create([
+        $this->document([
             'title' => 'Alur Pengajuan Keberatan',
             'category' => 'standar_layanan_alur',
             'description' => 'Bagan alur proses pengajuan keberatan informasi publik.',
@@ -40,7 +41,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Tata Cara
-        Document::create([
+        $this->document([
             'title' => 'Tata Cara Permohonan Informasi',
             'category' => 'standar_layanan_tata_cara',
             'description' => 'Panduan lengkap cara mengajukan permohonan informasi.',
@@ -49,7 +50,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Sengketa
-        Document::create([
+        $this->document([
             'title' => 'Tata Cara Penyelesaian Sengketa',
             'category' => 'standar_layanan_sengketa',
             'description' => 'Prosedur penyelesaian sengketa informasi di Komisi Informasi.',
@@ -58,7 +59,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Maklumat
-        Document::create([
+        $this->document([
             'title' => 'Maklumat Pelayanan PPID',
             'category' => 'standar_layanan_maklumat',
             'description' => 'Pernyataan kesanggupan pelayanan PPID.',
@@ -67,7 +68,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Biaya
-        Document::create([
+        $this->document([
             'title' => 'Standar Biaya Perolehan Informasi',
             'category' => 'standar_layanan_biaya',
             'description' => 'Informasi mengenai biaya penyalinan dokumen (jika ada).',
@@ -76,7 +77,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Permohonan (Formulir Offline)
-        Document::create([
+        $this->document([
             'title' => 'Formulir Permohonan Informasi (Offline)',
             'category' => 'standar_layanan_permohonan',
             'description' => 'Unduh formulir ini jika ingin mengajukan permohonan secara langsung.',
@@ -85,7 +86,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Standar Layanan - Keberatan (Formulir Offline)
-        Document::create([
+        $this->document([
             'title' => 'Formulir Pengajuan Keberatan (Offline)',
             'category' => 'standar_layanan_keberatan',
             'description' => 'Unduh formulir ini jika ingin mengajukan keberatan secara langsung.',
@@ -94,7 +95,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Laporan
-        Document::create([
+        $this->document([
             'title' => 'Laporan Kinerja Instansi Pemerintah 2024',
             'category' => 'laporan_pemda',
             'description' => 'Laporan akuntabilitas kinerja instansi pemerintah tahun 2024.',
@@ -102,7 +103,7 @@ class DocumentSeeder extends Seeder
             'is_published' => true
         ]);
 
-        Document::create([
+        $this->document([
             'title' => 'Laporan Tahunan PPID 2024',
             'category' => 'laporan_ppid',
             'description' => 'Laporan pelaksanaan layanan informasi publik tahun 2024.',
@@ -111,7 +112,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Informasi Publik - Berkala
-        Document::create([
+        $this->document([
             'title' => 'Ringkasan Laporan Keuangan 2024',
             'category' => 'informasi-publik-berkala',
             'description' => 'Ringkasan laporan keuangan pemerintah daerah tahun anggaran 2024.',
@@ -119,7 +120,7 @@ class DocumentSeeder extends Seeder
             'is_published' => true
         ]);
         
-        Document::create([
+        $this->document([
             'title' => 'Profil Pimpinan Daerah',
             'category' => 'informasi-publik-berkala',
             'description' => 'Profil lengkap Bupati dan Wakil Bupati.',
@@ -128,7 +129,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Informasi Publik - Serta Merta
-        Document::create([
+        $this->document([
             'title' => 'Peringatan Dini Cuaca Ekstrem',
             'category' => 'informasi-publik-serta-merta',
             'description' => 'Informasi mengenai potensi cuaca ekstrem dan banjir.',
@@ -136,7 +137,7 @@ class DocumentSeeder extends Seeder
             'is_published' => true
         ]);
 
-        Document::create([
+        $this->document([
             'title' => 'Panduan Evakuasi Bencana',
             'category' => 'informasi-publik-serta-merta',
             'description' => 'Prosedur evakuasi mandiri saat terjadi bencana alam.',
@@ -145,7 +146,7 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Informasi Publik - Setiap Saat
-        Document::create([
+        $this->document([
             'title' => 'Daftar Aset Daerah 2024',
             'category' => 'informasi-publik-setiap-saat',
             'description' => 'Daftar inventaris barang milik daerah.',
@@ -153,7 +154,7 @@ class DocumentSeeder extends Seeder
             'is_published' => true
         ]);
 
-        Document::create([
+        $this->document([
             'title' => 'Dokumen Perjanjian Kerja Sama',
             'category' => 'informasi-publik-setiap-saat',
             'description' => 'Salinan dokumen perjanjian kerja sama dengan pihak ketiga.',
@@ -162,12 +163,51 @@ class DocumentSeeder extends Seeder
         ]);
 
         // Informasi Publik - Dikecualikan
-        Document::create([
+        $this->document([
             'title' => 'Daftar Informasi Dikecualikan 2024',
             'category' => 'informasi-publik-dikecualikan',
             'description' => 'Keputusan PPID tentang daftar informasi yang dikecualikan.',
             'file_path' => 'documents/sk-dikecualikan.pdf',
             'is_published' => true
         ]);
+    }
+
+    /** Idempotent: one row per file_path, and a placeholder PDF on the public disk if the file is missing. */
+    private function document(array $attributes): void
+    {
+        Document::firstOrCreate(['file_path' => $attributes['file_path']], $attributes);
+
+        if (! Storage::disk('public')->exists($attributes['file_path'])) {
+            Storage::disk('public')->put($attributes['file_path'], self::placeholderPdf($attributes['title']));
+        }
+    }
+
+    /** One-page PDF showing the document title (sample data only, no real content). */
+    public static function placeholderPdf(string $title): string
+    {
+        $text = fn (string $s) => '(' . strtr(iconv('UTF-8', 'Windows-1252//TRANSLIT', $s) ?: $s, ['\\' => '\\\\', '(' => '\\(', ')' => '\\)']) . ')';
+        $stream = 'BT /F1 18 Tf 60 760 Td ' . $text($title) . ' Tj /F1 11 Tf 0 -30 Td '
+            . $text('Dokumen contoh (placeholder) - PPID Kabupaten Empat Lawang') . ' Tj ET';
+        $objects = [
+            '<< /Type /Catalog /Pages 2 0 R >>',
+            '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+            '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+            '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . "\nendstream",
+        ];
+
+        $pdf = "%PDF-1.4\n";
+        $offsets = [];
+        foreach ($objects as $i => $object) {
+            $offsets[] = strlen($pdf);
+            $pdf .= ($i + 1) . " 0 obj\n" . $object . "\nendobj\n";
+        }
+        $xref = strlen($pdf);
+        $pdf .= 'xref' . "\n0 " . (count($objects) + 1) . "\n0000000000 65535 f \n";
+        foreach ($offsets as $offset) {
+            $pdf .= sprintf("%010d 00000 n \n", $offset);
+        }
+
+        return $pdf . 'trailer << /Size ' . (count($objects) + 1) . " /Root 1 0 R >>\nstartxref\n" . $xref . "\n%%EOF\n";
     }
 }

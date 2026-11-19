@@ -22,14 +22,22 @@ class NewsFeedSeeder extends Seeder
 
         foreach (array_reverse($posts) as $post) {
             $slug = Str::slug($post['title']);
-            if (News::where('slug', $slug)->exists()) {
-                continue;
-            }
 
+            // Fixed path per asset: re-running only writes files that are missing.
             $image = null;
             if ($post['image'] && is_file($dir . '/' . $post['image'])) {
-                $image = 'news/' . Str::random(20) . '.' . pathinfo($post['image'], PATHINFO_EXTENSION);
-                Storage::disk('public')->put($image, file_get_contents($dir . '/' . $post['image']));
+                $image = 'news/empatlawangkab-' . $post['image'];
+                if (! Storage::disk('public')->exists($image)) {
+                    Storage::disk('public')->put($image, file_get_contents($dir . '/' . $post['image']));
+                }
+            }
+
+            if ($existing = News::where('slug', $slug)->first()) {
+                // Repair rows seeded earlier whose upload never landed (e.g. old dummy S3).
+                if ($image && (! $existing->image || ! Storage::disk('public')->exists($existing->image))) {
+                    $existing->update(['image' => $image]);
+                }
+                continue;
             }
 
             // In the app timezone: public pages hide posts with published_at > now().
