@@ -56,8 +56,11 @@
                 <div class="card-body p-4 p-md-5 bg-white">
                     @php($vm = $profile->type == 'visi_misi' ? visi_misi($profile->content) : null)
                     @php($about = $profile->slug === 'tentang-ppid' ? content_sections($profile->content) : null)
+                    @php($ts = $profile->type == 'tugas_fungsi' ? content_sections($profile->content) : null)
                     @if($about)
                         @include('profile._about')
+                    @elseif($ts && array_filter(array_column($ts['sections'], 'items')))
+                        @include('profile._task_cards')
                     @elseif($vm)
                         <section class="vm-visi text-center mb-5" aria-labelledby="vm-visi-title">
                             <div class="vm-label" id="vm-visi-title"><i class="fas fa-eye me-2"></i>Visi</div>
