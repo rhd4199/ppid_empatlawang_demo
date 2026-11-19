@@ -11,7 +11,11 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        $profiles = \App\Models\Profile::all();
+        // Fixed card order; unknown types go last.
+        $order = array_flip(['general', 'visi_misi', 'struktur', 'tugas_fungsi']);
+        $profiles = \App\Models\Profile::orderBy('id')->get()
+            ->sortBy(fn ($profile) => $order[$profile->type] ?? 99)
+            ->values();
         return view('profile.index', compact('profiles'));
     }
 
