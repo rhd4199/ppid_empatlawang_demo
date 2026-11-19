@@ -1,59 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PPID Kabupaten Empat Lawang
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Portal Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kabupaten Empat Lawang:
+situs publik keterbukaan informasi (profil, informasi publik, berita, galeri, agenda,
+pengadaan, laporan, permohonan informasi & keberatan), panel admin, dan REST API.
 
-## About Laravel
+- Produksi: https://ppid.empatlawangkab.go.id
+- Dokumentasi API: [API.md](API.md)
+- Link untuk form Monev KIP: [MONEV-LINKS.md](MONEV-LINKS.md)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Teknologi
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Laravel 12, PHP ^8.2, Blade (tanpa build front-end; CSS/JS lewat CDN dan `public/`).
+- Database: MySQL 8 di produksi; SQLite/Postgres juga jalan untuk lokal dan tes.
+- Upload file: disk `public` = S3-compatible (IDCloudHost).
+- Tidak ada queue/job — tidak perlu worker.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Menjalankan lokal
 
-## Learning Laravel
+```bash
+composer install
+cp .env.example .env          # isi DB_* dan S3_* bila perlu
+php artisan key:generate
+php artisan migrate
+php artisan db:seed --class=UserSeeder   # akun admin: ppid@empatlawangkab.go.id / password
+php artisan serve                        # http://127.0.0.1:8000, admin di /admin
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Data contoh (opsional, tanpa internet):
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+php artisan db:seed --class=ProfileSeeder      # juga: News, Gallery, Event, Procurement,
+                                               # Document, Official, PpidSetting, ContactSetting
+```
 
-## Laravel Sponsors
+`php artisan db:seed` penuh juga menjalankan `*ExternalSeeder` yang mengunduh data dari
+internet dan meng-upload ke S3 — jangan dipakai tanpa kredensial S3 yang benar.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Tanpa kredensial S3, gambar upload tidak tampil (halaman tetap jalan).
 
-### Premium Partners
+## Perintah penting
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Perintah | Guna |
+|---|---|
+| `php artisan test` | Tes (SQLite in-memory, lihat `phpunit.xml`) |
+| `php artisan test --filter=ApiTest` | Satu file tes |
+| `php artisan migrate --force` | Migrasi (produksi) |
+| `php artisan route:list` | Daftar route |
+| `php artisan config:clear` | Setelah ubah `.env` di server yang memakai `config:cache` |
 
-## Contributing
+## Konfigurasi (.env)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Lihat `.env.example`. Variabel khusus aplikasi ini:
 
-## Code of Conduct
+| Variabel | Guna |
+|---|---|
+| `API_TOKEN` | Bearer token REST API `/api/v1`. Kosong = API ditutup (401). |
+| `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_ROOT_DIR`, `S3_USE_PATH_STYLE_ENDPOINT` | Penyimpanan semua upload (disk `public`). |
+| `DB_CONNECTION`, `DB_URL` / `DB_HOST`… | Database. |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Pengaturan yang diubah dari panel admin (bukan `.env`): kontak & media sosial, statistik
+layanan, asisten virtual Sapa Madani (aktif, nomor WhatsApp, URL API chatbot) — tersimpan
+di tabel `contact_settings` / `ppid_settings`.
 
-## Security Vulnerabilities
+## Arsitektur singkat
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+routes/web.php     situs publik (URL berbahasa Indonesia) + /admin (middleware auth)
+routes/api.php     /api/v1/* — middleware BearerToken (app/Http/Middleware)
+app/Http/Controllers         controller publik
+app/Http/Controllers/Admin   CRUD panel admin
+app/Http/Controllers/Api     REST API (JSON)
+app/Models                   Eloquent: News, Gallery/GalleryItem, Event, Document,
+                             InfoPublic, Procurement, Official, Profile, InformationRequest,
+                             Complaint, Contact, ContactSetting, PpidSetting, User
+app/Support/BmkgWeather.php  prakiraan cuaca & peringatan dini BMKG (di-cache)
+app/helpers.php              helper global: storage_url, plain_text, wa_link, assistant_settings, …
+resources/views              Blade; layouts/app.blade.php = layout publik + SEO head
+```
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Publik**: halaman Blade server-rendered. Widget cuaca memanggil `/cuaca` (JSON) lewat JS
+  supaya BMKG yang lambat tidak menahan halaman. Chat Sapa Madani: `POST /sapa-madani/chat`
+  meneruskan pesan ke URL API yang diatur admin.
+- **Admin**: `/admin`, login Laravel UI; pendaftaran publik dimatikan (semua akun = admin).
+  Upload galeri besar memakai chunk upload (`/admin/galeri/{id}/upload-chunk`).
+- **SEO**: `/sitemap.xml` dan `/robots.txt` adalah route (`SitemapController`), bukan file statis.
+- **File**: path disimpan di DB, URL dibentuk dengan `storage_url()` dari disk `public` (S3).
