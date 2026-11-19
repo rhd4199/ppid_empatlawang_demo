@@ -55,7 +55,10 @@
 
                 <div class="card-body p-4 p-md-5 bg-white">
                     @php($vm = $profile->type == 'visi_misi' ? visi_misi($profile->content) : null)
-                    @if($vm)
+                    @php($about = $profile->slug === 'tentang-ppid' ? content_sections($profile->content) : null)
+                    @if($about)
+                        @include('profile._about')
+                    @elseif($vm)
                         <section class="vm-visi text-center mb-5" aria-labelledby="vm-visi-title">
                             <div class="vm-label" id="vm-visi-title"><i class="fas fa-eye me-2"></i>Visi</div>
                             <blockquote class="vm-quote article-content mb-0">{!! $vm['visi'] !!}</blockquote>

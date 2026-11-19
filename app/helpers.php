@@ -128,3 +128,33 @@ if (! function_exists('visi_misi')) {
         return ['visi' => trim($m[1]), 'misi' => array_map('trim', $items[1]), 'rest' => trim($list[3])];
     }
 }
+
+if (! function_exists('content_sections')) {
+    /**
+     * Split admin-edited HTML at its h2–h4 headings:
+     * ['intro' => html, 'sections' => [['title' => text, 'body' => html, 'items' => [li html…], 'after' => html]…]].
+     * 'items' holds the first <ol>/<ul> of a section (body = text before it, after = text after it).
+     * Null when there is no heading → the view shows the content as-is.
+     */
+    function content_sections(?string $html): ?array
+    {
+        $parts = preg_split('/<h[2-4][^>]*>(.*?)<\/h[2-4]>/is', (string) $html, -1, PREG_SPLIT_DELIM_CAPTURE);
+        if (count($parts) < 3) {
+            return null;
+        }
+
+        $sections = [];
+        for ($i = 1; $i < count($parts); $i += 2) {
+            $body = trim($parts[$i + 1]);
+            $items = [];
+            $after = '';
+            if (preg_match('/^(.*?)<(ol|ul)[^>]*>(.*?)<\/\2>(.*)$/is', $body, $m)
+                && preg_match_all('/<li[^>]*>(.*?)<\/li>/is', $m[3], $li)) {
+                [$body, $items, $after] = [trim($m[1]), array_map('trim', $li[1]), trim($m[4])];
+            }
+            $sections[] = ['title' => trim(html_entity_decode(strip_tags($parts[$i]))), 'body' => $body, 'items' => $items, 'after' => $after];
+        }
+
+        return ['intro' => trim($parts[0]), 'sections' => $sections];
+    }
+}

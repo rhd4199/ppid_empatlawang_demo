@@ -19,35 +19,44 @@ class ProfileSeeder extends Seeder
         Profile::firstOrCreate(['slug' => 'tentang-ppid'], [
             'title' => 'Tentang PPID',
             'content' => <<<'HTML'
-<p>Informasi merupakan kebutuhan pokok setiap orang bagi pengembangan pribadi dan lingkungan sosialnya. Hak memperoleh informasi merupakan hak asasi manusia, dan keterbukaan informasi publik membuat penyelenggaraan negara makin dapat diawasi publik serta dipertanggungjawabkan.</p>
-<p>Pemberlakuan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik pada 30 April 2010 merupakan momentum penting dalam mendorong keterbukaan di Indonesia, khususnya di Kabupaten Empat Lawang. Setiap Badan Publik wajib menyediakan dan melayani permohonan informasi publik secara cepat, tepat waktu, biaya ringan, dan cara sederhana.</p>
+<p>PPID adalah pintu layanan informasi publik Pemerintah Kabupaten Empat Lawang — melayani permohonan informasi masyarakat secara terbuka sesuai UU Nomor 14 Tahun 2008.</p>
 <h3>Pengertian PPID</h3>
-<p>Pejabat Pengelola Informasi dan Dokumentasi (PPID) adalah pejabat yang bertanggung jawab di bidang penyimpanan, pendokumentasian, penyediaan, dan/atau pelayanan informasi publik. PPID Pemerintah Kabupaten Empat Lawang merupakan ujung tombak pelayanan informasi kepada masyarakat, dibantu PPID Pelaksana pada setiap Perangkat Daerah.</p>
+<p>Pejabat Pengelola Informasi dan Dokumentasi (PPID) adalah pejabat yang bertanggung jawab atas penyimpanan, pendokumentasian, penyediaan, dan pelayanan informasi publik, dibantu PPID Pelaksana di setiap Perangkat Daerah.</p>
+<h3>Prinsip Layanan</h3>
+<ol>
+<li><strong>Cepat</strong></li>
+<li><strong>Tepat Waktu</strong></li>
+<li><strong>Biaya Ringan</strong></li>
+<li><strong>Cara Sederhana</strong></li>
+</ol>
 <h3>Dasar Hukum</h3>
 <ol>
-<li>Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik;</li>
-<li>Undang-Undang Nomor 25 Tahun 2009 tentang Pelayanan Publik;</li>
-<li>Undang-Undang Nomor 43 Tahun 2009 tentang Kearsipan;</li>
-<li>Peraturan Pemerintah Nomor 61 Tahun 2010 tentang Pelaksanaan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik;</li>
-<li>Peraturan Komisi Informasi Nomor 1 Tahun 2021 tentang Standar Layanan Informasi Publik;</li>
-<li>Peraturan Komisi Informasi Nomor 1 Tahun 2013 tentang Prosedur Penyelesaian Sengketa Informasi Publik;</li>
-<li>Peraturan Menteri Dalam Negeri Nomor 2 Tahun 2026 tentang Pengelolaan Layanan Informasi Publik di Kementerian Dalam Negeri, Pemerintah Daerah, dan Pemerintah Desa;</li>
-<li>Peraturan Bupati Empat Lawang Nomor 3 Tahun 2018 tentang Kedudukan, Susunan Organisasi, Tugas dan Fungsi serta Tata Kerja Dinas Komunikasi dan Informatika Kabupaten Empat Lawang.</li>
+<li><strong>UU No. 14 Tahun 2008</strong> Keterbukaan Informasi Publik</li>
+<li><strong>UU No. 25 Tahun 2009</strong> Pelayanan Publik</li>
+<li><strong>UU No. 43 Tahun 2009</strong> Kearsipan</li>
+<li><strong>PP No. 61 Tahun 2010</strong> Pelaksanaan UU Keterbukaan Informasi Publik</li>
+<li><strong>Perki No. 1 Tahun 2021</strong> Standar Layanan Informasi Publik</li>
+<li><strong>Perki No. 1 Tahun 2013</strong> Prosedur Penyelesaian Sengketa Informasi Publik</li>
+<li><strong>Permendagri No. 2 Tahun 2026</strong> Pengelolaan Layanan Informasi Publik di Kemendagri, Pemda, dan Pemdes</li>
+<li><strong>Perbup Empat Lawang No. 3 Tahun 2018</strong> Susunan Organisasi dan Tata Kerja Dinas Kominfo</li>
 </ol>
-<h3>Maklumat Pelayanan Informasi Publik</h3>
-<p>PPID Kabupaten Empat Lawang menyatakan komitmen untuk:</p>
+<h3>Maklumat Pelayanan</h3>
+<p>Kami berkomitmen untuk:</p>
 <ol>
-<li>Memberikan pelayanan informasi yang prima berdasarkan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik;</li>
-<li>Memberikan kemudahan kepada publik dalam mendapatkan informasi secara sederhana dan berbiaya ringan;</li>
-<li>Menyediakan dan memberikan informasi publik yang dikuasai secara akurat, benar, dan tidak menyesatkan;</li>
-<li>Memberikan jawaban permohonan informasi publik dan tanggapan pernyataan keberatan sesuai jangka waktu yang telah ditetapkan;</li>
-<li>Menyediakan Daftar Informasi Publik untuk informasi yang wajib disediakan dan diumumkan;</li>
-<li>Bertindak proaktif dalam memenuhi kebutuhan informasi masyarakat;</li>
-<li>Menyiapkan sarana dan prasarana yang inklusif, nyaman, dan tertata baik;</li>
-<li>Bersikap adil, tidak diskriminatif, dan berperilaku sopan santun dalam memberikan layanan informasi publik;</li>
-<li>Tidak melakukan pungutan biaya yang tidak sesuai dengan ketentuan peraturan perundang-undangan;</li>
-<li>Melaporkan hasil kinerja atas pelaksanaan pelayanan informasi publik.</li>
+<li><strong>Pelayanan prima</strong> sesuai UU Keterbukaan Informasi Publik</li>
+<li><strong>Mudah &amp; murah</strong> informasi diperoleh secara sederhana dan berbiaya ringan</li>
+<li><strong>Akurat</strong> informasi benar dan tidak menyesatkan</li>
+<li><strong>Tepat waktu</strong> menjawab permohonan dan keberatan sesuai batas waktu</li>
+<li><strong>Daftar Informasi Publik</strong> tersedia dan diumumkan</li>
+<li><strong>Proaktif</strong> memenuhi kebutuhan informasi masyarakat</li>
+<li><strong>Inklusif</strong> sarana nyaman dan ramah disabilitas</li>
+<li><strong>Adil &amp; sopan</strong> tanpa diskriminasi</li>
+<li><strong>Tanpa pungutan liar</strong> biaya hanya sesuai peraturan</li>
+<li><strong>Akuntabel</strong> melaporkan kinerja layanan informasi</li>
 </ol>
+<h3>Latar Belakang</h3>
+<p>Informasi merupakan kebutuhan pokok setiap orang bagi pengembangan pribadi dan lingkungan sosialnya. Hak memperoleh informasi merupakan hak asasi manusia, dan keterbukaan informasi publik membuat penyelenggaraan negara makin dapat diawasi publik serta dipertanggungjawabkan.</p>
+<p>Pemberlakuan Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik pada 30 April 2010 merupakan momentum penting dalam mendorong keterbukaan di Indonesia, khususnya di Kabupaten Empat Lawang. Setiap Badan Publik wajib menyediakan dan melayani permohonan informasi publik secara cepat, tepat waktu, biaya ringan, dan cara sederhana.</p>
 HTML,
             'type' => 'general',
         ]);
