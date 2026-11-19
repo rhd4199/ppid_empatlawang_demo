@@ -214,7 +214,16 @@
             min-height: auto !important;
             height: auto !important;
             border-bottom: 1px solid #dee2e6;
+            /* 7 columns on 360px leave ~45px per cell */
+            padding: 2px !important;
         }
+        .calendar-day > div:first-child > span:first-child {
+            width: 24px !important;
+            height: 24px !important;
+            font-size: 0.8rem;
+        }
+        .calendar-day .badge { display: none; }
+        .calendar-day .event-item { font-size: 0.65rem; }
         .col-sm-12 {
             width: 100%;
         }

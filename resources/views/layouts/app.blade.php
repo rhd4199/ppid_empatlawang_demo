@@ -233,6 +233,34 @@
             /* Handled by .nav-link.active above */
         }
 
+        /* Mobile (navbar collapsed below xl) */
+        @media (max-width: 1199.98px) {
+            /* Collapsed menu is taller than a phone screen; sticky navbar would hide the rest */
+            .navbar-collapse {
+                max-height: calc(100vh - 70px);
+                max-height: calc(100dvh - 70px);
+                overflow-y: auto;
+            }
+            .navbar-nav { align-items: stretch !important; }
+            .navbar-nav .nav-link {
+                padding: 12px 16px !important;
+                font-size: 0.95rem;
+                white-space: normal;
+            }
+            .dropdown-item {
+                padding: 10px 16px;
+                white-space: normal;
+            }
+        }
+        @media (max-width: 575.98px) {
+            /* Wide logo (7.7:1) must leave room for the toggler on 360px screens */
+            .navbar-brand img {
+                height: auto !important;
+                max-height: 45px;
+                max-width: calc(100vw - 140px);
+            }
+        }
+
         /* Footer */
         footer {
             background-color: #1a1a1a;
@@ -341,7 +369,7 @@
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-xl sticky-top">
-        <div class="container-fluid px-4 px-lg-5">
+        <div class="container-fluid px-3 px-sm-4 px-lg-5">
             <a class="navbar-brand" href="{{ url('/') }}">
                 <img src="{{ asset('assets/images/logo-with_name.png') }}" alt="PPID Kabupaten Empat Lawang" style="height: 45px;">
             </a>
