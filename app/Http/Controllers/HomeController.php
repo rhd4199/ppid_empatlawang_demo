@@ -24,7 +24,7 @@ class HomeController extends Controller
             ->latest('published_at')
             ->take(3)
             ->get();
-        $galleries = Gallery::latest()->take(9)->get(); // Fetch latest 9 for carousel (3 slides x 3 items)
+        $galleries = Gallery::where('is_published', true)->withCount('items')->latest()->take(9)->get(); // Fetch latest 9 for carousel (3 slides x 3 items)
 
         // Informasi Serta Merta (peringatan dini/evakuasi) highlighted as home sections
         $emergencyInfo = Document::where('category', 'informasi-publik-serta-merta')

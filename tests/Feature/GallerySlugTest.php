@@ -38,4 +38,14 @@ class GallerySlugTest extends TestCase
         $a->update(['title' => 'Judul Baru']);
         $this->assertSame('rapat-teknis-sdi', $a->fresh()->slug);
     }
+
+    public function test_listings_show_photo_count_and_hide_drafts_on_home(): void
+    {
+        $album = $this->album('Album Tampil');
+        $album->items()->createMany([['image_path' => 'a.jpg'], ['image_path' => 'b.jpg']]);
+        $this->album('Album Draf')->update(['is_published' => false]);
+
+        $this->get('/galeri')->assertOk()->assertSee('2 Foto');
+        $this->get('/')->assertOk()->assertSee('Album Tampil')->assertDontSee('Album Draf');
+    }
 }

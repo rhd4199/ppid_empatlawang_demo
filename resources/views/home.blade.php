@@ -571,7 +571,7 @@
                             @endif
                             <div class="gallery-overlay">
                                 <h5 class="fw-bold mb-1 text-white">{{ Str::limit($gallery->title, 40) }}</h5>
-                                <small class="text-white-50"><i class="fas fa-camera me-1"></i> {{ $gallery->items->count() }} Foto</small>
+                                <small class="text-white-50"><i class="fas fa-camera me-1"></i> {{ $gallery->items_count }} Foto</small>
                             </div>
                         </div>
                     </a>

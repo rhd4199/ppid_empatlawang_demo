@@ -44,7 +44,7 @@
                             </div>
                         </div>
                         <div class="photo-count-badge">
-                            <i class="fas fa-camera me-1"></i> {{ $gallery->items->count() }} Foto
+                            <i class="fas fa-camera me-1"></i> {{ $gallery->items_count }} Foto
                         </div>
                     </div>
                     <div class="card-body p-4 text-center">

@@ -88,7 +88,7 @@
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title text-truncate" title="{{ $gallery->title }}">{{ $gallery->title }}</h5>
                             <p class="card-text small text-muted mb-2">
-                                <i class="fas fa-images me-1"></i> {{ $gallery->items->count() }} Foto
+                                <i class="fas fa-images me-1"></i> {{ $gallery->items_count }} Foto
                             </p>
                             <p class="card-text text-muted small flex-grow-1">
                                 {{ Str::limit($gallery->description, 100) }}
