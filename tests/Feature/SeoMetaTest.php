@@ -39,6 +39,24 @@ class SeoMetaTest extends TestCase
         $this->assertSame('Rapat & "Evaluasi" <b>', $ld['headline']);
     }
 
+    public function test_sitemap_lists_published_pages_only_and_robots_points_to_it(): void
+    {
+        News::create(['title' => 'Terbit', 'slug' => 'terbit', 'content' => 'x', 'is_published' => true, 'published_at' => now()->subDay()]);
+        News::create(['title' => 'Draf', 'slug' => 'draf', 'content' => 'x', 'is_published' => false, 'published_at' => now()->subDay()]);
+        News::create(['title' => 'Terjadwal', 'slug' => 'terjadwal', 'content' => 'x', 'is_published' => true, 'published_at' => now()->addDay()]);
+
+        $xml = $this->get('/sitemap.xml')->assertOk()->assertHeader('Content-Type', 'application/xml; charset=UTF-8')->getContent();
+        $this->assertNotFalse(simplexml_load_string($xml));
+        $this->assertStringContainsString('<loc>'.url('/berita/terbit').'</loc>', $xml);
+        $this->assertStringNotContainsString('/berita/draf', $xml);
+        $this->assertStringNotContainsString('/berita/terjadwal', $xml);
+
+        $this->get('/berita/draf')->assertNotFound();
+        $this->get('/berita/terjadwal')->assertNotFound();
+
+        $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: '.url('/sitemap.xml'), false);
+    }
+
     public function test_home_has_organization_json_ld_and_login_is_noindex(): void
     {
         $ld = $this->jsonLd($this->get('/')->assertOk()->getContent());

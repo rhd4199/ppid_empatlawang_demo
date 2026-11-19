@@ -13,8 +13,12 @@ use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\InformationRequestController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\SitemapController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+// served here (not public/robots.txt) so the Sitemap line uses this host's URL
+Route::get('/robots.txt', [SitemapController::class, 'robots']);
 
 Route::get('/profil', [ProfileController::class, 'index'])->name('profiles.index');
 Route::get('/profil-pejabat', [App\Http\Controllers\OfficialController::class, 'index'])->name('officials.index');
