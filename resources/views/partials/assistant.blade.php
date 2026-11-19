@@ -87,6 +87,7 @@
     @media (max-width: 767.98px) {
         body { padding-bottom: 64px; }
         .a11y-widget { bottom: 80px; }
+        .a11y-panel { max-height: calc(100vh - 160px); max-height: calc(100dvh - 160px); }
         .sm-panel { left: 12px; right: 12px; width: auto; bottom: 76px; max-height: calc(100vh - 140px); }
     }
 </style>

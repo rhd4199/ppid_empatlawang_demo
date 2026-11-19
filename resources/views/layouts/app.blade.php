@@ -70,9 +70,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* WYSIWYG output: keep pasted images/tables inside their container */
-        .rich-text img { max-width: 100%; height: auto; }
-        .rich-text table { max-width: 100%; }
+        /* WYSIWYG output: keep pasted images/tables/embeds/long URLs inside their container */
+        :is(.rich-text, .article-content) { overflow-wrap: anywhere; }
+        :is(.rich-text, .article-content) :is(img, video, iframe) { max-width: 100%; height: auto; }
+        :is(.rich-text, .article-content) iframe { aspect-ratio: 16 / 9; }
+        :is(.rich-text, .article-content) table { display: block; max-width: 100%; overflow-x: auto; }
         .rich-text > :last-child { margin-bottom: 0; }
         :root {
             --primary-color: #0284c7; /* Sky Blue 600 */
@@ -310,6 +312,13 @@
                 max-height: calc(100vh - 70px);
                 max-height: calc(100dvh - 70px);
                 overflow-y: auto;
+            }
+        }
+        @media (max-width: 767.98px) {
+            /* Fixed bottom bar (partials/assistant) covers the last 64px; keep the last menu items reachable */
+            .navbar-collapse {
+                max-height: calc(100vh - 134px);
+                max-height: calc(100dvh - 134px);
             }
             .navbar-nav { align-items: stretch !important; }
             .navbar-nav .nav-link {
