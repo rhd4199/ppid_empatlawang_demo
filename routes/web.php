@@ -20,15 +20,17 @@ Route::get('/profil', [ProfileController::class, 'index'])->name('profiles.index
 Route::get('/profil-pejabat', [App\Http\Controllers\OfficialController::class, 'index'])->name('officials.index');
 Route::get('/profil/{slug}', [ProfileController::class, 'show'])->name('profiles.show');
 
-Route::resource('informasi-publik', InfoPublicController::class);
-Route::resource('standar-layanan', StandardServiceController::class)->names('standard-service');
-Route::resource('laporan', ReportController::class)->names('reports');
+Route::resource('informasi-publik', InfoPublicController::class)->only(['index', 'show'])
+    ->where(['informasi_publik' => '[0-9]+']);
+Route::resource('standar-layanan', StandardServiceController::class)->only(['index'])->names('standard-service');
+Route::resource('laporan', ReportController::class)->only(['index'])->names('reports');
 Route::resource('berita', NewsController::class)
+    ->only(['index', 'show'])
     ->parameters(['berita' => 'news:slug'])
     ->names('news');
-Route::resource('galeri', GalleryController::class)->names('galleries');
-Route::resource('event', EventController::class)->names('events');
-Route::resource('pengadaan', ProcurementController::class)->names('procurements');
+Route::resource('galeri', GalleryController::class)->only(['index', 'show'])->names('galleries');
+Route::resource('event', EventController::class)->only(['index'])->names('events');
+Route::resource('pengadaan', ProcurementController::class)->only(['index'])->names('procurements');
 
 Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
@@ -43,7 +45,8 @@ Route::post('/pengajuan-keberatan', [ComplaintController::class, 'store'])->name
 // No public sign-up: every account is an admin, so /register let anyone into /admin.
 Auth::routes(['register' => false]);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// /home was a second copy of the homepage; keep old links working without duplicate content.
+Route::permanentRedirect('/home', '/');
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\AdminController::class, 'index'])->name('dashboard');
 
