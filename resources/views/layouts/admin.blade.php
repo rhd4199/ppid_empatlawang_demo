@@ -66,6 +66,7 @@
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
+            height: 100dvh;
             position: fixed;
             top: 0;
             left: 0;
@@ -163,6 +164,8 @@
             border: none;
             font-size: 1.25rem;
             color: var(--text-dark);
+            padding: 0.5rem 0.75rem;
+            margin-left: -0.75rem;
         }
 
         .user-dropdown .dropdown-toggle {
@@ -197,6 +200,7 @@
                 margin-left: 0;
                 width: 100%;
             }
+            .top-header { padding: 0 1rem; }
             .header-toggle {
                 display: block;
             }
