@@ -63,7 +63,8 @@ class WeatherTest extends TestCase
 
     public function test_district_param_is_whitelisted_and_results_cached(): void
     {
-        Http::fake(['api.bmkg.go.id/*' => Http::response(['data' => [['cuaca' => [[]]]]]), 'www.bmkg.go.id/*' => Http::response($this->rss())]);
+        $today = now('Asia/Jakarta')->format('Y-m-d');
+        Http::fake(['api.bmkg.go.id/*' => Http::response(['data' => [['cuaca' => [[$this->slot("$today 11:00:00", 25)]]]]]), 'www.bmkg.go.id/*' => Http::response($this->rss())]);
 
         $this->getJson('/cuaca?kec=09')->assertJsonPath('name', 'Saling');
         $this->getJson('/cuaca?kec=../../x')->assertJsonPath('district', '04');
@@ -79,7 +80,31 @@ class WeatherTest extends TestCase
         $this->getJson('/cuaca')->assertOk()->assertJsonPath('slots', [])->assertJsonPath('alerts', []);
         $this->getJson('/cuaca');
 
-        Http::assertSentCount(4); // failures are not cached
+        Http::assertSentCount(6); // per call: BMKG + Open-Meteo fallback + nowcast; failures are not cached
+    }
+
+    public function test_falls_back_to_open_meteo_when_bmkg_fails(): void
+    {
+        $today = now('Asia/Jakarta')->format('Y-m-d');
+        Http::fake([
+            'api.bmkg.go.id/*' => Http::response('down', 503),
+            'www.bmkg.go.id/*' => Http::response($this->rss()),
+            'api.open-meteo.com/*' => Http::response(['hourly' => [
+                'time' => ["{$today}T10:00", "{$today}T11:00", "{$today}T14:00"],
+                'temperature_2m' => [24.4, 25.6, 28.1],
+                'relative_humidity_2m' => [85, 80, 70],
+                'weather_code' => [3, 61, 95],
+                'wind_speed_10m' => [4.0, 5.04, 6.0],
+                'wind_direction_10m' => [0, 270, 90],
+            ]]),
+        ]);
+
+        $this->getJson('/cuaca')->assertOk()
+            ->assertJsonCount(2, 'slots') // only the 3-hourly 11:00 and 14:00 slots
+            ->assertJsonPath('slots.0', ['time' => "$today 11:00:00", 'temp' => 26, 'humidity' => 80, 'desc' => 'Hujan Ringan', 'wind' => 5, 'wind_dir' => 'W', 'icon' => null, 'source' => 'Open-Meteo'])
+            ->assertJsonPath('slots.1.desc', 'Hujan Petir')
+            ->assertJsonPath('source', fn ($s) => str_starts_with($s, 'Open-Meteo'));
+        Http::assertSent(fn ($r) => str_contains($r->url(), 'latitude=-3.7053'));
     }
 
     public function test_home_has_weather_card_banner_and_footer_chip(): void

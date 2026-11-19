@@ -395,13 +395,13 @@
             <select class="form-select form-select-sm rounded-pill" aria-label="Pilih kecamatan"></select>
         </div>
         <div class="row g-4 align-items-center">
-            <div class="col-md-4 bmkg-now" data-now><p class="mb-0 opacity-75">Memuat data cuaca BMKG…</p></div>
+            <div class="col-md-4 bmkg-now" data-now><p class="mb-0 opacity-75">Memuat data cuaca…</p></div>
             <div class="col-md-8">
                 <div class="bmkg-slots mb-3" data-slots></div>
                 <div data-warn></div>
             </div>
         </div>
-        <small class="d-block mt-3 opacity-75">Sumber: <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="text-white">BMKG</a> (Badan Meteorologi, Klimatologi, dan Geofisika)</small>
+        <small class="d-block mt-3 opacity-75">Sumber: <span data-source>BMKG (Badan Meteorologi, Klimatologi, dan Geofisika)</span> &middot; <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="text-white">bmkg.go.id</a></small>
     </div>
 
     @if($emergencyInfo->isNotEmpty())

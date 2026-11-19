@@ -15,13 +15,18 @@ class WeatherController extends Controller
             $district = BmkgWeather::DEFAULT_DISTRICT;
         }
 
+        $slots = BmkgWeather::upcoming(BmkgWeather::forecast($district));
+        $source = ($slots[0]['source'] ?? 'BMKG') === 'Open-Meteo'
+            ? 'Open-Meteo (cadangan, data BMKG sedang tidak tersedia)'
+            : 'BMKG (Badan Meteorologi, Klimatologi, dan Geofisika)';
+
         return response()->json([
             'district' => $district,
             'name' => BmkgWeather::DISTRICTS[$district]['name'],
             'districts' => array_map(fn ($d) => $d['name'], BmkgWeather::DISTRICTS),
-            'slots' => BmkgWeather::upcoming(BmkgWeather::forecast($district)),
+            'slots' => $slots,
             'alerts' => BmkgWeather::alerts(),
-            'source' => 'BMKG (Badan Meteorologi, Klimatologi, dan Geofisika)',
-        ])->header('Cache-Control', 'public, max-age=600');
+            'source' => $source,
+        ])->header('Cache-Control', $slots ? 'public, max-age=600' : 'no-store'); // never pin an empty answer in caches
     }
 }
