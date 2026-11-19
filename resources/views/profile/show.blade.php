@@ -54,9 +54,33 @@
                 @endif
 
                 <div class="card-body p-4 p-md-5 bg-white">
-                    <div class="article-content">
-                        {!! $profile->content !!}
-                    </div>
+                    @php($vm = $profile->type == 'visi_misi' ? visi_misi($profile->content) : null)
+                    @if($vm)
+                        <section class="vm-visi text-center mb-5" aria-labelledby="vm-visi-title">
+                            <div class="vm-label" id="vm-visi-title"><i class="fas fa-eye me-2"></i>Visi</div>
+                            <blockquote class="vm-quote article-content mb-0">{!! $vm['visi'] !!}</blockquote>
+                        </section>
+                        <section aria-labelledby="vm-misi-title">
+                            <div class="vm-label text-center mb-4" id="vm-misi-title"><i class="fas fa-bullseye me-2"></i>Misi</div>
+                            <ol class="vm-misi list-unstyled row g-3 mb-0">
+                                @foreach($vm['misi'] as $item)
+                                    <li class="col-md-6">
+                                        <div class="vm-card h-100 d-flex gap-3 p-3 rounded-4">
+                                            <span class="vm-num flex-shrink-0">{{ $loop->iteration }}</span>
+                                            <div class="article-content">{!! $item !!}</div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ol>
+                        </section>
+                        @if($vm['rest'])
+                            <div class="article-content mt-4">{!! $vm['rest'] !!}</div>
+                        @endif
+                    @else
+                        <div class="article-content">
+                            {!! $profile->content !!}
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -107,8 +131,19 @@
     .profile-page .article-content table { border-collapse: collapse; margin-bottom: 1rem; font-size: 1rem; }
     .profile-page .article-content :is(th, td) { border: 1px solid #dee2e6; padding: .5rem .75rem; vertical-align: top; }
     .profile-page .article-content th { background: #f8f9fa; font-weight: 600; }
+
+    /* Visi & Misi */
+    .vm-label { font-size: .85rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--bs-primary); margin-bottom: 1rem; }
+    .profile-page .vm-quote { position: relative; padding: 1.5rem 1rem 0; font-size: 1.5rem; font-weight: 600; font-style: italic; line-height: 1.5; color: #222; }
+    .vm-quote::before { content: "\201C"; position: absolute; top: -1.25rem; left: 50%; transform: translateX(-50%); font-size: 5rem; line-height: 1; color: var(--bs-primary); opacity: .25; font-style: normal; }
+    .vm-quote p { margin-bottom: .5rem; }
+    .vm-card { background: #f8f9fa; border: 1px solid rgba(0,0,0,.06); }
+    .vm-num { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--bs-primary); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .profile-page .vm-card .article-content { font-size: 1rem; line-height: 1.6; }
+    .vm-card .article-content p { margin-bottom: 0; }
     @media (max-width: 575.98px) {
         .profile-page .article-content { font-size: 1rem; }
+        .profile-page .vm-quote { font-size: 1.2rem; }
         .profile-page nav .btn { font-size: .9rem; padding-left: 1rem !important; padding-right: 1rem !important; }
     }
 </style>

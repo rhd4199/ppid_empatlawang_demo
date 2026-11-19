@@ -109,3 +109,22 @@ if (! function_exists('wa_link')) {
         return strlen($digits) >= 9 ? 'https://wa.me/' . $digits : null;
     }
 }
+
+if (! function_exists('visi_misi')) {
+    /**
+     * Split admin-edited Visi & Misi HTML into ['visi' => html, 'misi' => [li html…], 'rest' => html]
+     * when it follows the "<h3>Visi</h3>…<h3>Misi</h3><ol>…" pattern (h2–h4, any case).
+     * Null when it doesn't (or Misi has no list items) → the view shows the content as-is.
+     */
+    function visi_misi(?string $html): ?array
+    {
+        $h = fn ($word) => '<h[2-4][^>]*>\s*(?:<[^>]+>\s*)*'.$word.'\s*(?:<[^>]+>\s*)*<\/h[2-4]>';
+        if (! preg_match('/^\s*'.$h('Visi').'(.*?)'.$h('Misi').'(.*)$/is', (string) $html, $m)
+            || ! preg_match('/^\s*<(ol|ul)[^>]*>(.*?)<\/\1>(.*)$/is', $m[2], $list)
+            || ! preg_match_all('/<li[^>]*>(.*?)<\/li>/is', $list[2], $items)) {
+            return null;
+        }
+
+        return ['visi' => trim($m[1]), 'misi' => array_map('trim', $items[1]), 'rest' => trim($list[3])];
+    }
+}
