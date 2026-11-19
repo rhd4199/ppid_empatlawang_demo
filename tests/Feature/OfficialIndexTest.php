@@ -20,12 +20,14 @@ class OfficialIndexTest extends TestCase
     public function test_leaders_first_then_grid_with_bio_modal(): void
     {
         $this->seed(\Database\Seeders\OfficialSeeder::class);
+        $this->seed(\Database\Seeders\OfficialSeeder::class);
+        $this->assertSame(5, Official::count()); // re-seed updates, no duplicates
         Official::create(['name' => 'Kadis A', 'position' => 'Kepala Dinas', 'order' => 10, 'is_published' => true,
             'bio' => str_repeat('Riwayat panjang. ', 20)]);
         Official::create(['name' => 'Hidden', 'position' => 'X', 'order' => 11, 'is_published' => false]);
 
         $this->get('/profil-pejabat')->assertOk()
-            ->assertSeeInOrder(['Joncik Muhammad', "A. Rifa&#039;i", 'Fauzan Khoiri Denin', 'Pejabat Struktural', 'Kadis A'], false)
+            ->assertSeeInOrder(['H. Joncik Muhammad', 'A. Rifai', 'Fauzan Khoiri Denin', 'Pejabat Struktural', 'M. Yunidi Nuzli', 'Sumitro Sukma Bahagia', 'Kadis A'], false)
             ->assertSee('official-card-lead', false)
             ->assertSee('data-bs-target="#official-', false)
             ->assertDontSee('Hidden')

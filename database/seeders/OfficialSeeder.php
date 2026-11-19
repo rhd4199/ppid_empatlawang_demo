@@ -8,35 +8,50 @@ use Illuminate\Database\Seeder;
 class OfficialSeeder extends Seeder
 {
     /**
-     * Source: id.wikipedia.org (Kabupaten Empat Lawang, Joncik Muhammad), as of 2026.
-     * No photos seeded — admin uploads via the CMS.
+     * Current officials as of November 2026, each name/position confirmed by 2 sources
+     * (empatlawangkab.go.id news, detik, jpnn, tribunnews, klikempatlawang). Research notes:
+     * workspace shared/riset-pejabat-empatlawang/README.md.
+     * Order 1–3 = leaders row on /profil-pejabat. No photos: the official site has none.
      */
     public function run(): void
     {
         $officials = [
             [
-                'name' => 'Joncik Muhammad',
+                'name' => 'H. Joncik Muhammad',
                 'position' => 'Bupati Empat Lawang',
-                'bio' => 'Bupati Empat Lawang dari Partai Amanat Nasional (PAN), menjabat dua periode: 2018-2023 dan periode berjalan sejak 16 Juni 2025. Sebelumnya menjabat Ketua Komisi II DPRD Provinsi Sumatera Selatan (2014-2018).',
+                'bio' => 'Bupati Empat Lawang periode 2025–2030, dilantik Gubernur Sumatera Selatan Herman Deru di Griya Agung Palembang pada 16 Juni 2025 berdasarkan SK Mendagri Nomor 100.1.3-2379 Tahun 2025. Sebelumnya menjabat Bupati Empat Lawang periode 2018–2023. Melanjutkan visi "Empat Lawang Madani Jilid II".',
                 'order' => 1,
             ],
             [
-                'name' => "A. Rifa'i",
+                'name' => 'A. Rifai',
                 'position' => 'Wakil Bupati Empat Lawang',
-                'bio' => 'Wakil Bupati Empat Lawang periode berjalan, mendampingi Bupati Joncik Muhammad.',
+                'bio' => 'Wakil Bupati Empat Lawang periode 2025–2030, dilantik bersama Bupati H. Joncik Muhammad pada 16 Juni 2025 di Griya Agung Palembang.',
                 'order' => 2,
             ],
             [
                 'name' => 'Fauzan Khoiri Denin',
                 'position' => 'Sekretaris Daerah Kabupaten Empat Lawang',
-                'bio' => 'Sekretaris Daerah (Sekda) Kabupaten Empat Lawang.',
+                'bio' => 'Sekretaris Daerah (Sekda) Kabupaten Empat Lawang, unsur pendamping Bupati dan Wakil Bupati dalam koordinasi perangkat daerah.',
                 'order' => 3,
+            ],
+            [
+                'name' => 'M. Yunidi Nuzli',
+                'position' => 'Asisten Pemerintahan dan Kesejahteraan Rakyat Setda Kabupaten Empat Lawang',
+                'bio' => 'Dilantik sebagai Asisten Pemerintahan dan Kesejahteraan Rakyat Sekretariat Daerah oleh Bupati Empat Lawang pada 12 Mei 2026.',
+                'order' => 4,
+            ],
+            [
+                'name' => 'Sumitro Sukma Bahagia',
+                'position' => 'Kepala Dinas Komunikasi, Informatika, Statistik dan Persandian Kabupaten Empat Lawang',
+                'bio' => 'Menjabat Plt Kepala Dinas Kominfo SP sejak serah terima jabatan Desember 2025, lalu dilantik sebagai Kepala Dinas definitif pada 12 Mei 2026.',
+                'order' => 5,
             ],
         ];
 
+        // Keyed by position: re-seeding replaces the previous holder instead of adding a duplicate.
         foreach ($officials as $data) {
-            Official::firstOrCreate(
-                ['name' => $data['name'], 'position' => $data['position']],
+            Official::updateOrCreate(
+                ['position' => $data['position']],
                 $data + ['is_published' => true]
             );
         }
