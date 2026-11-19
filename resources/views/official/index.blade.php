@@ -40,13 +40,16 @@
     @if ($leaders->isNotEmpty())
         <section class="official-section mb-5" aria-labelledby="leaders-title">
             <h2 id="leaders-title" class="official-heading h4 fw-bold text-center mb-4"><i class="fas fa-landmark"></i> Pimpinan Daerah</h2>
-            <div class="row g-3 g-md-4 justify-content-center">
-                @foreach ($leaders as $official)
-                    <div class="col-6 col-md-4 col-xl-3">
-                        @include('official._card', ['lead' => true])
-                    </div>
-                @endforeach
-            </div>
+            {{-- Row 1: Bupati & Wakil (order 1–2); row 2: Sekretaris Daerah (order 3). --}}
+            @foreach ($leaders->groupBy(fn ($o) => $o->order <= 2 ? 'heads' : 'secretary') as $row => $group)
+                <div class="row g-3 g-md-4 justify-content-center {{ $loop->last ? '' : 'mb-3 mb-md-4' }}" data-row="{{ $row }}">
+                    @foreach ($group as $official)
+                        <div class="col-6 col-md-4 col-xl-3">
+                            @include('official._card', ['lead' => true])
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
         </section>
     @endif
 

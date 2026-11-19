@@ -30,7 +30,7 @@ class OfficialIndexTest extends TestCase
         Official::create(['name' => 'Hidden', 'position' => 'X', 'order' => 11, 'is_published' => false]);
 
         $this->get('/profil-pejabat')->assertOk()
-            ->assertSeeInOrder(['H. Joncik Muhammad', 'A. Rifai', 'Fauzan Khoiri Denin', 'Pejabat Struktural', 'M. Yunidi Nuzli', 'Sumitro Sukma Bahagia', 'Kadis A'], false)
+            ->assertSeeInOrder(['data-row="heads"', 'H. Joncik Muhammad', 'A. Rifai', 'data-row="secretary"', 'Fauzan Khoiri Denin', 'Pejabat Struktural', 'M. Yunidi Nuzli', 'Sumitro Sukma Bahagia', 'Kadis A'], false)
             ->assertSee('official-card-lead', false)
             ->assertSee('officials/bupati.jpg', false)
             ->assertSee('>YN</div>', false) // initials when no photo
