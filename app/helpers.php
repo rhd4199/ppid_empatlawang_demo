@@ -158,3 +158,29 @@ if (! function_exists('content_sections')) {
         return ['intro' => trim($parts[0]), 'sections' => $sections];
     }
 }
+
+if (! function_exists('table_rows')) {
+    /**
+     * First <table> of admin-edited HTML as plain-text cells:
+     * ['intro' => html before, 'head' => [th…], 'rows' => [[td…]…], 'after' => html after].
+     * Null when there is no table with body rows → the view shows the content as-is.
+     */
+    function table_rows(?string $html): ?array
+    {
+        if (! preg_match('/^(.*?)<table[^>]*>(.*?)<\/table>(.*)$/is', (string) $html, $m)) {
+            return null;
+        }
+
+        $text = fn ($cell) => trim(html_entity_decode(strip_tags($cell)));
+        preg_match_all('/<th[^>]*>(.*?)<\/th>/is', $m[2], $th);
+        $rows = [];
+        preg_match_all('/<tr[^>]*>(.*?)<\/tr>/is', $m[2], $tr);
+        foreach ($tr[1] as $row) {
+            if (preg_match_all('/<td[^>]*>(.*?)<\/td>/is', $row, $td)) {
+                $rows[] = array_map($text, $td[1]);
+            }
+        }
+
+        return $rows ? ['intro' => trim($m[1]), 'head' => array_map($text, $th[1]), 'rows' => $rows, 'after' => trim($m[3])] : null;
+    }
+}

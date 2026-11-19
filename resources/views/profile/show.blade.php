@@ -47,6 +47,7 @@
 
         <div class="col-lg-9">
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                @php($units = $profile->type === 'struktur' ? table_rows($profile->content) : null)
                 @if($profile->type === 'struktur')
                     @include('profile._structure')
                 @elseif($profile->image)
@@ -57,7 +58,9 @@
                     @php($vm = $profile->type == 'visi_misi' ? visi_misi($profile->content) : null)
                     @php($about = $profile->slug === 'tentang-ppid' ? content_sections($profile->content) : null)
                     @php($ts = $profile->type == 'tugas_fungsi' ? content_sections($profile->content) : null)
-                    @if($about)
+                    @if($units)
+                        @include('profile._units')
+                    @elseif($about)
                         @include('profile._about')
                     @elseif($ts && array_filter(array_column($ts['sections'], 'items')))
                         @include('profile._task_cards')

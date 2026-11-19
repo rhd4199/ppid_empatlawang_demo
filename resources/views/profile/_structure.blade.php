@@ -32,18 +32,17 @@
             </div>
         </div>
     </div>
-@else
+@elseif(! $units)
     {{-- ponytail: fixed standard PPID levels (Permendagri 3/2017); replace by uploading the official chart image. --}}
     <div class="card-body p-4 p-md-5 pb-0 bg-white">
         <div class="structure-chart" role="list" aria-label="Bagan {{ $profile->title }}">
             @foreach([
-                ['Pembina', 'Bupati Empat Lawang', 'fa-user-tie'],
-                ['Atasan PPID', 'Sekretaris Daerah', 'fa-user-shield'],
-                ['PPID Utama', 'Kepala Dinas Komunikasi dan Informatika', 'fa-building-columns'],
-                ['PPID Pelaksana', 'Perangkat Daerah di lingkungan Pemerintah Kabupaten Empat Lawang', 'fa-sitemap'],
-            ] as [$role, $holder, $icon])
+                ['Pembina', 'Bupati Empat Lawang'],
+                ['Atasan PPID', 'Sekretaris Daerah'],
+                ['PPID Utama', 'Kepala Dinas Komunikasi dan Informatika'],
+                ['PPID Pelaksana', 'Perangkat Daerah di lingkungan Pemerintah Kabupaten Empat Lawang'],
+            ] as [$role, $holder])
                 <div class="structure-node" role="listitem">
-                    <i class="fas {{ $icon }} text-primary mb-1"></i>
                     <div class="fw-bold">{{ $role }}</div>
                     <div class="small text-muted">{{ $holder }}</div>
                 </div>
@@ -59,8 +58,7 @@
     @media (max-width: 767.98px) { .structure-img { width: auto; min-width: 720px; max-width: none; } }
 
     .structure-chart { display: flex; flex-direction: column; align-items: center; }
-    .structure-node { position: relative; width: min(100%, 26rem); text-align: center; padding: 1rem; border: 2px solid var(--bs-primary); border-radius: 1rem; background: #fff; }
+    .structure-node { position: relative; width: min(100%, 26rem); text-align: center; padding: 1rem; border: 1px solid #e5e7eb; border-top: 3px solid var(--bs-primary); border-radius: .75rem; background: #fff; }
     .structure-node + .structure-node { margin-top: 2rem; }
     .structure-node + .structure-node::before { content: ''; position: absolute; top: calc(-2rem - 2px); left: 50%; height: 2rem; border-left: 2px solid var(--bs-primary); }
-    .structure-node .fa-solid, .structure-node .fas { font-size: 1.4rem; }
 </style>
