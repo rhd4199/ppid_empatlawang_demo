@@ -17,8 +17,8 @@ class VisiMisiTest extends TestCase
 
         $this->get('/profil/visi-misi')->assertOk()
             ->assertSee('class="vm-quote', false)
-            ->assertSee('Empat Lawang MADANI')
-            ->assertSeeInOrder(['vm-num', '1', 'Meningkatkan kualitas SDM.', 'vm-num', '2', 'tata kelola pemerintahan'], false);
+            ->assertSee('pelayanan informasi yang transparan dan akuntabel')
+            ->assertSeeInOrder(['vm-num', '1', 'Meningkatkan pengelolaan dan pelayanan informasi', 'vm-num', '2', 'sistem penyediaan dan layanan informasi'], false);
     }
 
     public function test_free_form_content_is_shown_as_is(): void
