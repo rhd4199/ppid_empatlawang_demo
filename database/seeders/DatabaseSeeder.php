@@ -29,8 +29,10 @@ class DatabaseSeeder extends Seeder
             RegulasiKipSeeder::class,
             NewsSeeder::class,
             NewsExternalSeeder::class,
+            NewsFeedSeeder::class,
             GallerySeeder::class,
             GalleryExternalSeeder::class,
+            GalleryFeedSeeder::class,
             EventSeeder::class,
             ProcurementSeeder::class,
         ]);
