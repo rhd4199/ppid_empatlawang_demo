@@ -475,7 +475,7 @@
 </section>
 <style>
     /* Bento: big "Terbaru" tile left, 2x2 category tiles right */
-    .info-bento { display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+    .info-bento { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); } /* minmax(0,…): truncated doc titles must not widen the grid past the screen */
     .bento-feature {
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
         color: #fff; border-radius: 1.25rem; padding: 1.75rem;
@@ -501,11 +501,11 @@
         display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
     }
     @media (min-width: 576px) {
-        .info-bento { grid-template-columns: repeat(2, 1fr); }
+        .info-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .bento-feature { grid-column: 1 / -1; }
     }
     @media (min-width: 992px) {
-        .info-bento { grid-template-columns: 2fr 1fr 1fr; }
+        .info-bento { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); }
         .bento-feature { grid-column: 1; grid-row: 1 / span 2; }
     }
 </style>
