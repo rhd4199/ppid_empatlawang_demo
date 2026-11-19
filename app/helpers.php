@@ -76,3 +76,35 @@ if (! function_exists('plain_text')) {
         return Illuminate\Support\Str::squish(html_entity_decode(strip_tags(preg_replace('/<[^>]*>/', ' $0 ', (string) $html)), ENT_QUOTES | ENT_HTML5));
     }
 }
+
+if (! function_exists('assistant_settings')) {
+    /**
+     * Sapa Madani (virtual assistant) settings from ppid_settings.
+     * wa_url is set when a WhatsApp number is configured: the button then opens WA instead of the chat panel.
+     */
+    function assistant_settings(): array
+    {
+        $values = App\Models\PpidSetting::whereIn('key', ['assistant_enabled', 'assistant_whatsapp', 'assistant_api_url'])
+            ->pluck('value', 'key');
+
+        return [
+            'enabled' => ($values['assistant_enabled'] ?? '1') === '1',
+            'whatsapp' => $values['assistant_whatsapp'] ?? '',
+            'api_url' => $values['assistant_api_url'] ?? '',
+            'wa_url' => wa_link($values['assistant_whatsapp'] ?? null),
+        ];
+    }
+}
+
+if (! function_exists('wa_link')) {
+    /** "0812-3456 789" / "+62812…" → https://wa.me/62812…; null when no usable number. */
+    function wa_link(?string $number): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) $number);
+        if (str_starts_with($digits, '0')) {
+            $digits = '62' . substr($digits, 1);
+        }
+
+        return strlen($digits) >= 9 ? 'https://wa.me/' . $digits : null;
+    }
+}

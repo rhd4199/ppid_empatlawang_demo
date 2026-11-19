@@ -222,6 +222,45 @@
         </div>
     </form>
 
+    <!-- Sapa Madani (asisten virtual) -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-robot me-2 text-primary"></i>Sapa Madani (AI Asisten / Chatbot)</h5>
+            <small class="text-muted">Tombol bantuan di situs publik. Bila nomor WhatsApp diisi, tombol langsung membuka WhatsApp; bila kosong, membuka panel chat Sapa Madani.</small>
+        </div>
+        <form action="{{ route('admin.contact-settings.update-assistant') }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="card-body p-4">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="assistantEnabled" name="assistant_enabled" value="1" {{ $assistant['enabled'] ? 'checked' : '' }}>
+                    <label class="form-check-label fw-bold" for="assistantEnabled">Tampilkan tombol Sapa Madani</label>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">Nomor WhatsApp Layanan</label>
+                        <input type="text" name="assistant_whatsapp" class="form-control @error('assistant_whatsapp') is-invalid @enderror"
+                               value="{{ old('assistant_whatsapp', $assistant['whatsapp']) }}" placeholder="mis. 0812-3456-7890">
+                        @error('assistant_whatsapp')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <small class="text-muted">Kosongkan untuk memakai panel chat.</small>
+                    </div>
+                    <div class="col-md-7">
+                        <label class="form-label fw-bold">URL API Chatbot</label>
+                        <input type="url" name="assistant_api_url" class="form-control @error('assistant_api_url') is-invalid @enderror"
+                               value="{{ old('assistant_api_url', $assistant['api_url']) }}" placeholder="https://...">
+                        @error('assistant_api_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <small class="text-muted">Menerima POST <code>{"message": "..."}</code>, membalas <code>{"reply": "..."}</code>. Kosong = balasan otomatis sementara.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-end p-3">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                    <i class="fas fa-save me-2"></i> Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Statistik Beranda -->
     <div class="card border-0 shadow-sm rounded-4 mb-5">
         <div class="card-header bg-white py-3">

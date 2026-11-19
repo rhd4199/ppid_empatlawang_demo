@@ -43,6 +43,8 @@ Route::get('/permohonan-informasi', [InformationRequestController::class, 'creat
 Route::post('/permohonan-informasi', [InformationRequestController::class, 'store'])->name('request.store');
 Route::get('/cek-status-permohonan', [InformationRequestController::class, 'checkStatus'])->name('request.status');
 
+Route::post('/sapa-madani/chat', [App\Http\Controllers\AssistantController::class, 'chat'])->middleware('throttle:20,1')->name('assistant.chat');
+
 Route::get('/pengajuan-keberatan', [ComplaintController::class, 'create'])->name('complaint.create');
 Route::post('/pengajuan-keberatan', [ComplaintController::class, 'store'])->name('complaint.store');
 
@@ -111,6 +113,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Contact Settings
     Route::get('/pengaturan-kontak', [App\Http\Controllers\Admin\ContactSettingController::class, 'index'])->name('contact-settings.index');
     Route::put('/pengaturan-kontak', [App\Http\Controllers\Admin\ContactSettingController::class, 'update'])->name('contact-settings.update');
+    Route::put('/pengaturan-kontak/asisten', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateAssistant'])->name('contact-settings.update-assistant');
     Route::put('/pengaturan-kontak/statistik', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateStats'])->name('contact-settings.update-stats');
 
     // Account Settings

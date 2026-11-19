@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         // share contact settings (social media, phone, email) with the public layout
         View::composer('layouts.app', function ($view) {
             $view->with('contactSettings', ContactSetting::first());
+            $view->with('assistant', assistant_settings());
         });
     }
 }

@@ -24,7 +24,9 @@ class ContactSettingController extends Controller
 
         $satisfactionIndex = PpidSetting::where('key', 'stat_satisfaction_index')->value('value') ?? '98%';
 
-        return view('admin.contact-settings.index', compact('settings', 'satisfactionIndex'));
+        $assistant = assistant_settings();
+
+        return view('admin.contact-settings.index', compact('settings', 'satisfactionIndex', 'assistant'));
     }
 
     public function updateStats(Request $request)
@@ -39,6 +41,26 @@ class ContactSettingController extends Controller
         );
 
         return redirect()->route('admin.contact-settings.index')->with('success', 'Statistik beranda berhasil diperbarui.');
+    }
+
+    public function updateAssistant(Request $request)
+    {
+        $data = $request->validate([
+            'assistant_enabled' => 'nullable|boolean',
+            'assistant_whatsapp' => ['nullable', 'string', 'max:30', 'regex:/^[0-9+\-\s()]*$/'],
+            'assistant_api_url' => 'nullable|url:http,https|max:500',
+        ]);
+
+        $values = [
+            'assistant_enabled' => $request->boolean('assistant_enabled') ? '1' : '0',
+            'assistant_whatsapp' => trim($data['assistant_whatsapp'] ?? ''),
+            'assistant_api_url' => trim($data['assistant_api_url'] ?? ''),
+        ];
+        foreach ($values as $key => $value) {
+            PpidSetting::updateOrCreate(['key' => $key], ['value' => $value, 'description' => 'Sapa Madani (asisten virtual)']);
+        }
+
+        return redirect()->route('admin.contact-settings.index')->with('success', 'Pengaturan Sapa Madani berhasil diperbarui.');
     }
 
     public function update(Request $request)
