@@ -11,7 +11,7 @@ class TugasFungsiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeded_content_renders_one_card_per_list_item(): void
+    public function test_seeded_content_renders_one_numbered_item_per_list_item(): void
     {
         $this->seed(ProfileSeeder::class);
         $content = Profile::where('slug', 'tugas-fungsi')->value('content');
@@ -41,7 +41,8 @@ class TugasFungsiTest extends TestCase
             'content' => '<p>Intro</p><h3>Tugas</h3><p>Pengantar</p><ol><li>Menyusun laporan;</li><li>Memberikan jawaban; dan</li></ol><p>Catatan</p><h3>Lain</h3><p>Tanpa daftar</p>']);
 
         $html = $this->get('/profil/tugas-fungsi')->assertOk()
-            ->assertSeeInOrder(['Intro', 'Pengantar', 'fa-file-lines', 'Menyusun laporan</div>', 'fa-reply', 'Memberikan jawaban</div>', 'Catatan', 'Lain', 'Tanpa daftar'], false)
+            ->assertSeeInOrder(['Intro', 'href="#tf-title-0"', 'Pengantar', 'Menyusun laporan</div>', 'Memberikan jawaban</div>', 'Catatan', 'Lain', 'Tanpa daftar'], false)
+            ->assertDontSee('fa-file-lines', false) // no per-item icons
             ->getContent();
 
         $this->assertSame(2, substr_count($html, 'class="tf-card'));
