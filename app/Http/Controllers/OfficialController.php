@@ -13,6 +13,9 @@ class OfficialController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('official.index', compact('officials'));
+        // ponytail: leaders = order 1–3 (Bupati, Wakil, Sekda); add a `level` column if that grows.
+        [$leaders, $officials] = $officials->partition(fn ($o) => $o->order >= 1 && $o->order <= 3);
+
+        return view('official.index', compact('leaders', 'officials'));
     }
 }
