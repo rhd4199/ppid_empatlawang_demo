@@ -14,7 +14,8 @@ if (! function_exists('storage_url')) {
             return null;
         }
 
-        return Storage::disk('public')->url($path);
+        // url(): local disk gives '/storage/...' → absolute on the request host; S3 URLs pass through.
+        return url(Storage::disk('public')->url($path));
     }
 }
 

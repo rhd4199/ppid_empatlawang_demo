@@ -49,8 +49,17 @@ return [
 
         // "public" drives every upload in the app (Storage::disk('public'),
         // ->store($path, 'public')). Backed by IDCloudHost S3-compatible
-        // storage; swap FILESYSTEM_DISK/S3_* env vars to point elsewhere.
-        'public' => [
+        // storage when S3_ENDPOINT is set; otherwise (local dev/preview) or
+        // with PUBLIC_DISK_DRIVER=local it falls back to storage/app/public
+        // served at /storage (run `php artisan storage:link`). No 'url' key:
+        // storage_url() makes it absolute from the current request host.
+        'public' => env('PUBLIC_DISK_DRIVER', env('S3_ENDPOINT') ? 's3' : 'local') === 'local' ? [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ] : [
             'driver' => 's3',
             'key' => env('S3_ACCESS_KEY_ID'),
             'secret' => env('S3_SECRET_ACCESS_KEY'),
