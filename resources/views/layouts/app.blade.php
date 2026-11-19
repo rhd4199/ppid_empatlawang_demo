@@ -191,6 +191,28 @@
             background: var(--primary-color);
             color: #fff;
         }
+        /* Desktop: float the icons on the left edge so the navbar stays short; collapsed menu keeps them inline */
+        @media (min-width: 1200px) {
+            .nav-social {
+                position: fixed;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 1070;
+                flex-direction: column;
+                gap: 6px !important;
+                margin: 0 !important;
+                padding: 10px 8px;
+                background: #fff;
+                border-radius: 0 14px 14px 0;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            }
+            .nav-social a {
+                width: 34px;
+                height: 34px;
+                font-size: 0.9rem;
+            }
+        }
 
         /* Navbar */
         .navbar {
