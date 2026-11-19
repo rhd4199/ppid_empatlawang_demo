@@ -38,25 +38,29 @@
     @endif
 
     @if ($leaders->isNotEmpty())
-        <h2 class="visually-hidden">Pimpinan Daerah</h2>
-        <div class="row g-3 g-md-4 justify-content-center mb-4">
-            @foreach ($leaders as $official)
-                <div class="col-6 col-md-4 col-lg-3">
-                    @include('official._card', ['lead' => true])
-                </div>
-            @endforeach
-        </div>
+        <section class="official-section mb-5" aria-labelledby="leaders-title">
+            <h2 id="leaders-title" class="official-heading h4 fw-bold text-center mb-4"><i class="fas fa-landmark"></i> Pimpinan Daerah</h2>
+            <div class="row g-3 g-md-4 justify-content-center">
+                @foreach ($leaders as $official)
+                    <div class="col-6 col-md-4 col-xl-3">
+                        @include('official._card', ['lead' => true])
+                    </div>
+                @endforeach
+            </div>
+        </section>
     @endif
 
     @if ($officials->isNotEmpty())
-        <h2 class="h4 fw-bold text-center mb-4 {{ $leaders->isEmpty() ? 'visually-hidden' : '' }}">Pejabat Struktural</h2>
-        <div class="row g-3 g-md-4">
-            @foreach ($officials as $official)
-                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-                    @include('official._card', ['lead' => false])
-                </div>
-            @endforeach
-        </div>
+        <section class="official-section" aria-labelledby="structural-title">
+            <h2 id="structural-title" class="official-heading h4 fw-bold text-center mb-4 {{ $leaders->isEmpty() ? 'visually-hidden' : '' }}"><i class="fas fa-sitemap"></i> Pejabat Struktural</h2>
+            <div class="row g-3">
+                @foreach ($officials as $official)
+                    <div class="col-12 col-md-6 col-lg-4">
+                        @include('official._card', ['lead' => false])
+                    </div>
+                @endforeach
+            </div>
+        </section>
     @endif
 
     <div class="mt-5 text-center">
@@ -69,23 +73,34 @@
 @stack('official-modals')
 
 <style>
-    .official-page { margin-top: -3rem; }
 
     .shape { position: absolute; border-radius: 50%; filter: blur(80px); background: #fff; opacity: .1; }
     .shape-1 { width: 400px; height: 400px; top: -100px; right: -100px; }
     .shape-2 { width: 300px; height: 300px; bottom: -50px; left: -100px; }
 
+    .official-heading i { color: var(--bs-primary); margin-right: .5rem; }
+    .official-heading::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 4px; margin: .75rem auto 0; background: linear-gradient(90deg, var(--bs-primary), #f59e0b); }
+
     .official-card { transition: transform .2s ease, box-shadow .2s ease; }
     .official-card:hover { transform: translateY(-3px); box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.1) !important; }
-    .official-photo { aspect-ratio: 3 / 4; overflow: hidden; }
-    .official-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
     .official-card-lead { border-top: 4px solid var(--bs-primary) !important; }
+    .official-photo { aspect-ratio: 3 / 4; overflow: hidden; background: linear-gradient(160deg, #e0f2fe, #bae6fd); }
+    .official-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .official-photo-sm { width: 72px; }
+    .official-initials { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 2.5rem; color: var(--bs-primary); letter-spacing: .05em; }
+    .official-photo-sm .official-initials { font-size: 1.25rem; }
+    .official-position { color: var(--bs-primary); line-height: 1.35; }
+    .official-card-row .official-position { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .official-card h3 { overflow-wrap: anywhere; }
     .official-bio { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .official-modal-photo { width: 64px; aspect-ratio: 3 / 4; object-fit: cover; object-position: top; }
 
     @media (max-width: 575.98px) {
-        .official-card .card-body { padding: .75rem !important; }
-        .official-card h3 { font-size: .95rem; }
-        .official-bio { -webkit-line-clamp: 2; }
+        .official-card-lead .card-body { padding: .75rem !important; }
+        .official-card-lead h3 { font-size: .95rem; }
+        .official-card-lead .official-position { font-size: .75rem; }
+        .official-bio { display: none; }
     }
 </style>
 @endsection
