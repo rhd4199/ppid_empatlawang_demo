@@ -28,22 +28,22 @@ class ReportController extends Controller
      */
     private function requestStats(): array
     {
-        $requests = InformationRequest::all();
+        // Public page: never load whole rows (they hold NIK, KTP, addresses), only what is shown.
+        $counts = InformationRequest::selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
 
-        $rejected = $requests->where('status', 'rejected');
-
-        $resolved = $requests->whereIn('status', ['approved', 'rejected']);
+        // ponytail: day diff stays in PHP (DATEDIFF differs per driver); only two columns are read
+        $resolved = InformationRequest::whereIn('status', ['approved', 'rejected'])->get(['created_at', 'updated_at']);
         $avgDays = $resolved->isNotEmpty()
             ? round($resolved->avg(fn ($r) => $r->created_at->diffInDays($r->updated_at)), 1)
             : null;
 
         return [
-            'total' => $requests->count(),
+            'total' => (int) $counts->sum(),
             // ponytail: schema has no "partial vs full" distinction on approved requests, only one status
-            'approved' => $requests->where('status', 'approved')->count(),
-            'rejected' => $rejected->count(),
+            'approved' => (int) ($counts['approved'] ?? 0),
+            'rejected' => (int) ($counts['rejected'] ?? 0),
             'avg_days' => $avgDays,
-            'rejection_reasons' => $rejected->pluck('admin_note')->filter()->values(),
+            'rejection_reasons' => InformationRequest::where('status', 'rejected')->pluck('admin_note')->filter()->values(),
         ];
     }
 }
