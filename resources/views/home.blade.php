@@ -16,7 +16,7 @@
         overflow: hidden;
     }
     .hero-title {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 700;
         font-size: clamp(2rem, 1rem + 5vw, 3.5rem);
         margin-bottom: 20px;

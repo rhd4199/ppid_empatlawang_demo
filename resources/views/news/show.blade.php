@@ -105,11 +105,11 @@
 @push('styles')
 <style>
     .font-playfair {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
     .article-content {
-        font-family: 'Georgia', serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         color: #333;
     }
     
@@ -126,7 +126,7 @@
     }
     
     .article-content h2, .article-content h3 {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 700;
         margin-top: 2.5rem;
         margin-bottom: 1rem;

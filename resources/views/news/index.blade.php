@@ -127,7 +127,7 @@
 @push('styles')
 <style>
     .font-playfair {
-        font-family: 'Playfair Display', serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
     .card-img-wrapper {
