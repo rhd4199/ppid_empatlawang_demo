@@ -547,6 +547,8 @@
         </div>
     </nav>
 
+    @include('partials.weather')
+
     <!-- Main Content -->
     <main id="konten-utama" tabindex="-1">
         @yield('content')
@@ -610,6 +612,7 @@
         <div class="footer-bottom text-center">
             <div class="container">
                 <p class="mb-0">&copy; {{ date('Y') }} PPID Kabupaten Empat Lawang. All Rights Reserved.</p>
+                <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="bmkg-chip text-decoration-none mt-2" data-bmkg-chip hidden></a>
             </div>
         </div>
     </footer>

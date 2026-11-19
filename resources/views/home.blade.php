@@ -381,12 +381,27 @@
 </div>
 
 <!-- Informasi Serta Merta: Peringatan Dini & Evakuasi Darurat -->
-@if($emergencyInfo->isNotEmpty())
 <div class="container py-5">
     <div class="text-center mb-5">
         <span class="badge bg-danger-subtle text-danger fw-bold mb-2 px-3 py-2 rounded-pill">Informasi Serta Merta</span>
         <h2 class="fw-bold">Peringatan Dini & Kesiapsiagaan Bencana</h2>
         <p class="text-muted">Informasi penting yang wajib diketahui masyarakat sewaktu-waktu</p>
+    </div>
+
+    <!-- Cuaca BMKG (filled by partials/weather.blade.php) -->
+    <div class="bmkg-card mb-5" id="bmkgCard">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h4 class="fw-bold mb-0 text-white"><i class="fas fa-cloud-sun me-2"></i>Cuaca Hari Ini</h4>
+            <select class="form-select form-select-sm rounded-pill" aria-label="Pilih kecamatan"></select>
+        </div>
+        <div class="row g-4 align-items-center">
+            <div class="col-md-4 bmkg-now" data-now><p class="mb-0 opacity-75">Memuat data cuaca BMKG…</p></div>
+            <div class="col-md-8">
+                <div class="bmkg-slots mb-3" data-slots></div>
+                <div data-warn></div>
+            </div>
+        </div>
+        <small class="d-block mt-3 opacity-75">Sumber: <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="text-white">BMKG</a> (Badan Meteorologi, Klimatologi, dan Geofisika)</small>
     </div>
 
     @foreach($emergencyInfo as $i => $info)
@@ -421,7 +436,6 @@
     .bg-warning-subtle { background: #fff3cd; }
     .bg-danger-subtle { background: #f8d7da; }
 </style>
-@endif
 
 <!-- Informasi Publik (bento) -->
 <section class="py-5">

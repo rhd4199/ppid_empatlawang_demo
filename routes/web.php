@@ -43,6 +43,7 @@ Route::get('/permohonan-informasi', [InformationRequestController::class, 'creat
 Route::post('/permohonan-informasi', [InformationRequestController::class, 'store'])->name('request.store');
 Route::get('/cek-status-permohonan', [InformationRequestController::class, 'checkStatus'])->name('request.status');
 
+Route::get('/cuaca', [App\Http\Controllers\WeatherController::class, 'show'])->middleware('throttle:60,1')->name('weather.show');
 Route::post('/sapa-madani/chat', [App\Http\Controllers\AssistantController::class, 'chat'])->middleware('throttle:20,1')->name('assistant.chat');
 
 Route::get('/pengajuan-keberatan', [ComplaintController::class, 'create'])->name('complaint.create');
