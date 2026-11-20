@@ -290,6 +290,24 @@ class AssistantTest extends TestCase
         $this->assertStringContainsString('?', $reply('xyz'));
     }
 
+    public function test_fallback_greets_informal_openers_and_asks_which_data(): void
+    {
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        foreach (['hola', 'Hey', 'P', 'met pagi', 'malam'] as $message) {
+            $this->assertStringStartsWith('Selamat', $reply($message), $message);
+        }
+        $this->assertStringNotContainsString('Selamat', $reply('malam ini kantor buka?'));
+
+        foreach (['mintak data', 'minta dokumen dong'] as $message) {
+            $generic = $reply($message);
+            $this->assertStringContainsString('Data atau dokumen apa', $generic, $message);
+            $this->assertStringContainsString(route('informasi-publik.index'), $generic);
+            $this->assertStringContainsString(route('request.create'), $generic);
+        }
+        $this->assertStringNotContainsString('Data atau dokumen apa', $reply('mintak data apbd 2024'));
+    }
+
     public function test_fallback_invites_the_question_when_user_only_wants_to_ask(): void
     {
         $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');

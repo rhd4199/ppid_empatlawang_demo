@@ -65,7 +65,8 @@ class AssistantFallback
         if (preg_match('/^(assalamu.?alaikum|asw|ass?alam)/u', $text)) {
             return "Wa'alaikumsalam warahmatullahi wabarakatuh, Bapak/Ibu.";
         }
-        if (! preg_match('/^(halo+|hallo+|hai+|hi+|hei+|helo+|selamat (pagi|siang|sore|malam)|permisi|punten)\b/u', $text)) {
+        // informal openers too: "hola", "hey", "met pagi", a bare "P" or "malam" (chat ping)
+        if (! preg_match('/^(halo+|hallo+|hola+|hai+|hi+|hei+|hey+|hy+|helo+|hello+|(selamat|slmt|met) (pagi|siang|sore|malam)|salam|permisi|punten)\b|^(p+|pagi|siang|sore|malam)\W*$/u', $text)) {
             return null;
         }
         $hour = now('Asia/Jakarta')->hour;
@@ -100,7 +101,10 @@ class AssistantFallback
     {
         $keywords = DocumentFinder::wants($text) ? DocumentFinder::keywords($text) : [];
         if (! $keywords) {
-            return null;
+            // "mintak data" without a subject: ask which data instead of guessing
+            return preg_match('/\b(data|dokumen|berkas|file|salinan)\b/u', $text)
+                ? 'Data atau dokumen apa yang Bapak/Ibu butuhkan? Sebutkan saja, misalnya "data APBD 2024". Bapak/Ibu juga bisa mencarinya sendiri di Daftar Informasi Publik (' . route('informasi-publik.index') . '). Bila belum tersedia, silakan ajukan lewat menu Permohonan Informasi (' . route('request.create') . ').'
+                : null;
         }
         $docs = DocumentFinder::search($keywords);
         if (! $docs) {
