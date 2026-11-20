@@ -6,11 +6,18 @@ use App\Models\PpidSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class AssistantTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['services.openai.key' => null]); // a real key in .env must never reach tests
+    }
 
     private function set(array $values): void
     {
@@ -75,6 +82,29 @@ class AssistantTest extends TestCase
         Http::fake(['bot.example.test/*' => Http::response('down', 500)]);
 
         $this->postJson('/sapa-madani/chat', ['message' => 'halo'])->assertOk()->assertJsonPath('reply', fn ($r) => str_starts_with($r, 'Maaf'));
+    }
+
+    public function test_openai_key_takes_precedence_and_is_sent_as_bearer(): void
+    {
+        config(['services.openai.key' => 'sk-test', 'services.openai.model' => 'gpt-4o-mini']);
+        $this->set(['assistant_api_url' => 'https://bot.example.test/chat']);
+        Http::fake(['api.openai.com/*' => Http::response(['choices' => [['message' => ['content' => ' Jawaban OpenAI ']]]])]);
+
+        $this->postJson('/sapa-madani/chat', ['message' => 'cara minta informasi?'])->assertOk()->assertJsonPath('reply', 'Jawaban OpenAI');
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($req) => $req->hasHeader('Authorization', 'Bearer sk-test')
+            && $req['model'] === 'gpt-4o-mini' && $req['max_tokens'] > 0
+            && $req['messages'][1] === ['role' => 'user', 'content' => 'cara minta informasi?']);
+    }
+
+    public function test_openai_failure_returns_friendly_reply_without_leaking_key(): void
+    {
+        config(['services.openai.key' => 'sk-secret-test']);
+        Http::fake(['api.openai.com/*' => Http::response(['error' => ['message' => 'quota']], 429)]);
+        Log::spy();
+
+        $this->postJson('/sapa-madani/chat', ['message' => 'halo'])->assertOk()->assertJsonPath('reply', fn ($r) => str_starts_with($r, 'Maaf, Sapa Madani sedang tidak dapat menjawab'));
+        Log::shouldHaveReceived('warning')->withArgs(fn ($msg) => str_contains($msg, 'OpenAI') && ! str_contains($msg, 'sk-secret-test'));
     }
 
     public function test_admin_saves_settings_and_validates(): void
