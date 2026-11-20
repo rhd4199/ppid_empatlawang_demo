@@ -32,6 +32,8 @@
     .bmkg-fa.fa-cloud-bolt { color: #fcd34d; }
     .bmkg-card select { max-width: 220px; }
     .bmkg-warn { background: rgba(255,255,255,.95); color: #991b1b; border-radius: 14px; padding: 10px 14px; font-size: .88rem; }
+    .bmkg-warn summary { cursor: pointer; font-weight: 600; }
+    .bmkg-warn a { color: #991b1b; }
 </style>
 
 <script>
@@ -80,6 +82,24 @@
         });
     }
 
+    const title = s => s.toLowerCase().replace(/\b\w+/g, w => /^[ivx]+$/.test(w) ? w.toUpperCase() : w[0].toUpperCase() + w.slice(1)); // BANYUASIN III → Banyuasin III
+    // Short box: title, valid time, impact, which Empat Lawang districts; full BMKG text + all areas folded away.
+    function warn(a) {
+        const all = a.all_areas || [];
+        const time = a.start && a.end ? `${a.start.replace(/ WI\w+$/, '')}–${a.end}` : a.end ? `s.d. ${a.end}` : '';
+        const link = /^https:\/\//.test(a.link || '') ? a.link : 'https://www.bmkg.go.id/peringatan-dini/nowcast';
+        return `<div class="bmkg-warn mb-2">
+            <div class="fw-bold"><i class="fas fa-triangle-exclamation me-1"></i>${esc(a.title)}</div>
+            ${time ? `<div><i class="far fa-clock me-1"></i>Berlaku ${esc(time)}</div>` : ''}
+            <div><i class="fas fa-location-dot me-1"></i>Termasuk Empat Lawang: <strong>Kec. ${esc(a.areas.map(title).join(', '))}</strong></div>
+            ${a.impact ? `<div>Dampak: ${esc(a.impact)}</div>` : ''}
+            <details class="mt-1"><summary>Selengkapnya${all.length ? ` (${all.length} kecamatan)` : ''}</summary>
+                ${all.length ? `<div class="mt-1">${all.map(n => a.areas.includes(n) ? `<strong>${esc(title(n))}</strong>` : esc(title(n))).join(', ')}</div>` : ''}
+                <p class="mt-1 mb-1" style="white-space: pre-line">${esc(a.description)}</p>
+                <a href="${esc(link)}" target="_blank" rel="noopener" class="fw-semibold">Lihat di BMKG</a>
+            </details></div>`;
+    }
+
     function render(d) {
         const card = getCard();
         if (!card) return;
@@ -108,7 +128,7 @@
              <div class="fw-semibold">${esc(hour(s.time))}</div>${icon(s)}<div class="bmkg-t">${esc(s.temp)}°</div>
              <div class="small opacity-75 text-truncate" title="${esc(s.desc)}">${esc(s.desc)}</div></div>`).join('');
         card.querySelector('[data-warn]').innerHTML = d.alerts.length
-            ? d.alerts.map(a => `<div class="bmkg-warn mb-2"><i class="fas fa-triangle-exclamation me-1"></i><strong>${esc(a.title)}</strong><br>${esc(a.description)}</div>`).join('')
+            ? d.alerts.map(warn).join('')
             : '<div class="small opacity-75"><i class="fas fa-circle-check me-1"></i>Tidak ada peringatan dini cuaca BMKG untuk Empat Lawang saat ini.</div>';
     }
 

@@ -140,11 +140,29 @@ class BmkgWeather
             }
             $hits = array_values(array_filter($names, fn ($n) => preg_match('/\b' . preg_quote($n, '/') . '\b/', strtoupper($desc))));
             if ($hits) {
-                $alerts[] = ['title' => $title, 'description' => $desc, 'areas' => $hits, 'link' => (string) $item->link];
+                $alerts[] = ['title' => $title, 'description' => $desc, 'areas' => $hits, 'link' => (string) $item->link] + self::alertParts($desc);
             }
         }
 
         return $alerts;
+    }
+
+    /**
+     * Short pieces of BMKG's fixed nowcast wording ("akan terjadi pada …, 16:00 WIB di … khususnya di A, B.
+     * … dampak berupa X. … hingga …, 17:30 WIB."); a piece is null when BMKG changes the wording (the full text stays).
+     */
+    public static function alertParts(string $desc): array
+    {
+        $time = '(\d{1,2}[:.]\d{2} WI(?:B|TA|T))';
+        $get = fn ($re) => preg_match($re, $desc, $m) ? trim($m[1]) : null;
+        $areas = $get('/khususnya di (.+?)\.(?:\s|$)/s');
+
+        return [
+            'start' => $get("/terjadi pada [^\\n]*?$time/"),
+            'end' => $get("/hingga [^\\n]*?$time/"),
+            'impact' => $get('/dampak berupa (.+?)\./'),
+            'all_areas' => $areas ? array_map('trim', explode(',', $areas)) : [],
+        ];
     }
 
     // Cache successes only, so a BMKG outage is retried on the next request instead of being stored as "no data".

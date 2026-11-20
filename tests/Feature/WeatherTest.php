@@ -119,4 +119,19 @@ class WeatherTest extends TestCase
             ->assertSee('Sumber:', false);
         Http::assertNothingSent(); // weather is loaded by JS, never during page render
     }
+
+    public function test_alert_parts_from_bmkg_wording(): void
+    {
+        $desc = "Hujan lebat disertai petir akan terjadi pada 20 November 2026, 16:00 WIB di sebagian wilayah Sumatera Selatan, khususnya di BABAT SUPAT, PENDOPO, ULU MUSI.\n"
+            . " Kondisi ini berpotensi menimbulkan dampak berupa jarak pandang berkurang, angin kencang, dan banjir lokal.\n"
+            . " Masyarakat dihimbau untuk tetap waspada.\n Kondisi diperkirakan dapat berlangsung hingga 20 November 2026, 17:30 WIB.";
+
+        $this->assertSame([
+            'start' => '16:00 WIB',
+            'end' => '17:30 WIB',
+            'impact' => 'jarak pandang berkurang, angin kencang, dan banjir lokal',
+            'all_areas' => ['BABAT SUPAT', 'PENDOPO', 'ULU MUSI'],
+        ], \App\Support\BmkgWeather::alertParts($desc));
+        $this->assertSame(['start' => null, 'end' => null, 'impact' => null, 'all_areas' => []], \App\Support\BmkgWeather::alertParts('Teks lain.'));
+    }
 }
