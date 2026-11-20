@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Controllers\AssistantController;
 use App\Models\ContactSetting;
+use App\Models\Document;
 use App\Models\PpidSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -194,6 +195,58 @@ class AssistantTest extends TestCase
         foreach (['Jl. Contoh', '(0702) 111222', 'ppid@example.test', '08:00 - 16:00'] as $part) {
             $this->assertStringContainsString($part, $all);
         }
+    }
+
+    private function seedDocuments(): array
+    {
+        $doc = fn ($title, $category, $published = true) => Document::create(['title' => $title, 'category' => $category, 'file_path' => 'docs/x.pdf', 'is_published' => $published]);
+
+        return [
+            'apbd' => $doc('Ringkasan APBD Tahun 2025', 'informasi-publik-berkala'),
+            'lk' => $doc('Laporan Keuangan Pemerintah Daerah 2024', 'laporan_pemda'),
+            'draft' => $doc('Laporan Rahasia Draft', 'informasi-publik-berkala', false),
+            'excluded' => $doc('Laporan Penyidikan Dikecualikan', 'informasi-publik-dikecualikan'),
+        ];
+    }
+
+    public function test_fallback_lists_matching_public_documents(): void
+    {
+        $docs = $this->seedDocuments();
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        $apbd = $reply('minta data APBD 2025');
+        $this->assertStringContainsString('Ringkasan APBD Tahun 2025', $apbd);
+        $this->assertStringContainsString(route('informasi-publik.show', $docs['apbd']->id), $apbd);
+        $this->assertStringNotContainsString('Laporan Keuangan', $apbd);
+
+        $this->assertStringContainsString('Ringkasan APBD Tahun 2025', $reply('min ppid, ada data APBD?')); // "ppid" retried away
+
+        $laporan = $reply('ada laporan keuangan?');
+        $this->assertStringContainsString(route('informasi-publik.show', $docs['lk']->id), $laporan);
+
+        $any = $reply('saya minta dokumen laporan');
+        $this->assertStringContainsString('Laporan Keuangan', $any);
+        $this->assertStringNotContainsString('Rahasia', $any);
+        $this->assertStringNotContainsString('Penyidikan', $any);
+
+        $none = $reply('minta data stunting 2023');
+        $this->assertStringContainsString('belum tersedia', $none);
+        $this->assertStringContainsString(route('request.create'), $none);
+
+        // "how do I file a request" is not a document search
+        $this->assertStringContainsString('10 hari kerja', $reply('Cara minta informasi?'));
+        $this->assertStringNotContainsString('belum tersedia', $reply('Cara minta informasi?'));
+    }
+
+    public function test_openai_prompt_lists_only_found_documents(): void
+    {
+        $docs = $this->seedDocuments();
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::response(['choices' => [['message' => ['content' => 'ok']]]])]);
+
+        $this->postJson('/sapa-madani/chat', ['message' => 'ada data APBD?'])->assertOk();
+        Http::assertSent(fn ($req) => str_contains($req['messages'][0]['content'], 'Ringkasan APBD Tahun 2025: ' . route('informasi-publik.show', $docs['apbd']->id))
+            && ! str_contains($req['messages'][0]['content'], 'Laporan Keuangan'));
     }
 
     public function test_fallback_greets_thanks_and_asks_back_like_a_person(): void

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactSetting;
 use App\Support\AssistantFallback;
+use App\Support\DocumentFinder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -56,7 +57,7 @@ TXT;
                     'model' => config('services.openai.model'),
                     'max_tokens' => (int) config('services.openai.max_tokens'),
                     'messages' => [
-                        ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'])],
+                        ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'], $data['message'])],
                         ...array_map(fn ($m) => ['role' => $m['role'], 'content' => $m['content']], $data['history'] ?? []),
                         ['role' => 'user', 'content' => $data['message']],
                     ],
@@ -71,8 +72,8 @@ TXT;
         return response()->json(['reply' => AssistantFallback::reply($data['message'])]);
     }
 
-    /** Persona (admin override or default) plus the official contact data and site links, so the model never has to guess them. */
-    private function systemPrompt(string $persona): string
+    /** Persona (admin override or default) plus official contact data, site links and matching documents, so the model never has to guess them. */
+    private function systemPrompt(string $persona, string $message): string
     {
         $contact = ContactSetting::first();
         $facts = array_filter([
@@ -97,6 +98,19 @@ TXT;
         $lines[] = 'Tautan menu situs:';
         foreach ($links as $label => $url) {
             $lines[] = "- {$label}: {$url}";
+        }
+
+        $text = mb_strtolower($message);
+        if (DocumentFinder::wants($text) && $keywords = DocumentFinder::keywords($text)) {
+            $docs = DocumentFinder::search($keywords);
+            $lines[] = '';
+            $lines[] = 'Hasil pencarian Daftar Informasi Publik untuk "' . implode(' ', $keywords) . '" (sebut hanya dokumen dan tautan dari daftar ini, jangan mengarang dokumen lain):';
+            foreach ($docs as $doc) {
+                $lines[] = "- {$doc['title']}: {$doc['url']}";
+            }
+            if (! $docs) {
+                $lines[] = '- Tidak ada dokumen yang cocok. Sampaikan bahwa dokumen itu belum tersedia di daftar dan sarankan mengajukan permohonan informasi.';
+            }
         }
 
         return implode("\n", $lines);

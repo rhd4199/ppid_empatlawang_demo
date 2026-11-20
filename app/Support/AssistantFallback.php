@@ -73,16 +73,35 @@ class AssistantFallback
             '\b(lapor|melapor|mengadu|pengaduan|aduan|adukan)\b' => 'PPID melayani permintaan informasi publik. Bila Bapak/Ibu ingin meminta data atau dokumen, silakan lewat menu Permohonan Informasi (' . route('request.create') . '). Untuk pengaduan pelayanan publik, Bapak/Ibu bisa memakai SP4N-LAPOR! di lapor.go.id atau menghubungi kami lewat halaman Kontak (' . route('contact.index') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',
             '\b(kontak|telepon|telpon|alamat|email|e-mail|surel|jam|buka|tutup|kantor|lokasi|whatsapp|wa|hubungi)\b' => fn () => self::contact($text),
+            // pattern unused here: documents() checks request intent and keywords itself and returns null to fall through
+            '' => fn () => self::documents($text),
             '\b(daftar informasi|dip|berkala|serta.?merta|setiap saat|dikecualikan|dokumen)\b' => 'Daftar informasi publik, baik yang berkala, serta-merta, maupun setiap saat, bisa dilihat dan diunduh di menu Daftar Informasi Publik (' . route('informasi-publik.index') . ').',
             '\b(permohonan|mengajukan|ajukan|minta|meminta|memperoleh|informasi)\b' => 'Caranya mudah: buka menu Permohonan Informasi (' . route('request.create') . '), isi identitas, informasi yang dibutuhkan beserta tujuannya, lalu pilih cara menerima salinannya. Simpan nomor registrasinya untuk mengecek status. PPID akan menjawab paling lambat 10 hari kerja, dan bisa diperpanjang 7 hari kerja bila perlu.',
         ];
         foreach ($topics as $pattern => $reply) {
-            if (preg_match("/{$pattern}/u", $text)) {
-                return $reply instanceof \Closure ? $reply() : $reply;
+            if (preg_match("/{$pattern}/u", $text) && ($answer = $reply instanceof \Closure ? $reply() : $reply) !== null) {
+                return $answer;
             }
         }
 
         return null;
+    }
+
+    /** Matching documents as a numbered list, or "not listed yet" + permohonan link; null when the message is not a document request. */
+    private static function documents(string $text): ?string
+    {
+        $keywords = DocumentFinder::wants($text) ? DocumentFinder::keywords($text) : [];
+        if (! $keywords) {
+            return null;
+        }
+        $docs = DocumentFinder::search($keywords);
+        if (! $docs) {
+            return 'Dokumen tentang "' . implode(' ', $keywords) . '" belum tersedia di Daftar Informasi Publik. Bapak/Ibu dapat memintanya lewat menu Permohonan Informasi (' . route('request.create') . '); PPID akan menjawab paling lambat 10 hari kerja.';
+        }
+
+        $lines = array_map(fn ($d, $i) => ($i + 1) . ". {$d['title']}\n   {$d['url']}", $docs, array_keys($docs));
+
+        return "Berikut dokumen yang cocok di Daftar Informasi Publik:\n" . implode("\n", $lines) . "\nBila yang dicari belum ada, Bapak/Ibu dapat mengajukan permohonan informasi (" . route('request.create') . ').';
     }
 
     /** Answers with the ContactSetting data that was asked for (all of it for a plain "kontak"); links to /kontak only when it is missing. */
