@@ -166,6 +166,25 @@ class AssistantTest extends TestCase
         $this->assertStringNotContainsString('sedang disiapkan', $reply('halo'));
     }
 
+    public function test_fallback_greets_thanks_and_asks_back_like_a_person(): void
+    {
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        $this->travelTo(now()->setTimezone('Asia/Jakarta')->setTime(8, 0)); // 08:00 WIB
+        $hello = $reply('Halo');
+        $this->assertStringStartsWith('Selamat pagi, Bapak/Ibu.', $hello);
+        $this->assertStringNotContainsString('pesan Anda sudah kami terima', $hello);
+        $this->travelTo(now()->setTimezone('Asia/Jakarta')->setTime(19, 0));
+        $this->assertStringStartsWith('Selamat malam', $reply('selamat pagi'));
+
+        $this->assertStringStartsWith("Wa'alaikumsalam", $reply('Assalamualaikum, cara minta informasi?'));
+        $this->assertStringContainsString(route('request.create'), $reply('Assalamualaikum, cara minta informasi?'));
+        $this->assertMatchesRegularExpression('/^(Sama-sama|Terima kasih kembali)/', $reply('terima kasih'));
+        $this->assertStringContainsString('lapor.go.id', $reply('apakah saya bisa melapor'));
+        $this->assertStringNotContainsString('lapor.go.id', $reply('saya minta laporan keuangan'));
+        $this->assertStringContainsString('?', $reply('xyz'));
+    }
+
     public function test_admin_prompt_unchanged_default_is_stored_empty(): void
     {
         $admin = User::factory()->create();

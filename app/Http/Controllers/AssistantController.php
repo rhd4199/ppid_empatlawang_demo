@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactSetting;
+use App\Support\AssistantFallback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,7 @@ class AssistantController extends Controller
     public const DEFAULT_PROMPT = <<<'TXT'
 Anda adalah Sapa Madani, petugas layanan informasi virtual PPID (Pejabat Pengelola Informasi dan Dokumentasi) Kabupaten Empat Lawang.
 
-Gaya: ramah, sopan, Bahasa Indonesia baku yang sederhana, ringkas (paling banyak sekitar 150 kata). Pakai daftar bernomor untuk langkah-langkah.
+Gaya: seperti petugas layanan yang hangat dan empatik, bukan robot atau template. Sapa pengguna dengan "Bapak/Ibu". Bahasa Indonesia yang sopan, sederhana, dan luwes (tidak kaku). Jawab inti pertanyaan lebih dulu, lalu beri penjelasan seperlunya; ringkas (paling banyak sekitar 150 kata). Pakai daftar bernomor hanya untuk langkah-langkah. Balas salam dan ucapan terima kasih dengan wajar. Bila maksud pertanyaan belum jelas, tanyakan balik dengan sopan (mis. "Boleh diceritakan informasi apa yang Bapak/Ibu cari?") daripada langsung memberi daftar menu. Hindari kalimat pembuka yang sama berulang-ulang.
 
 Fokus Anda hanya keterbukaan informasi publik:
 - Dasar hukum: UU No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik (KIP) dan aturan turunannya.
@@ -67,26 +68,7 @@ TXT;
                 ->post($settings['api_url'], ['message' => $data['message']])->throw()->json('reply'), 'API');
         }
 
-        return response()->json(['reply' => $this->cannedReply($data['message'])]);
-    }
-
-    // ponytail: keyword fallback while no AI is connected; first matching topic wins (keberatan before permohonan).
-    private function cannedReply(string $message): string
-    {
-        $topics = [
-            ['keberatan|sengketa|banding', 'Cara mengajukan keberatan: 1) Buka menu Pengajuan Keberatan. 2) Isi identitas, nomor permohonan, dan alasan keberatan. 3) Kirim paling lambat 30 hari kerja; Atasan PPID menanggapi paling lambat 30 hari kerja. Formulir: ' . route('complaint.create')],
-            ['status|cek|lacak|nomor registrasi', 'Status permohonan dapat dicek di menu Cek Status Permohonan dengan nomor registrasi Anda: ' . route('request.status')],
-            ['kontak|telepon|telpon|alamat|email|jam|kantor|whatsapp|wa\b', 'Alamat, telepon, email, dan jam layanan PPID ada di halaman Kontak: ' . route('contact.index')],
-            ['daftar informasi|dip\b|berkala|serta.?merta|setiap saat|dikecualikan|dokumen', 'Daftar informasi publik (berkala, serta-merta, setiap saat) dapat dilihat dan diunduh di menu Daftar Informasi Publik: ' . route('informasi-publik.index')],
-            ['permohonan|mengajukan|ajukan|minta|meminta|memperoleh|informasi', 'Cara mengajukan permohonan informasi: 1) Buka menu Permohonan Informasi. 2) Isi identitas, rincian informasi yang dibutuhkan, tujuan penggunaan, dan cara memperoleh salinan. 3) Simpan nomor registrasi untuk cek status. PPID menjawab paling lambat 10 hari kerja (dapat diperpanjang 7 hari kerja). Formulir: ' . route('request.create')],
-        ];
-        foreach ($topics as [$pattern, $reply]) {
-            if (preg_match("/{$pattern}/iu", $message)) {
-                return $reply;
-            }
-        }
-
-        return 'Terima kasih, pesan Anda sudah kami terima. Untuk saat ini Sapa Madani baru dapat membantu soal permohonan informasi, keberatan, cek status, daftar informasi publik, dan kontak PPID. Silakan ajukan permohonan melalui menu Permohonan Informasi (' . route('request.create') . ') atau hubungi kami di halaman Kontak (' . route('contact.index') . ').';
+        return response()->json(['reply' => AssistantFallback::reply($data['message'])]);
     }
 
     /** Persona (admin override or default) plus the official contact data and site links, so the model never has to guess them. */
