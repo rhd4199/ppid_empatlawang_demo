@@ -6,6 +6,7 @@ use App\Http\Controllers\AssistantController;
 use App\Models\ContactSetting;
 use App\Models\Document;
 use App\Models\PpidSetting;
+use App\Support\DocumentFinder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -236,6 +237,27 @@ class AssistantTest extends TestCase
         // "how do I file a request" is not a document search
         $this->assertStringContainsString('10 hari kerja', $reply('Cara minta informasi?'));
         $this->assertStringNotContainsString('belum tersedia', $reply('Cara minta informasi?'));
+    }
+
+    public function test_document_search_ignores_chat_slang_and_stray_words(): void
+    {
+        $doc = fn ($title) => Document::create(['title' => $title, 'category' => 'informasi-publik-berkala', 'file_path' => 'docs/x.pdf', 'is_published' => true]);
+        $perbup = $doc('Peraturan Bupati tentang Penjabaran APBD Tahun Anggaran 2024');
+        $perda = $doc('Peraturan Daerah tentang APBD Tahun Anggaran 2024');
+        $doc('Peraturan Daerah tentang APBD Tahun Anggaran 2023');
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        $this->assertSame(['apbd', '2024'], DocumentFinder::keywords('boleh mintak data APBD 2024 tidak'));
+        $slang = $reply('boleh mintak data APBD 2024 tidak');
+        $this->assertStringContainsString(route('informasi-publik.show', $perbup->id), $slang);
+        $this->assertStringContainsString(route('informasi-publik.show', $perda->id), $slang);
+        $this->assertStringNotContainsString('2023', $slang);
+
+        // stray word: ranked fallback keeps the year required
+        $stray = DocumentFinder::search(['apbd', 'xyzzy', '2024']);
+        $this->assertCount(2, $stray);
+        $this->assertSame([], DocumentFinder::search(['apbd', 'xyzzy', '2099']));
+        $this->assertStringContainsString('belum tersedia', $reply('data apbd 2099'));
     }
 
     public function test_openai_prompt_lists_only_found_documents(): void
