@@ -128,13 +128,14 @@
     const send = form.querySelector('.sm-send');
     const reset = panel.querySelector('[data-sm-reset]');
     const intro = box.innerHTML; // greeting + suggestion chips, restored on "new chat"
-    const KEY = 'smChat', MAX_MESSAGES = 20, MAX_HISTORY = 10;
+    const KEY = 'smChat', MAX_MESSAGES = 60, MAX_HISTORY = 10;
     let busy = false;
     // chat survives page changes within this tab (sessionStorage); storage blocked → page-only memory
     const blank = () => ({ messages: [], history: [], open: false });
     let state = blank();
     try { state = Object.assign(blank(), JSON.parse(sessionStorage.getItem(KEY))); } catch (e) { /* blocked or corrupt */ }
     if (!Array.isArray(state.messages) || !Array.isArray(state.history)) state = blank();
+    let shown = 0; // stored messages rendered so far, counted from the newest; older ones load when scrolled to the top
     function save() {
         state.messages = state.messages.slice(-MAX_MESSAGES);
         state.history = state.history.slice(-MAX_HISTORY);
@@ -146,7 +147,11 @@
         document.querySelectorAll('[data-sm-open]').forEach(b => b.setAttribute('aria-expanded', show));
         if (show) {
             panel.hidden = false;
-            requestAnimationFrame(() => { panel.classList.add('is-open'); fit(); });
+            requestAnimationFrame(() => {
+                panel.classList.add('is-open'); fit();
+                box.scrollTop = box.scrollHeight; // always open at the newest message (only scrollable once visible)
+                fillUp();
+            });
             if (focus) input.focus();
         } else {
             panel.classList.remove('is-open');
@@ -192,25 +197,42 @@
         }
         el.append(text.slice(last));
     }
-    function add(text, who) {
+    // before = row to insert above (lazy-loaded older messages); default appends and scrolls to the newest
+    function add(text, who, before = null) {
         const row = document.createElement('div');
         row.className = 'sm-row sm-row-' + who;
+        row.dataset.m = '';
         if (who === 'bot') row.innerHTML = '<span class="sm-mini" aria-hidden="true"><i class="fas fa-robot"></i></span>'; // static markup only
         const el = document.createElement('div');
         el.className = 'sm-msg sm-' + who;
         if (who === 'bot') fill(el, text); else el.textContent = text;
         row.appendChild(el);
-        box.appendChild(row);
-        box.scrollTop = box.scrollHeight;
+        box.insertBefore(row, before);
+        if (!before) box.scrollTop = box.scrollHeight;
         return el;
     }
-    function remember(text, who) { state.messages.push({ who, text }); reset.hidden = false; save(); }
+    function remember(text, who) { state.messages.push({ who, text }); shown++; reset.hidden = false; save(); shown = Math.min(shown, state.messages.length); }
+
+    // Render the next PAGE older stored messages above the current ones, keeping the visible message in place.
+    const PAGE = 10;
+    function loadOlder() {
+        const end = state.messages.length - shown;
+        if (end <= 0) return false;
+        const start = Math.max(0, end - PAGE), first = box.querySelector('[data-m]'), height = box.scrollHeight;
+        state.messages.slice(start, end).forEach(m => { if (m && (m.who === 'user' || m.who === 'bot')) add(String(m.text), m.who, first); });
+        shown += end - start;
+        box.scrollTop += box.scrollHeight - height;
+        return true;
+    }
+    // too few rows to scroll → the scroll event never fires, so load until the list overflows or nothing is left
+    function fillUp() { while (box.scrollHeight <= box.clientHeight && loadOlder()); }
 
     if (state.messages.length) {
         document.getElementById('smSuggest')?.remove();
-        state.messages.forEach(m => { if (m && (m.who === 'user' || m.who === 'bot')) add(String(m.text), m.who); });
+        loadOlder();
         reset.hidden = false;
     }
+    box.addEventListener('scroll', () => { if (box.scrollTop < 60) loadOlder(); }, { passive: true });
     // reopen after navigation on desktop only: on phones the panel would cover the new page
     if (state.open && window.matchMedia('(min-width: 768px)').matches) toggle(true, false);
 
@@ -218,7 +240,7 @@
     panel.querySelector('[data-sm-close]').addEventListener('click', () => toggle(false));
     reset.addEventListener('click', () => {
         if (busy) return;
-        state.messages = []; state.history = []; save();
+        state.messages = []; state.history = []; shown = 0; save();
         box.innerHTML = intro;
         reset.hidden = true;
         input.focus();
