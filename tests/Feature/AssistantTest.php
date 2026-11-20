@@ -31,6 +31,8 @@ class AssistantTest extends TestCase
     {
         $this->get('/')->assertOk()
             ->assertSee('id="smPanel"', false)
+            ->assertSee('id="smTeaser"', false)
+            ->assertSee('Tanya Asisten AI')
             ->assertSee('sm-bottombar', false)
             ->assertDontSee('wa.me/', false);
     }
@@ -41,6 +43,7 @@ class AssistantTest extends TestCase
 
         $this->get('/')->assertOk()
             ->assertSee('https://wa.me/6281234567890', false)
+            ->assertSee('id="smTeaser"', false)
             ->assertDontSee('id="smPanel"', false);
     }
 
