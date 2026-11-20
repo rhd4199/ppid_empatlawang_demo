@@ -100,7 +100,8 @@
         font-size: .8rem; line-height: 1.3; text-align: left; transition: background .15s, border-color .15s;
     }
     .sm-chip:hover, .sm-chip:focus-visible { background: #e0f2fe; border-color: #0369a1; }
-    .sm-note a { color: #0369a1; font-weight: 600; }
+    .sm-note a, .sm-bot a { color: #0369a1; font-weight: 600; }
+    .sm-bot a { text-decoration: underline; text-underline-offset: 2px; }
     @media (max-width: 767.98px) {
         .sm-panel { left: 12px; right: 12px; width: auto; bottom: 76px; max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); transform-origin: bottom center; }
     }
@@ -146,13 +147,32 @@
     }
     const isOpen = () => panel.classList.contains('is-open');
     const sync = () => { input.readOnly = busy; send.disabled = busy || !input.value.trim(); }; // readOnly keeps focus, unlike disabled
+    // text nodes + <a> built with createElement, never innerHTML: replies come from an external API.
+    // Only http(s) URLs become links; other sites open in a new tab without referrer.
+    function fill(el, text) {
+        el.textContent = '';
+        let last = 0;
+        for (const m of text.matchAll(/https?:\/\/[^\s<>"'()]+/g)) {
+            const url = m[0].replace(/[.,;:!?]+$/, ''); // sentence punctuation after the URL
+            let href;
+            try { href = new URL(url); } catch (e) { continue; }
+            el.append(text.slice(last, m.index));
+            const a = document.createElement('a');
+            a.href = href.href;
+            a.textContent = url;
+            if (href.origin !== location.origin) { a.target = '_blank'; a.rel = 'noopener noreferrer nofollow'; }
+            el.append(a);
+            last = m.index + url.length;
+        }
+        el.append(text.slice(last));
+    }
     function add(text, who) {
         const row = document.createElement('div');
         row.className = 'sm-row sm-row-' + who;
         if (who === 'bot') row.innerHTML = '<span class="sm-mini" aria-hidden="true"><i class="fas fa-robot"></i></span>'; // static markup only
         const el = document.createElement('div');
         el.className = 'sm-msg sm-' + who;
-        el.textContent = text; // never innerHTML: replies come from an external API
+        if (who === 'bot') fill(el, text); else el.textContent = text;
         row.appendChild(el);
         box.appendChild(row);
         box.scrollTop = box.scrollHeight;
@@ -217,7 +237,7 @@
         }
         pending.classList.remove('sm-typing');
         pending.removeAttribute('aria-label');
-        pending.textContent = reply;
+        fill(pending, reply);
         remember(reply, 'bot');
         box.scrollTop = box.scrollHeight;
         busy = false; sync();
