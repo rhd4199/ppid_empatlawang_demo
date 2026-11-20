@@ -28,6 +28,14 @@ class AssistantFallback
             ]);
         }
 
+        // "saya mau tanya" without a topic yet: invite the question (checked after topics so "mau tanya cara keberatan" still answers)
+        if (preg_match('/\b(mau|mo|boleh|numpang|ingin|pengen|pingin|izin|ijin)\s+(tanya|nanya|bertanya)\b|\bada (pertanyaan|yang (mau|ingin) (saya )?(tanya|ditanyakan))\b/u', $text)) {
+            return ($greeting ? "{$greeting} " : '') . Arr::random([
+                'Silakan, Bapak/Ibu. Apa yang ingin ditanyakan?',
+                'Tentu boleh, Bapak/Ibu. Silakan, apa yang ingin ditanyakan?',
+            ]) . ' Misalnya cara mengajukan permohonan informasi, mengecek status permohonan, mengajukan keberatan, atau mencari dokumen publik.';
+        }
+
         if ($greeting) {
             return "{$greeting} " . Arr::random([
                 'Saya Sapa Madani dari PPID Kabupaten Empat Lawang. Ada yang bisa saya bantu hari ini?',

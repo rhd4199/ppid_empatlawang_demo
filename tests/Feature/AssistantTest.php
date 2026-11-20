@@ -290,6 +290,21 @@ class AssistantTest extends TestCase
         $this->assertStringContainsString('?', $reply('xyz'));
     }
 
+    public function test_fallback_invites_the_question_when_user_only_wants_to_ask(): void
+    {
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        foreach (['saya mau tanya nih', 'boleh tanya?', 'numpang nanya min', 'ada pertanyaan'] as $message) {
+            $this->assertMatchesRegularExpression('/^(Silakan|Tentu boleh)/', $reply($message), $message);
+        }
+        $this->assertStringStartsWith('Selamat', $reply('halo, mau tanya'));
+        $this->assertStringContainsString('Silakan', $reply('halo, mau tanya'));
+        // a question that already names a topic still gets that topic's answer
+        $complaint = $reply('mau tanya cara mengajukan keberatan');
+        $this->assertStringContainsString(route('complaint.create'), $complaint);
+        $this->assertStringNotContainsString('Apa yang ingin ditanyakan', $complaint);
+    }
+
     public function test_admin_prompt_unchanged_default_is_stored_empty(): void
     {
         $admin = User::factory()->create();

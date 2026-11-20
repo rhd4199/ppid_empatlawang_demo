@@ -16,6 +16,7 @@ class DocumentFinder
         'unduh', 'download', 'dapat', 'bisa', 'boleh', 'yang', 'dan', 'atau', 'di', 'ke', 'dari', 'untuk', 'tentang', 'soal', 'mengenai',
         'tahun', 'thn', 'tersedia', 'punya', 'dong', 'ya', 'nya', 'pak', 'bu', 'bapak', 'ibu', 'admin', 'kak', 'min', 'cara', 'bagaimana',
         'gimana', 'mengajukan', 'ajukan', 'permohonan', 'informasi', 'publik', 'halo', 'hai',
+        'tanya', 'nanya', 'bertanya', 'pertanyaan', 'ditanyakan', 'numpang', 'nih', 'izin', 'ijin',
         'assalamualaikum', 'selamat', 'pagi', 'siang', 'sore', 'malam', 'terima', 'kasih', 'ini', 'itu', 'sudah', 'belum', 'dengan', 'pada',
         'kirim', 'kirimkan', 'berikan', 'kasih', 'link', 'tautan', 'terbaru', 'lengkap',
         // chat slang and filler ("boleh mintak data apbd 2024 tidak")
