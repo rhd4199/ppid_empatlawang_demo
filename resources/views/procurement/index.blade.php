@@ -77,6 +77,10 @@
                                 <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
                                     <i class="fas fa-gavel me-1"></i> Lihat
                                 </a>
+                                @elseif($doc->external_url)
+                                <a href="{{ $doc->external_url }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 text-nowrap" target="_blank" rel="noopener">
+                                    <i class="fas fa-arrow-up-right-from-square me-1"></i> Sumber
+                                </a>
                                 @endif
                             </div>
                             @empty
