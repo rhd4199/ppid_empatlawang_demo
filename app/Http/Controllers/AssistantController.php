@@ -33,10 +33,16 @@ Aturan:
 TXT;
 
     // Order: OPENAI_API_KEY set → OpenAI Chat Completions; else assistant_api_url (forwarded as {"message"}, must answer
-    // {"reply"}); else a fixed reply. ponytail: single-turn (no chat history sent), cost bounded by max_tokens + route throttle.
+    // {"reply"}); else a fixed reply. Only OpenAI gets the history. Cost bounded by max_tokens, history size + route throttle.
     public function chat(Request $request)
     {
-        $data = $request->validate(['message' => 'required|string|max:1000']);
+        // history = the last turns kept by the chat panel (browser only, never stored server-side) so follow-ups make sense.
+        $data = $request->validate([
+            'message' => 'required|string|max:1000',
+            'history' => 'nullable|array|max:10',
+            'history.*.role' => 'required|in:user,assistant',
+            'history.*.content' => 'required|string|max:1000',
+        ]);
         $settings = assistant_settings();
 
         if (! $settings['enabled']) {
@@ -50,6 +56,7 @@ TXT;
                     'max_tokens' => (int) config('services.openai.max_tokens'),
                     'messages' => [
                         ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'])],
+                        ...array_map(fn ($m) => ['role' => $m['role'], 'content' => $m['content']], $data['history'] ?? []),
                         ['role' => 'user', 'content' => $data['message']],
                     ],
                 ])->throw()->json('choices.0.message.content'), 'OpenAI');

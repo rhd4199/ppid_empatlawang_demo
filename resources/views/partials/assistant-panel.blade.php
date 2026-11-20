@@ -114,6 +114,7 @@
     const input = document.getElementById('smInput');
     const send = form.querySelector('.sm-send');
     let busy = false;
+    const history = []; // last turns for follow-up questions; lives in this page only
 
     function toggle(show) {
         // queried at click time: the mobile bottom-bar opener is rendered after this script
@@ -173,9 +174,10 @@
                     'Content-Type': 'application/json', 'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
-                body: JSON.stringify({ message }),
+                body: JSON.stringify({ message, history: history.slice(-10) }),
             });
             const data = await res.json();
+            if (res.ok && data.reply) history.push({ role: 'user', content: message }, { role: 'assistant', content: data.reply.slice(0, 1000) });
             reply = res.ok && data.reply ? data.reply : (res.status === 429 ? 'Terlalu banyak pesan, coba lagi sebentar.' : 'Maaf, terjadi kesalahan. Silakan coba lagi.');
         } catch (err) {
             reply = 'Koneksi gagal. Silakan coba lagi.';
