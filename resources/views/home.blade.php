@@ -546,6 +546,8 @@
     </div>
 </section>
 
+@include('partials.home._calendar')
+
 <!-- Gallery Carousel -->
 <section class="py-5">
     <div class="container">

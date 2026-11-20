@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\Gallery;
 use App\Models\Document;
+use App\Models\Event;
+use Carbon\Carbon;
 use App\Models\ContactSetting;
 use App\Models\PpidSetting;
 use App\Models\InformationRequest;
@@ -60,6 +62,13 @@ class HomeController extends Controller
             'satisfaction_index' => PpidSetting::where('key', 'stat_satisfaction_index')->value('value') ?? '98%',
         ];
 
-        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings', 'stats', 'infoCategories', 'infoCounts', 'infoLatest'));
+        // Kalender agenda bulan berjalan (events have no draft flag — all are public)
+        $calendarMonth = now()->startOfMonth();
+        $monthEvents = Event::whereBetween('start_date', [$calendarMonth, $calendarMonth->copy()->endOfMonth()])
+            ->orderBy('start_date')
+            ->get()
+            ->groupBy(fn ($event) => Carbon::parse($event->start_date)->day);
+
+        return view('home', compact('news', 'galleries', 'emergencyInfo', 'contactSettings', 'stats', 'infoCategories', 'infoCounts', 'infoLatest', 'calendarMonth', 'monthEvents'));
     }
 }
