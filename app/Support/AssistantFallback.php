@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\ContactSetting;
 use Illuminate\Support\Arr;
 
 /**
@@ -71,16 +72,47 @@ class AssistantFallback
             '\b(keberatan|sengketa|banding)\b' => 'Bila permohonan informasi ditolak, tidak ditanggapi, atau jawabannya belum sesuai, Bapak/Ibu dapat mengajukan keberatan lewat menu Pengajuan Keberatan (' . route('complaint.create') . '). Cukup isi identitas, nomor registrasi permohonan, dan alasannya, paling lambat 30 hari kerja. Atasan PPID akan menanggapi paling lambat 30 hari kerja.',
             '\b(lapor|melapor|mengadu|pengaduan|aduan|adukan)\b' => 'PPID melayani permintaan informasi publik. Bila Bapak/Ibu ingin meminta data atau dokumen, silakan lewat menu Permohonan Informasi (' . route('request.create') . '). Untuk pengaduan pelayanan publik, Bapak/Ibu bisa memakai SP4N-LAPOR! di lapor.go.id atau menghubungi kami lewat halaman Kontak (' . route('contact.index') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',
-            '\b(kontak|telepon|telpon|alamat|email|jam|kantor|whatsapp|wa)\b' => 'Alamat kantor, nomor telepon, email, dan jam layanan PPID lengkap ada di halaman Kontak (' . route('contact.index') . ').',
+            '\b(kontak|telepon|telpon|alamat|email|e-mail|surel|jam|buka|tutup|kantor|lokasi|whatsapp|wa|hubungi)\b' => fn () => self::contact($text),
             '\b(daftar informasi|dip|berkala|serta.?merta|setiap saat|dikecualikan|dokumen)\b' => 'Daftar informasi publik, baik yang berkala, serta-merta, maupun setiap saat, bisa dilihat dan diunduh di menu Daftar Informasi Publik (' . route('informasi-publik.index') . ').',
             '\b(permohonan|mengajukan|ajukan|minta|meminta|memperoleh|informasi)\b' => 'Caranya mudah: buka menu Permohonan Informasi (' . route('request.create') . '), isi identitas, informasi yang dibutuhkan beserta tujuannya, lalu pilih cara menerima salinannya. Simpan nomor registrasinya untuk mengecek status. PPID akan menjawab paling lambat 10 hari kerja, dan bisa diperpanjang 7 hari kerja bila perlu.',
         ];
         foreach ($topics as $pattern => $reply) {
             if (preg_match("/{$pattern}/u", $text)) {
-                return $reply;
+                return $reply instanceof \Closure ? $reply() : $reply;
             }
         }
 
         return null;
+    }
+
+    /** Answers with the ContactSetting data that was asked for (all of it for a plain "kontak"); links to /kontak only when it is missing. */
+    private static function contact(string $text): string
+    {
+        $c = ContactSetting::first();
+        $fields = [
+            'hours' => ['/\b(jam|buka|tutup|hari)\b/u', implode('; ', (array) $c?->working_hours), 'Jam layanan PPID: %s.'],
+            'address' => ['/\b(alamat|lokasi|kantor|datang|dimana|di mana)\b/u', trim((string) $c?->address), 'Kantor PPID beralamat di %s.'],
+            'phones' => ['/\b(telepon|telpon|nomor|hp|whatsapp|wa|hubungi)\b/u', implode(' atau ', (array) $c?->phones), 'PPID dapat dihubungi di nomor %s.'],
+            'emails' => ['/\b(email|e-mail|surel)\b/u', implode(' atau ', (array) $c?->emails), 'Email PPID: %s.'],
+        ];
+        $asked = array_filter($fields, fn ($f) => preg_match($f[0], $text)) ?: $fields;
+
+        $sentences = [];
+        foreach ($asked as [, $value, $format]) {
+            if ($value !== '') {
+                $sentences[] = sprintf($format, $value);
+            }
+        }
+        if (! $sentences) {
+            return 'Data kontak lengkap (alamat, telepon, email, dan jam layanan) ada di halaman Kontak (' . route('contact.index') . ').';
+        }
+        if (array_keys($asked) === ['hours'] && $fields['address'][1] !== '') {
+            $sentences[] = 'Kalau ingin datang langsung, alamatnya di ' . $fields['address'][1] . '.';
+        }
+        if (count($sentences) < count($asked)) {
+            $sentences[] = 'Info kontak lainnya ada di halaman Kontak (' . route('contact.index') . ').';
+        }
+
+        return implode(' ', $sentences);
     }
 }

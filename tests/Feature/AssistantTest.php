@@ -166,6 +166,36 @@ class AssistantTest extends TestCase
         $this->assertStringNotContainsString('sedang disiapkan', $reply('halo'));
     }
 
+    public function test_fallback_answers_contact_questions_with_contact_data(): void
+    {
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        $this->assertStringContainsString(route('contact.index'), $reply('Jam layanan PPID?'));
+
+        ContactSetting::create([
+            'address' => 'Jl. Contoh No. 1, Tebing Tinggi',
+            'phones' => ['(0702) 111222'],
+            'emails' => ['ppid@example.test'],
+            'working_hours' => ['Senin - Jumat: 08:00 - 16:00'],
+        ]);
+
+        $hours = $reply('Jam layanan PPID?');
+        $this->assertStringContainsString('Senin - Jumat: 08:00 - 16:00', $hours);
+        $this->assertStringContainsString('Jl. Contoh No. 1', $hours); // offered for a visit
+        $this->assertStringNotContainsString('(0702) 111222', $hours);
+        $this->assertStringNotContainsString(route('contact.index'), $hours);
+
+        $phone = $reply('nomor telepon PPID berapa?');
+        $this->assertStringContainsString('(0702) 111222', $phone);
+        $this->assertStringNotContainsString('ppid@example.test', $phone);
+        $this->assertStringContainsString('ppid@example.test', $reply('email ppid apa?'));
+
+        $all = $reply('kontak ppid');
+        foreach (['Jl. Contoh', '(0702) 111222', 'ppid@example.test', '08:00 - 16:00'] as $part) {
+            $this->assertStringContainsString($part, $all);
+        }
+    }
+
     public function test_fallback_greets_thanks_and_asks_back_like_a_person(): void
     {
         $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
