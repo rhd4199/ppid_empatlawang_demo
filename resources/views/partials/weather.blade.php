@@ -31,9 +31,34 @@
     .bmkg-fa.fa-cloud-sun, .bmkg-fa.fa-moon, .bmkg-fa.fa-cloud-moon { color: #fef3c7; }
     .bmkg-fa.fa-cloud-bolt { color: #fcd34d; }
     .bmkg-card select { max-width: 220px; }
-    .bmkg-warn { background: rgba(255,255,255,.95); color: #991b1b; border-radius: 14px; padding: 10px 14px; font-size: .88rem; }
-    .bmkg-warn summary { cursor: pointer; font-weight: 600; }
-    .bmkg-warn a { color: #991b1b; }
+    .bmkg-ig { --ig: #b91c1c; --ig-soft: #fef2f2; background: #fff; color: #1e293b; border-radius: 16px; overflow: hidden; font-size: .88rem; box-shadow: 0 6px 18px rgba(15,23,42,.18); }
+    .bmkg-ig-amber { --ig: #b45309; --ig-soft: #fffbeb; }
+    .bmkg-ig-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--ig); color: #fff; }
+    .bmkg-ig-icon { width: 52px; height: 52px; flex: none; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.18); font-size: 1.7rem; color: #fde047; }
+    .bmkg-ig-badge { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; opacity: .9; }
+    .bmkg-ig-title { font-weight: 800; font-size: 1rem; line-height: 1.25; }
+    .bmkg-ig-status { flex: none; padding: 4px 10px; border-radius: 999px; font-size: .72rem; font-weight: 700; background: #fff; color: var(--ig); }
+    .bmkg-ig-status.is-live::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: currentColor; animation: bmkg-blink 1.2s infinite; }
+    .bmkg-ig-status.is-past { background: rgba(255,255,255,.25); color: #fff; }
+    @keyframes bmkg-blink { 50% { opacity: .25; } }
+    .bmkg-ig-time { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--ig-soft); }
+    .bmkg-ig-time small { display: block; font-size: .68rem; color: #64748b; }
+    .bmkg-ig-time strong { font-size: 1rem; color: var(--ig); white-space: nowrap; }
+    .bmkg-ig-bar { flex: 1; height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+    .bmkg-ig-bar span { display: block; height: 100%; background: var(--ig); }
+    .bmkg-ig-sec { padding: 10px 14px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+    .bmkg-ig-label { width: 100%; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #64748b; }
+    .bmkg-ig-area, .bmkg-ig-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-weight: 600; }
+    .bmkg-ig-area { background: var(--ig); color: #fff; }
+    .bmkg-ig-chip { background: var(--ig-soft); color: var(--ig); border: 1px solid currentColor; }
+    .bmkg-ig-tips { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+    .bmkg-ig-tip { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; background: #f1f5f9; font-size: .8rem; line-height: 1.25; }
+    .bmkg-ig-tip i { width: 26px; height: 26px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--ig); font-size: .8rem; }
+    .bmkg-ig-more { margin: 10px 14px 12px; padding-top: 8px; border-top: 1px dashed #cbd5e1; }
+    .bmkg-ig-more summary { cursor: pointer; font-weight: 700; color: var(--ig); }
+    .bmkg-ig-more a { color: var(--ig); }
+    @media (max-width: 575.98px) { .bmkg-ig-head { flex-wrap: wrap; } .bmkg-ig-icon { width: 44px; height: 44px; font-size: 1.4rem; } }
+    @media (prefers-reduced-motion: reduce) { .bmkg-ig-status.is-live::before { animation: none; } }
 </style>
 
 <script>
@@ -83,21 +108,54 @@
     }
 
     const title = s => s.toLowerCase().replace(/\b\w+/g, w => /^[ivx]+$/.test(w) ? w.toUpperCase() : w[0].toUpperCase() + w.slice(1)); // BANYUASIN III → Banyuasin III
-    // Short box: title, valid time, impact, which Empat Lawang districts; full BMKG text + all areas folded away.
+    // Infographic per alert: hazard icon + status, valid-time bar, Empat Lawang districts, impact chips, advice.
+    // Full BMKG text + every Sumsel district stay folded in "Selengkapnya".
+    const wibMin = s => { const m = /(\d{1,2})[.:](\d{2})/.exec(s || ''); return m ? +m[1] * 60 + +m[2] : null; };
+    const nowMin = () => wibMin(new Date().toLocaleTimeString('en-GB', {timeZone: 'Asia/Jakarta', hour12: false}));
+    const IMPACT = [[/jarak pandang/i, 'fa-eye-slash'], [/angin/i, 'fa-wind'], [/banjir|genangan/i, 'fa-house-flood-water'],
+        [/longsor/i, 'fa-hill-rockslide'], [/pohon/i, 'fa-tree'], [/petir|kilat/i, 'fa-bolt'], [/licin/i, 'fa-road']];
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+    function advice(t) {
+        const tips = [['fa-house', 'Kurangi aktivitas di luar ruangan']];
+        if (/petir|angin/i.test(t)) tips.push(['fa-tree', 'Jauhi pohon besar & papan reklame']);
+        if (/hujan/i.test(t)) tips.push(['fa-water', 'Waspada genangan, banjir & longsor']);
+        tips.push(['fa-tower-broadcast', 'Pantau info terbaru BMKG']);
+        return tips;
+    }
     function warn(a) {
         const all = a.all_areas || [];
-        const time = a.start && a.end ? `${a.start.replace(/ WI\w+$/, '')}–${a.end}` : a.end ? `s.d. ${a.end}` : '';
         const link = /^https:\/\//.test(a.link || '') ? a.link : 'https://www.bmkg.go.id/peringatan-dini/nowcast';
-        return `<div class="bmkg-warn mb-2">
-            <div class="fw-bold"><i class="fas fa-triangle-exclamation me-1"></i>${esc(a.title)}</div>
-            ${time ? `<div><i class="far fa-clock me-1"></i>Berlaku ${esc(time)}</div>` : ''}
-            <div><i class="fas fa-location-dot me-1"></i>Termasuk Empat Lawang: <strong>Kec. ${esc(a.areas.map(title).join(', '))}</strong></div>
-            ${a.impact ? `<div>Dampak: ${esc(a.impact)}</div>` : ''}
-            <details class="mt-1"><summary>Selengkapnya${all.length ? ` (${all.length} kecamatan)` : ''}</summary>
-                ${all.length ? `<div class="mt-1">${all.map(n => a.areas.includes(n) ? `<strong>${esc(title(n))}</strong>` : esc(title(n))).join(', ')}</div>` : ''}
+        const severe = /lebat|ekstrem|kencang|es\b/i.test(a.title);
+        const [s, e, n] = [wibMin(a.start), wibMin(a.end), nowMin()];
+        const status = s === null || e === null || e <= s ? null
+            : n < s ? ['soon', 'Akan terjadi'] : n <= e ? ['live', 'Sedang berlangsung'] : ['past', 'Telah berakhir'];
+        const pct = status ? Math.min(100, Math.max(0, Math.round((n - s) / (e - s) * 100))) : 0;
+        const impacts = (a.impact || '').split(/,\s*(?:dan\s+)?|\s+dan\s+/).map(x => x.trim()).filter(Boolean);
+        const chips = (list, cls) => list.map(([ic, txt]) => `<span class="${cls}"><i class="fas ${ic}" aria-hidden="true"></i>${esc(txt)}</span>`).join('');
+        return `<article class="bmkg-ig ${severe ? 'bmkg-ig-red' : 'bmkg-ig-amber'} mb-2">
+            <header class="bmkg-ig-head">
+                <span class="bmkg-ig-icon"><i class="fas ${fa(a.title, false)}" aria-hidden="true"></i></span>
+                <div class="flex-grow-1" style="min-width: 0">
+                    <span class="bmkg-ig-badge"><i class="fas fa-triangle-exclamation me-1" aria-hidden="true"></i>Peringatan Dini BMKG</span>
+                    <div class="bmkg-ig-title">${esc(a.title)}</div>
+                </div>
+                ${status ? `<span class="bmkg-ig-status is-${status[0]}">${status[1]}</span>` : ''}
+            </header>
+            ${a.start || a.end ? `<div class="bmkg-ig-time">
+                <div><small>Mulai</small><strong>${esc(a.start || '–')}</strong></div>
+                <div class="bmkg-ig-bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
+                <div class="text-end"><small>Selesai</small><strong>${esc(a.end || '–')}</strong></div></div>` : ''}
+            <div class="bmkg-ig-sec"><div class="bmkg-ig-label"><i class="fas fa-location-dot me-1" aria-hidden="true"></i>Kecamatan terdampak di Empat Lawang</div>
+                ${chips(a.areas.map(x => ['fa-map-pin', 'Kec. ' + title(x)]), 'bmkg-ig-area')}</div>
+            ${impacts.length ? `<div class="bmkg-ig-sec"><div class="bmkg-ig-label">Potensi dampak</div>
+                ${chips(impacts.map(x => [(IMPACT.find(([re]) => re.test(x)) || [, 'fa-circle-exclamation'])[1], cap(x)]), 'bmkg-ig-chip')}</div>` : ''}
+            <div class="bmkg-ig-sec"><div class="bmkg-ig-label">Imbauan</div>
+                <div class="bmkg-ig-tips">${chips(advice(a.title + ' ' + (a.impact || '')), 'bmkg-ig-tip')}</div></div>
+            <details class="bmkg-ig-more"><summary>Selengkapnya${all.length ? ` (${all.length} kecamatan di Sumsel)` : ''}</summary>
+                ${all.length ? `<div class="mt-1">${all.map(x => a.areas.includes(x) ? `<strong>${esc(title(x))}</strong>` : esc(title(x))).join(', ')}</div>` : ''}
                 <p class="mt-1 mb-1" style="white-space: pre-line">${esc(a.description)}</p>
                 <a href="${esc(link)}" target="_blank" rel="noopener" class="fw-semibold">Lihat di BMKG</a>
-            </details></div>`;
+            </details></article>`;
     }
 
     function render(d) {
