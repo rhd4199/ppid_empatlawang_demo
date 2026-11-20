@@ -271,6 +271,15 @@ class AssistantTest extends TestCase
             && ! str_contains($req['messages'][0]['content'], 'Laporan Keuangan'));
     }
 
+    public function test_fallback_small_talk_and_civil_registration(): void
+    {
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        $this->assertMatchesRegularExpression('/baik/i', $reply('Apakabar'));
+        $this->assertStringContainsString('Disdukcapil', $reply('Syarat bikin KTP apa ya?'));
+        $this->assertStringContainsString('Disdukcapil', $reply('Mau bikin KTP'));
+    }
+
     public function test_fallback_greets_thanks_and_asks_back_like_a_person(): void
     {
         $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');

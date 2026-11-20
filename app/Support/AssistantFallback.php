@@ -36,6 +36,13 @@ class AssistantFallback
             ]) . ' Misalnya cara mengajukan permohonan informasi, mengecek status permohonan, mengajukan keberatan, atau mencari dokumen publik.';
         }
 
+        if (preg_match('/\b(apa ?kabar|pa ?kabar|gimana kabar|kabarnya)\b/u', $text)) {
+            return ($greeting ? "{$greeting} " : '') . Arr::random([
+                'Alhamdulillah baik, terima kasih sudah bertanya, Bapak/Ibu. Semoga Bapak/Ibu juga sehat selalu. Ada yang bisa saya bantu?',
+                'Kabar baik, Bapak/Ibu, terima kasih. Ada informasi yang sedang Bapak/Ibu cari?',
+            ]);
+        }
+
         if ($greeting) {
             return "{$greeting} " . Arr::random([
                 'Saya Sapa Madani dari PPID Kabupaten Empat Lawang. Ada yang bisa saya bantu hari ini?',
@@ -79,6 +86,8 @@ class AssistantFallback
     {
         $topics = [
             '\b(keberatan|sengketa|banding)\b' => 'Bila permohonan informasi ditolak, tidak ditanggapi, atau jawabannya belum sesuai, Bapak/Ibu dapat mengajukan keberatan lewat menu Pengajuan Keberatan (' . route('complaint.create') . '). Cukup isi identitas, nomor registrasi permohonan, dan alasannya, paling lambat 30 hari kerja. Atasan PPID akan menanggapi paling lambat 30 hari kerja.',
+            // civil registration is Disdukcapil's service, not PPID's; no requirement list here (it must not be made up)
+            '\b(ktp|e-?ktp|ktp-?el|kk|kartu keluarga|akta|akte|kia|kartu identitas anak|domisili|pindah datang|adminduk|kependudukan|dukcapil|disdukcapil)\b' => 'Pembuatan KTP-el, KK, akta, dan dokumen kependudukan lainnya dilayani oleh Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Empat Lawang, jadi persyaratan resminya paling tepat ditanyakan langsung ke Disdukcapil. Bila Bapak/Ibu ingin informasi persyaratannya secara tertulis, bisa juga diajukan lewat Permohonan Informasi (' . route('request.create') . ').',
             '\b(lapor|melapor|mengadu|pengaduan|aduan|adukan)\b' => 'PPID melayani permintaan informasi publik. Bila Bapak/Ibu ingin meminta data atau dokumen, silakan lewat menu Permohonan Informasi (' . route('request.create') . '). Untuk pengaduan pelayanan publik, Bapak/Ibu bisa memakai SP4N-LAPOR! di lapor.go.id atau menghubungi kami lewat halaman Kontak (' . route('contact.index') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',
             '\b(kontak|telepon|telpon|alamat|email|e-mail|surel|jam|buka|tutup|kantor|lokasi|whatsapp|wa|hubungi)\b' => fn () => self::contact($text),
