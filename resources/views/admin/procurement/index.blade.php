@@ -229,6 +229,12 @@
                         <input class="form-control" type="file" name="file_path">
                         <div class="form-text small"><i class="fas fa-info-circle me-1"></i> Max 10MB. Format: PDF, DOC, XLS, JPG, PNG.</div>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Tautan (opsional)</label>
+                        <input type="text" class="form-control bg-light border-0" name="external_url" maxlength="255" placeholder="https://sirup.inaproc.id/... atau /kontak">
+                        <div class="form-text small"><i class="fas fa-link me-1"></i> Untuk dokumen tanpa file: SiRUP, LPSE, JDIH, peraturan.bpk.go.id.</div>
+                    </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>

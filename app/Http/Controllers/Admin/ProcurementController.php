@@ -91,6 +91,7 @@ class ProcurementController extends Controller
             'category' => 'required|in:pengadaan_info,pengadaan_regulasi',
             'file_path' => 'nullable|file|mimes:pdf,doc,docx,xls,csv,xlsx,jpg,png|max:10240', // 10MB max
             'description' => 'nullable|string',
+            'external_url' => ['nullable', 'string', 'max:255', 'regex:#^(https?://|/)#i'],
             'is_published' => 'nullable|boolean',
         ]);
 
@@ -103,6 +104,7 @@ class ProcurementController extends Controller
             'title' => $request->title,
             'category' => $request->category,
             'file_path' => $path,
+            'external_url' => $request->external_url,
             'description' => $request->description,
             'is_published' => $request->has('is_published') ? $request->is_published : true,
         ]);
@@ -119,7 +121,7 @@ class ProcurementController extends Controller
             'category' => 'required|in:pengadaan_info,pengadaan_regulasi',
             'file_path' => 'nullable|file|mimes:pdf,doc,docx,xls,csv,xlsx,jpg,png|max:10240', // 10MB max
             'description' => 'nullable|string',
-            'external_url' => 'nullable|string|max:255',
+            'external_url' => ['nullable', 'string', 'max:255', 'regex:#^(https?://|/)#i'],
             'is_published' => 'nullable|boolean',
         ]);
 

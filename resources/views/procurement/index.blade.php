@@ -42,30 +42,7 @@
                 <div class="tab-pane fade show active" id="info">
                     <div class="card card-hover border-0 shadow-sm p-4 mb-4">
                         <h3 class="mb-4 border-bottom pb-2">Informasi Pengadaan</h3>
-                        <div class="list-group list-group-flush">
-                            @forelse($documents->where('category', 'pengadaan_info') as $doc)
-                            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                <div>
-                                    <h5 class="mb-1">{{ $doc->title }}</h5>
-                                    <p class="mb-0 text-muted small">{{ Str::limit(strip_tags($doc->description), 260) }}</p>
-                                </div>
-                                <div class="d-flex flex-column gap-2 ms-3">
-                                    @if($doc->file_path)
-                                    <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3 text-nowrap" target="_blank">
-                                        <i class="fas fa-eye me-1"></i> Lihat
-                                    </a>
-                                    @endif
-                                    @if($doc->external_url)
-                                    <a href="{{ $doc->external_url }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 text-nowrap" target="_blank" rel="noopener">
-                                        <i class="fas fa-arrow-up-right-from-square me-1"></i> Buka
-                                    </a>
-                                    @endif
-                                </div>
-                            </div>
-                            @empty
-                            <div class="alert alert-info">Belum ada informasi pengadaan.</div>
-                            @endforelse
-                        </div>
+                        @include('procurement._list', ['docs' => $documents->where('category', 'pengadaan_info'), 'empty' => 'Belum ada informasi pengadaan.', 'limit' => 260])
                     </div>
                 </div>
 
@@ -73,27 +50,7 @@
                 <div class="tab-pane fade" id="regulasi">
                     <div class="card card-hover border-0 shadow-sm p-4 mb-4">
                         <h3 class="mb-4 border-bottom pb-2">Regulasi & Aturan</h3>
-                        <div class="list-group list-group-flush">
-                            @forelse($documents->where('category', 'pengadaan_regulasi') as $doc)
-                            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                <div>
-                                    <h5 class="mb-1">{{ $doc->title }}</h5>
-                                    <p class="mb-0 text-muted small">{{ Str::limit(strip_tags($doc->description), 120) }}</p>
-                                </div>
-                                @if($doc->file_path)
-                                <a href="{{ storage_url($doc->file_path) }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">
-                                    <i class="fas fa-gavel me-1"></i> Lihat
-                                </a>
-                                @elseif($doc->external_url)
-                                <a href="{{ $doc->external_url }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 text-nowrap" target="_blank" rel="noopener">
-                                    <i class="fas fa-arrow-up-right-from-square me-1"></i> Sumber
-                                </a>
-                                @endif
-                            </div>
-                            @empty
-                            <div class="alert alert-info">Belum ada dokumen regulasi.</div>
-                            @endforelse
-                        </div>
+                        @include('procurement._list', ['docs' => $documents->where('category', 'pengadaan_regulasi'), 'empty' => 'Belum ada dokumen regulasi.', 'limit' => 160])
                     </div>
                 </div>
 
