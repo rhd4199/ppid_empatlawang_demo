@@ -29,8 +29,8 @@
 
 <style>
     .sm-panel {
-        position: fixed; right: 18px; bottom: 150px; z-index: 1085; width: 370px; max-width: calc(100vw - 24px);
-        height: 500px; max-height: calc(100vh - 170px); display: flex; flex-direction: column;
+        position: fixed; right: 18px; bottom: 150px; z-index: 1085; width: 400px; max-width: calc(100vw - 24px);
+        height: 680px; max-height: calc(100vh - 170px); display: flex; flex-direction: column;
         background: #fff; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden;
         box-shadow: 0 24px 60px rgba(15,23,42,.22), 0 4px 14px rgba(15,23,42,.08);
         transform-origin: bottom right; opacity: 0; transform: translateY(12px) scale(.96);
@@ -184,7 +184,8 @@
             el.append(text.slice(last, m.index));
             const a = document.createElement('a');
             a.href = href.href;
-            a.textContent = url;
+            // own-site links show only the path ("/informasi-publik/27"): the full preview/production host wastes 2–3 lines
+            a.textContent = href.origin === location.origin ? href.pathname + href.search : url;
             if (href.origin !== location.origin) { a.target = '_blank'; a.rel = 'noopener noreferrer nofollow'; }
             el.append(a);
             last = m.index + url.length;
