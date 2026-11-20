@@ -46,6 +46,7 @@ Tanpa kredensial S3, gambar upload tidak tampil (halaman tetap jalan).
 | `php artisan test --filter=ApiTest` | Satu file tes |
 | `php artisan migrate --force` | Migrasi (produksi) |
 | `php artisan route:list` | Daftar route |
+| `php artisan mail:test <email>` | Kirim email uji (cek konfigurasi SMTP) |
 | `php artisan config:clear` | Setelah ubah `.env` di server yang memakai `config:cache` |
 
 ## Konfigurasi (.env)
@@ -57,6 +58,30 @@ Lihat `.env.example`. Variabel khusus aplikasi ini:
 | `API_TOKEN` | Bearer token REST API `/api/v1`. Kosong = API ditutup (401). |
 | `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_ROOT_DIR`, `S3_USE_PATH_STYLE_ENDPOINT` | Penyimpanan semua upload (disk `public`). |
 | `DB_CONNECTION`, `DB_URL` / `DB_HOST`… | Database. |
+| `MAIL_*` | Pengiriman email (reset password). Lihat "Email (SMTP)" di bawah. |
+
+### Email (SMTP)
+
+Produksi — isi di `.env` server (jangan di-commit):
+
+```dotenv
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtp            # port 587 (STARTTLS); port 465 (SSL) pakai smtps
+MAIL_HOST=mail.domain-anda.go.id
+MAIL_PORT=587
+MAIL_USERNAME=ppid@domain-anda.go.id
+MAIL_PASSWORD=...           # Gmail/Google Workspace: App Password, bukan password akun
+MAIL_FROM_ADDRESS="ppid@domain-anda.go.id"
+MAIL_FROM_NAME="PPID Kabupaten Empat Lawang"
+```
+
+Lalu `php artisan config:clear` (bila server memakai `config:cache`) dan cek koneksi:
+
+```bash
+php artisan mail:test alamat@tujuan.id   # kirim email uji; gagal = pesan error SMTP
+```
+
+Lokal: `MAIL_MAILER=log` — email tidak dikirim, isinya tercatat di `storage/logs/laravel.log`.
 
 Pengaturan yang diubah dari panel admin (bukan `.env`): kontak & media sosial, statistik
 layanan, asisten virtual Sapa Madani (aktif, nomor WhatsApp, URL API chatbot) — tersimpan
