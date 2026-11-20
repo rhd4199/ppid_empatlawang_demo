@@ -249,7 +249,13 @@
                         <input type="url" name="assistant_api_url" class="form-control @error('assistant_api_url') is-invalid @enderror"
                                value="{{ old('assistant_api_url', $assistant['api_url']) }}" placeholder="https://...">
                         @error('assistant_api_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        <small class="text-muted">Menerima POST <code>{"message": "..."}</code>, membalas <code>{"reply": "..."}</code>. Kosong = balasan otomatis sementara.</small>
+                        <small class="text-muted">Menerima POST <code>{"message": "..."}</code>, membalas <code>{"reply": "..."}</code>. Kosong = balasan otomatis sementara. Tidak dipakai bila OpenAI aktif (OPENAI_API_KEY).</small>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Persona / Instruksi Sapa Madani (OpenAI)</label>
+                        <textarea name="assistant_prompt" rows="12" class="form-control font-monospace small @error('assistant_prompt') is-invalid @enderror">{{ old('assistant_prompt', $assistant['prompt'] !== '' ? $assistant['prompt'] : App\Http\Controllers\AssistantController::DEFAULT_PROMPT) }}</textarea>
+                        @error('assistant_prompt')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <small class="text-muted">Alamat, telepon, email, jam layanan (dari Pengaturan Kontak di atas) dan tautan menu situs ditambahkan otomatis. Kosongkan untuk kembali ke instruksi bawaan.</small>
                     </div>
                 </div>
             </div>

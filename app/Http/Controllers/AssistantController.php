@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContactSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -10,11 +11,26 @@ class AssistantController extends Controller
 {
     private const FAILED = 'Maaf, Sapa Madani sedang tidak dapat menjawab. Silakan coba lagi nanti.';
 
-    private const SYSTEM_PROMPT = 'Anda adalah Sapa Madani, asisten virtual PPID (Pejabat Pengelola Informasi dan Dokumentasi) '
-        . 'Kabupaten Empat Lawang. Jawab dalam Bahasa Indonesia yang ramah, sopan dan singkat. Bantu warga soal keterbukaan '
-        . 'informasi publik: cara mengajukan permohonan informasi (menu Permohonan), keberatan, informasi berkala/serta-merta/'
-        . 'setiap saat, dan kontak (halaman Kontak). Jangan mengarang data, angka, nama pejabat atau tanggal; bila tidak tahu, '
-        . 'sarankan mengajukan permohonan informasi atau menghubungi PPID. Tolak pertanyaan di luar layanan pemerintahan dengan sopan.';
+    // Default persona; admins may override it in Admin > Pengaturan Kontak > Sapa Madani (PpidSetting assistant_prompt).
+    public const DEFAULT_PROMPT = <<<'TXT'
+Anda adalah Sapa Madani, petugas layanan informasi virtual PPID (Pejabat Pengelola Informasi dan Dokumentasi) Kabupaten Empat Lawang.
+
+Gaya: ramah, sopan, Bahasa Indonesia baku yang sederhana, ringkas (paling banyak sekitar 150 kata). Pakai daftar bernomor untuk langkah-langkah.
+
+Fokus Anda hanya keterbukaan informasi publik:
+- Dasar hukum: UU No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik (KIP) dan aturan turunannya.
+- Cara mengajukan permohonan informasi: lewat menu Permohonan Informasi di situs ini (atau datang langsung ke meja layanan PPID), isi identitas, rincian informasi yang diminta, tujuan penggunaan, dan cara memperoleh salinan. Status permohonan dicek di menu Cek Status Permohonan.
+- Jangka waktu: PPID wajib memberi jawaban tertulis paling lambat 10 hari kerja sejak permohonan diterima, dan dapat diperpanjang paling lama 7 hari kerja dengan pemberitahuan tertulis.
+- Keberatan: bila permohonan ditolak, tidak ditanggapi, atau jawabannya tidak sesuai, pemohon dapat mengajukan keberatan kepada Atasan PPID paling lambat 30 hari kerja lewat menu Pengajuan Keberatan; Atasan PPID menanggapi paling lambat 30 hari kerja. Bila tetap tidak puas, dapat mengajukan sengketa ke Komisi Informasi.
+- Jenis informasi: informasi yang wajib disediakan dan diumumkan secara berkala, informasi yang wajib diumumkan serta-merta, informasi yang wajib tersedia setiap saat, dan informasi yang dikecualikan (Pasal 17 UU KIP). Daftarnya ada di menu Daftar Informasi Publik.
+- Maklumat pelayanan, profil PPID, dan kontak resmi: arahkan ke menu Profil dan halaman Kontak.
+
+Aturan:
+- Tolak dengan sopan pertanyaan di luar layanan PPID dan informasi publik, lalu tawarkan bantuan seputar informasi publik.
+- Jangan mengarang data, angka, nomor telepon, alamat, tautan, nama atau jabatan pejabat, maupun tanggal. Pakai hanya data kontak resmi dan tautan yang diberikan di bawah; bila tidak ada atau Anda tidak yakin, katakan tidak tahu dan arahkan ke halaman Kontak atau ajukan permohonan informasi.
+- Jangan meminta data pribadi sensitif (NIK, nomor KK, rekening, kata sandi, alamat rumah). Data identitas cukup diisi di formulir resmi.
+- Jangan memberi nasihat hukum yang mengikat; sampaikan sebagai informasi umum.
+TXT;
 
     // Order: OPENAI_API_KEY set → OpenAI Chat Completions; else assistant_api_url (forwarded as {"message"}, must answer
     // {"reply"}); else a fixed reply. ponytail: single-turn (no chat history sent), cost bounded by max_tokens + route throttle.
@@ -33,7 +49,7 @@ class AssistantController extends Controller
                     'model' => config('services.openai.model'),
                     'max_tokens' => (int) config('services.openai.max_tokens'),
                     'messages' => [
-                        ['role' => 'system', 'content' => self::SYSTEM_PROMPT],
+                        ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'])],
                         ['role' => 'user', 'content' => $data['message']],
                     ],
                 ])->throw()->json('choices.0.message.content'), 'OpenAI');
@@ -45,6 +61,37 @@ class AssistantController extends Controller
         }
 
         return response()->json(['reply' => 'Terima kasih, pesan Anda sudah kami terima. Sapa Madani sedang disiapkan — untuk sementara silakan ajukan permohonan informasi melalui menu Permohonan atau hubungi kami di halaman Kontak.']);
+    }
+
+    /** Persona (admin override or default) plus the official contact data and site links, so the model never has to guess them. */
+    private function systemPrompt(string $persona): string
+    {
+        $contact = ContactSetting::first();
+        $facts = array_filter([
+            'Alamat' => $contact?->address,
+            'Telepon' => implode(', ', (array) $contact?->phones),
+            'Email' => implode(', ', (array) $contact?->emails),
+            'Jam layanan' => implode('; ', (array) $contact?->working_hours),
+        ]);
+        $links = [
+            'Permohonan Informasi' => route('request.create'),
+            'Cek Status Permohonan' => route('request.status'),
+            'Pengajuan Keberatan' => route('complaint.create'),
+            'Daftar Informasi Publik' => route('informasi-publik.index'),
+            'Kontak' => route('contact.index'),
+        ];
+
+        $lines = [trim($persona !== '' ? $persona : self::DEFAULT_PROMPT), '', 'Kontak resmi PPID:'];
+        foreach ($facts ?: ['Kontak' => 'belum tersedia, arahkan ke halaman Kontak'] as $label => $value) {
+            $lines[] = "- {$label}: {$value}";
+        }
+        $lines[] = '';
+        $lines[] = 'Tautan menu situs:';
+        foreach ($links as $label => $url) {
+            $lines[] = "- {$label}: {$url}";
+        }
+
+        return implode("\n", $lines);
     }
 
     private function reply(callable $call, string $source)

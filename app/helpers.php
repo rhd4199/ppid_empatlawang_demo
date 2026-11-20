@@ -85,13 +85,14 @@ if (! function_exists('assistant_settings')) {
      */
     function assistant_settings(): array
     {
-        $values = App\Models\PpidSetting::whereIn('key', ['assistant_enabled', 'assistant_whatsapp', 'assistant_api_url'])
+        $values = App\Models\PpidSetting::whereIn('key', ['assistant_enabled', 'assistant_whatsapp', 'assistant_api_url', 'assistant_prompt'])
             ->pluck('value', 'key');
 
         return [
             'enabled' => ($values['assistant_enabled'] ?? '1') === '1',
             'whatsapp' => $values['assistant_whatsapp'] ?? '',
             'api_url' => $values['assistant_api_url'] ?? '',
+            'prompt' => $values['assistant_prompt'] ?? '',
             'wa_url' => wa_link($values['assistant_whatsapp'] ?? null),
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\Controller;
 use App\Models\ContactSetting;
 use App\Models\PpidSetting;
@@ -49,18 +50,28 @@ class ContactSettingController extends Controller
             'assistant_enabled' => 'nullable|boolean',
             'assistant_whatsapp' => ['nullable', 'string', 'max:30', 'regex:/^[0-9+\-\s()]*$/'],
             'assistant_api_url' => 'nullable|url:http,https|max:500',
+            'assistant_prompt' => 'nullable|string|max:6000',
         ]);
 
         $values = [
             'assistant_enabled' => $request->boolean('assistant_enabled') ? '1' : '0',
             'assistant_whatsapp' => trim($data['assistant_whatsapp'] ?? ''),
             'assistant_api_url' => trim($data['assistant_api_url'] ?? ''),
+            // Unchanged default is stored as '' so later improvements to the built-in persona still apply.
+            'assistant_prompt' => $this->customPrompt($data['assistant_prompt'] ?? ''),
         ];
         foreach ($values as $key => $value) {
             PpidSetting::updateOrCreate(['key' => $key], ['value' => $value, 'description' => 'Sapa Madani (asisten virtual)']);
         }
 
         return redirect()->route('admin.contact-settings.index')->with('success', 'Pengaturan Sapa Madani berhasil diperbarui.');
+    }
+
+    private function customPrompt(string $prompt): string
+    {
+        $prompt = trim(str_replace("\r\n", "\n", $prompt));
+
+        return $prompt === trim(AssistantController::DEFAULT_PROMPT) ? '' : $prompt;
     }
 
     public function update(Request $request)

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\AssistantController;
+use App\Models\ContactSetting;
 use App\Models\PpidSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -95,6 +97,42 @@ class AssistantTest extends TestCase
         Http::assertSent(fn ($req) => $req->hasHeader('Authorization', 'Bearer sk-test')
             && $req['model'] === 'gpt-4o-mini' && $req['max_tokens'] > 0
             && $req['messages'][1] === ['role' => 'user', 'content' => 'cara minta informasi?']);
+    }
+
+    public function test_openai_request_carries_persona_and_official_contact(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        ContactSetting::create(['emails' => ['ppid@empatlawangkab.go.id'], 'phones' => ['(0702) 123456']]);
+        Http::fake(['api.openai.com/*' => Http::response(['choices' => [['message' => ['content' => 'ok']]]])]);
+
+        $this->postJson('/sapa-madani/chat', ['message' => 'halo'])->assertOk();
+        Http::assertSent(function ($req) {
+            $system = $req['messages'][0];
+
+            return $system['role'] === 'system'
+                && str_contains($system['content'], 'petugas layanan informasi virtual PPID')
+                && str_contains($system['content'], '10 hari kerja')
+                && str_contains($system['content'], 'Email: ppid@empatlawangkab.go.id')
+                && str_contains($system['content'], route('request.create'));
+        });
+
+        $this->set(['assistant_prompt' => 'Persona khusus admin.']);
+        $this->postJson('/sapa-madani/chat', ['message' => 'halo'])->assertOk();
+        Http::assertSent(fn ($req) => str_starts_with($req['messages'][0]['content'], 'Persona khusus admin.')
+            && ! str_contains($req['messages'][0]['content'], 'petugas layanan informasi virtual'));
+    }
+
+    public function test_admin_prompt_unchanged_default_is_stored_empty(): void
+    {
+        $admin = User::factory()->create();
+        $route = route('admin.contact-settings.update-assistant');
+
+        $this->actingAs($admin)->put($route, ['assistant_prompt' => str_replace("\n", "\r\n", AssistantController::DEFAULT_PROMPT)])->assertSessionHasNoErrors();
+        $this->assertSame('', assistant_settings()['prompt']);
+
+        $this->actingAs($admin)->put($route, ['assistant_prompt' => '  Persona baru  '])->assertSessionHasNoErrors();
+        $this->assertSame('Persona baru', assistant_settings()['prompt']);
+        $this->get(route('admin.contact-settings.index'))->assertOk()->assertSee('Persona baru');
     }
 
     public function test_openai_failure_returns_friendly_reply_without_leaking_key(): void
