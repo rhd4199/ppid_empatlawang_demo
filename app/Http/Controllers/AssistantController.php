@@ -67,7 +67,26 @@ TXT;
                 ->post($settings['api_url'], ['message' => $data['message']])->throw()->json('reply'), 'API');
         }
 
-        return response()->json(['reply' => 'Terima kasih, pesan Anda sudah kami terima. Sapa Madani sedang disiapkan — untuk sementara silakan ajukan permohonan informasi melalui menu Permohonan atau hubungi kami di halaman Kontak.']);
+        return response()->json(['reply' => $this->cannedReply($data['message'])]);
+    }
+
+    // ponytail: keyword fallback while no AI is connected; first matching topic wins (keberatan before permohonan).
+    private function cannedReply(string $message): string
+    {
+        $topics = [
+            ['keberatan|sengketa|banding', 'Cara mengajukan keberatan: 1) Buka menu Pengajuan Keberatan. 2) Isi identitas, nomor permohonan, dan alasan keberatan. 3) Kirim paling lambat 30 hari kerja; Atasan PPID menanggapi paling lambat 30 hari kerja. Formulir: ' . route('complaint.create')],
+            ['status|cek|lacak|nomor registrasi', 'Status permohonan dapat dicek di menu Cek Status Permohonan dengan nomor registrasi Anda: ' . route('request.status')],
+            ['kontak|telepon|telpon|alamat|email|jam|kantor|whatsapp|wa\b', 'Alamat, telepon, email, dan jam layanan PPID ada di halaman Kontak: ' . route('contact.index')],
+            ['daftar informasi|dip\b|berkala|serta.?merta|setiap saat|dikecualikan|dokumen', 'Daftar informasi publik (berkala, serta-merta, setiap saat) dapat dilihat dan diunduh di menu Daftar Informasi Publik: ' . route('informasi-publik.index')],
+            ['permohonan|mengajukan|ajukan|minta|meminta|memperoleh|informasi', 'Cara mengajukan permohonan informasi: 1) Buka menu Permohonan Informasi. 2) Isi identitas, rincian informasi yang dibutuhkan, tujuan penggunaan, dan cara memperoleh salinan. 3) Simpan nomor registrasi untuk cek status. PPID menjawab paling lambat 10 hari kerja (dapat diperpanjang 7 hari kerja). Formulir: ' . route('request.create')],
+        ];
+        foreach ($topics as [$pattern, $reply]) {
+            if (preg_match("/{$pattern}/iu", $message)) {
+                return $reply;
+            }
+        }
+
+        return 'Terima kasih, pesan Anda sudah kami terima. Untuk saat ini Sapa Madani baru dapat membantu soal permohonan informasi, keberatan, cek status, daftar informasi publik, dan kontak PPID. Silakan ajukan permohonan melalui menu Permohonan Informasi (' . route('request.create') . ') atau hubungi kami di halaman Kontak (' . route('contact.index') . ').';
     }
 
     /** Persona (admin override or default) plus the official contact data and site links, so the model never has to guess them. */

@@ -140,6 +140,32 @@ class AssistantTest extends TestCase
         Http::assertSentCount(1);
     }
 
+    public function test_admin_shows_ai_connection_status(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $page = fn () => $this->get(route('admin.contact-settings.index'))->assertOk();
+
+        $page()->assertSee('Belum terhubung')->assertDontSee('Terhubung ke');
+
+        $this->set(['assistant_api_url' => 'https://bot.example.test/chat']);
+        $page()->assertSee('Terhubung ke API eksternal');
+
+        config(['services.openai.key' => 'sk-secret-test', 'services.openai.model' => 'gpt-4o-mini']);
+        $page()->assertSee('Terhubung ke OpenAI')->assertSee('gpt-4o-mini')->assertDontSee('Belum terhubung')->assertDontSee('sk-secret-test');
+    }
+
+    public function test_fallback_answers_common_questions_by_keyword(): void
+    {
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+
+        $this->assertStringContainsString(route('request.create'), $reply('Cara mengajukan permohonan informasi'));
+        $this->assertStringContainsString('10 hari kerja', $reply('Cara mengajukan permohonan informasi'));
+        $this->assertStringContainsString(route('complaint.create'), $reply('Permohonan saya ditolak, mau keberatan'));
+        $this->assertStringContainsString(route('request.status'), $reply('cek status permohonan'));
+        $this->assertStringContainsString(route('contact.index'), $reply('nomor telepon kantor?'));
+        $this->assertStringNotContainsString('sedang disiapkan', $reply('halo'));
+    }
+
     public function test_admin_prompt_unchanged_default_is_stored_empty(): void
     {
         $admin = User::factory()->create();

@@ -232,6 +232,14 @@
             @csrf
             @method('PUT')
             <div class="card-body p-4">
+                {{-- Same order as AssistantController::chat; never print the key itself. --}}
+                @if (config('services.openai.key'))
+                    <div class="alert alert-success py-2 small"><i class="fas fa-circle-check me-1"></i><strong>Terhubung ke OpenAI</strong> (model {{ config('services.openai.model') }}). Chat dijawab AI.</div>
+                @elseif ($assistant['api_url'] !== '')
+                    <div class="alert alert-info py-2 small"><i class="fas fa-plug me-1"></i><strong>Terhubung ke API eksternal</strong> (URL API Chatbot di bawah).</div>
+                @else
+                    <div class="alert alert-warning py-2 small"><i class="fas fa-triangle-exclamation me-1"></i><strong>Belum terhubung — balasan otomatis tetap.</strong> Isi <code>OPENAI_API_KEY</code> di env server (lalu <code>php artisan config:clear</code>) atau URL API Chatbot di bawah.</div>
+                @endif
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" role="switch" id="assistantEnabled" name="assistant_enabled" value="1" {{ $assistant['enabled'] ? 'checked' : '' }}>
                     <label class="form-check-label fw-bold" for="assistantEnabled">Tampilkan tombol Sapa Madani</label>
