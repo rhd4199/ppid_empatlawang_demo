@@ -27,6 +27,7 @@ class WeatherController extends Controller
             'slots' => $slots,
             'alerts' => BmkgWeather::alerts(),
             'source' => $source,
+            'updated' => $slots[0]['fetched_at'] ?? null,
         ])->header('Cache-Control', $slots ? 'public, max-age=600' : 'no-store'); // never pin an empty answer in caches
     }
 }

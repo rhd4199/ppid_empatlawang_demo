@@ -37,15 +37,16 @@ class BmkgWeather
     public static function forecast(string $district): array
     {
         return self::remember("weather:forecast:$district", 3600, function () use ($district) {
+            $slots = [];
             try {
-                if ($slots = self::bmkgForecast(self::DISTRICTS[$district]['adm4'])) {
-                    return $slots;
-                }
+                $slots = self::bmkgForecast(self::DISTRICTS[$district]['adm4']);
             } catch (\Throwable $e) {
                 Log::warning("BMKG forecast failed ($district), using Open-Meteo: " . $e->getMessage());
             }
+            $slots = $slots ?: self::openMeteoForecast(self::DISTRICTS[$district]);
+            $fetched = now('Asia/Jakarta')->format('Y-m-d H:i:s'); // shown as "Diperbarui" (cached up to 1 hour)
 
-            return self::openMeteoForecast(self::DISTRICTS[$district]);
+            return array_map(fn ($s) => $s + ['fetched_at' => $fetched], $slots);
         });
     }
 

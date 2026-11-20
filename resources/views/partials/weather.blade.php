@@ -12,16 +12,24 @@
     .bmkg-alert { background: #b91c1c; color: #fff; font-size: .9rem; }
     .bmkg-chip { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,.85); font-size: .85rem; }
     .bmkg-chip[hidden] { display: none; }
-    .bmkg-chip img { width: 22px; height: 22px; }
     .bmkg-card { background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border-radius: 20px; padding: 24px; }
-    .bmkg-now img { width: 72px; height: 72px; }
-    .bmkg-now .bmkg-temp { font-size: 3rem; font-weight: 800; line-height: 1; }
-    .bmkg-slots { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
-    .bmkg-slot { flex: 0 0 auto; min-width: 78px; text-align: center; background: rgba(255,255,255,.12); border-radius: 14px; padding: 8px 6px; font-size: .8rem; }
-    .bmkg-slot img { width: 34px; height: 34px; }
-    .bmkg-fa { font-size: 2rem; }
-    .bmkg-now .bmkg-fa { font-size: 3.5rem; }
+    .bmkg-now { background: rgba(255,255,255,.14); border-radius: 16px; padding: 18px; }
+    .bmkg-now .bmkg-temp { font-size: 3.25rem; font-weight: 800; line-height: 1; }
+    .bmkg-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bmkg-stat { background: rgba(255,255,255,.12); border-radius: 12px; padding: 8px 10px; font-size: .95rem; font-weight: 600; }
+    .bmkg-stat small { display: block; font-size: .72rem; font-weight: 400; opacity: .8; }
+    /* Equal columns that fill the width; below ~78px each (phones) the row scrolls sideways instead of squeezing. */
+    .bmkg-slots { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(78px, 1fr); gap: 8px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x proximity; }
+    .bmkg-slot { text-align: center; background: rgba(255,255,255,.12); border-radius: 14px; padding: 8px 4px; font-size: .85rem; scroll-snap-align: start; }
+    .bmkg-slot .bmkg-day { font-size: .7rem; opacity: .8; min-height: 1.1em; }
+    .bmkg-slot .bmkg-fa { font-size: 1.75rem; margin: 6px 0; display: block; }
+    .bmkg-slot .bmkg-t { font-size: 1.05rem; font-weight: 700; }
+    .bmkg-fa { width: 1.25em; text-align: center; }
     .bmkg-chip .bmkg-fa { font-size: 1rem; }
+    .bmkg-now .bmkg-fa { font-size: 4rem; }
+    .bmkg-fa.fa-sun { color: #fde047; }
+    .bmkg-fa.fa-cloud-sun, .bmkg-fa.fa-moon, .bmkg-fa.fa-cloud-moon { color: #fef3c7; }
+    .bmkg-fa.fa-cloud-bolt { color: #fcd34d; }
     .bmkg-card select { max-width: 220px; }
     .bmkg-warn { background: rgba(255,255,255,.95); color: #991b1b; border-radius: 14px; padding: 10px 14px; font-size: .88rem; }
 </style>
@@ -33,12 +41,18 @@
     const getCard = () => document.getElementById('bmkgCard');
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
     const hour = t => t.slice(11, 16);
-    const fa = desc => /petir/i.test(desc) ? 'fa-cloud-bolt' : /hujan|gerimis/i.test(desc) ? 'fa-cloud-rain'
-        : /kabut|kabur|asap/i.test(desc) ? 'fa-smog' : /cerah berawan/i.test(desc) ? 'fa-cloud-sun' : /cerah/i.test(desc) ? 'fa-sun' : 'fa-cloud';
-    // BMKG gives an SVG icon; the Open-Meteo fallback has none → Font Awesome icon from the description.
-    const icon = (src, alt) => src && /^https:\/\//.test(src)
-        ? `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">`
-        : `<i class="fas ${fa(alt)} bmkg-fa" aria-hidden="true"></i>`;
+    const night = t => { const h = +t.slice(11, 13); return h >= 18 || h < 6; };
+    const fa = (desc, isNight) => /petir/i.test(desc) ? 'fa-cloud-bolt' : /hujan|gerimis/i.test(desc) ? 'fa-cloud-rain'
+        : /kabut|kabur|asap/i.test(desc) ? 'fa-smog' : /cerah berawan/i.test(desc) ? (isNight ? 'fa-cloud-moon' : 'fa-cloud-sun')
+        : /cerah/i.test(desc) ? (isNight ? 'fa-moon' : 'fa-sun') : 'fa-cloud';
+    // One icon set for every source (BMKG's own SVGs mix styles, e.g. "Udara Kabur"; Open-Meteo has none).
+    const icon = s => `<i class="fas ${fa(s.desc, night(s.time))} bmkg-fa" title="${esc(s.desc)}" aria-hidden="true"></i>`;
+    const today = () => new Date().toLocaleDateString('sv-SE', {timeZone: 'Asia/Jakarta'}); // YYYY-MM-DD in WIB
+    const dayDiff = t => Math.round((Date.parse(t.slice(0, 10)) - Date.parse(today())) / 864e5);
+    const dayLabel = t => ({0: 'Hari ini', 1: 'Besok', 2: 'Lusa'})[dayDiff(t)]
+        ?? new Date(t.slice(0, 10) + 'T00:00').toLocaleDateString('id-ID', {weekday: 'short'});
+    const longDate = ymd => new Date(ymd + 'T00:00').toLocaleDateString('id-ID', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
+    const windDir = w => ({N: 'Utara', NE: 'Timur Laut', E: 'Timur', SE: 'Tenggara', S: 'Selatan', SW: 'Barat Daya', W: 'Barat', NW: 'Barat Laut'})[w] ?? w;
     // Storage can throw (in-app browsers, private mode); never let it break the widget.
     const store = {
         get: k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
@@ -61,7 +75,7 @@
         const now = d.slots[0];
         document.querySelectorAll('[data-bmkg-chip]').forEach(el => {
             if (!now) return;
-            el.innerHTML = `${icon(now.icon, now.desc)}<span>${esc(d.name)} ${esc(now.temp)}°C · ${esc(now.desc)}</span><small class="opacity-75">(${esc(now.source || 'BMKG')})</small>`;
+            el.innerHTML = `${icon(now)}<span>${esc(d.name)} ${esc(now.temp)}°C · ${esc(now.desc)}</span><small class="opacity-75">(${esc(now.source || 'BMKG')})</small>`;
             el.hidden = false;
         });
     }
@@ -76,15 +90,23 @@
             select.onchange = () => load(select.value);
         }
         select.value = d.district;
+        const date = card.querySelector('[data-date]');
+        if (date) date.textContent = `Kec. ${d.name} · ${longDate(today())}`;
         card.querySelector('[data-now]').innerHTML = now
-            ? `<div class="d-flex align-items-center gap-3">${icon(now.icon, now.desc)}<div><div class="bmkg-temp">${esc(now.temp)}°C</div>
-               <div class="fw-semibold">${esc(now.desc)}</div></div></div>
-               <div class="small mt-2 opacity-75"><i class="fas fa-droplet me-1"></i>${esc(now.humidity)}% &nbsp; <i class="fas fa-wind me-1"></i>${esc(now.wind)} km/j ${esc(now.wind_dir)}</div>`
+            ? `<div class="small opacity-75 mb-2">Sekarang (prakiraan ${esc(hour(now.time))} WIB)</div>
+               <div class="d-flex align-items-center gap-3 mb-3">${icon(now)}<div><div class="bmkg-temp">${esc(now.temp)}°C</div>
+               <div class="fw-semibold fs-5">${esc(now.desc)}</div></div></div>
+               <div class="bmkg-stats"><div class="bmkg-stat"><small>Kelembapan</small><i class="fas fa-droplet me-1"></i>${esc(now.humidity)}%</div>
+               <div class="bmkg-stat"><small>Angin dari ${esc(windDir(now.wind_dir))}</small><i class="fas fa-wind me-1"></i>${esc(now.wind)} km/j</div></div>
+               ${d.updated ? `<div class="small opacity-75 mt-2"><i class="fas fa-rotate me-1"></i>Diperbarui ${esc(hour(d.updated))} WIB</div>` : ''}`
             : '<p class="mb-0 opacity-75">Data cuaca belum tersedia. Coba lagi nanti.</p>';
         const src = card.querySelector('[data-source]');
         if (src) src.textContent = d.source;
-        card.querySelector('[data-slots]').innerHTML = d.slots.slice(1).map(s =>
-            `<div class="bmkg-slot"><div class="fw-semibold">${esc(hour(s.time))}</div>${icon(s.icon, s.desc)}<div>${esc(s.temp)}°</div></div>`).join('');
+        // Day label only where the day changes (first slot, then e.g. "Besok" after midnight).
+        card.querySelector('[data-slots]').innerHTML = d.slots.slice(1).map((s, i, a) =>
+            `<div class="bmkg-slot"><div class="bmkg-day">${i === 0 || a[i - 1].time.slice(0, 10) !== s.time.slice(0, 10) ? esc(dayLabel(s.time)) : ''}</div>
+             <div class="fw-semibold">${esc(hour(s.time))}</div>${icon(s)}<div class="bmkg-t">${esc(s.temp)}°</div>
+             <div class="small opacity-75 text-truncate" title="${esc(s.desc)}">${esc(s.desc)}</div></div>`).join('');
         card.querySelector('[data-warn]').innerHTML = d.alerts.length
             ? d.alerts.map(a => `<div class="bmkg-warn mb-2"><i class="fas fa-triangle-exclamation me-1"></i><strong>${esc(a.title)}</strong><br>${esc(a.description)}</div>`).join('')
             : '<div class="small opacity-75"><i class="fas fa-circle-check me-1"></i>Tidak ada peringatan dini cuaca BMKG untuk Empat Lawang saat ini.</div>';

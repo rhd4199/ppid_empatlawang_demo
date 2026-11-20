@@ -54,6 +54,7 @@ class WeatherTest extends TestCase
             ->assertJsonPath('name', 'Tebing Tinggi')
             ->assertJsonCount(2, 'slots')
             ->assertJsonPath('slots.0.temp', 25)
+            ->assertJsonPath('updated', now('Asia/Jakarta')->format('Y-m-d H:i:s'))
             ->assertJsonCount(1, 'alerts')
             ->assertJsonPath('alerts.0.areas', ['TEBING TINGGI', 'SALING']);
 
@@ -101,7 +102,7 @@ class WeatherTest extends TestCase
 
         $this->getJson('/cuaca')->assertOk()
             ->assertJsonCount(2, 'slots') // only the 3-hourly 11:00 and 14:00 slots
-            ->assertJsonPath('slots.0', ['time' => "$today 11:00:00", 'temp' => 26, 'humidity' => 80, 'desc' => 'Hujan Ringan', 'wind' => 5, 'wind_dir' => 'W', 'icon' => null, 'source' => 'Open-Meteo'])
+            ->assertJsonPath('slots.0', ['time' => "$today 11:00:00", 'temp' => 26, 'humidity' => 80, 'desc' => 'Hujan Ringan', 'wind' => 5, 'wind_dir' => 'W', 'icon' => null, 'source' => 'Open-Meteo', 'fetched_at' => now('Asia/Jakarta')->format('Y-m-d H:i:s')])
             ->assertJsonPath('slots.1.desc', 'Hujan Petir')
             ->assertJsonPath('source', fn ($s) => str_starts_with($s, 'Open-Meteo'));
         Http::assertSent(fn ($r) => str_contains($r->url(), 'latitude=-3.7053'));

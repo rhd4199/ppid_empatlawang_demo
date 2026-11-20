@@ -391,14 +391,18 @@
     <!-- Cuaca BMKG (filled by partials/weather.blade.php) -->
     <div class="bmkg-card mb-5" id="bmkgCard">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <h4 class="fw-bold mb-0 text-white"><i class="fas fa-cloud-sun me-2"></i>Cuaca Hari Ini</h4>
+            <div>
+                <h4 class="fw-bold mb-0 text-white"><i class="fas fa-cloud-sun me-2"></i>Cuaca Hari Ini</h4>
+                <small class="opacity-75" data-date></small>
+            </div>
             <select class="form-select form-select-sm rounded-pill" aria-label="Pilih kecamatan"></select>
         </div>
-        <div class="row g-4 align-items-center">
-            <div class="col-md-4 bmkg-now" data-now><p class="mb-0 opacity-75">Memuat data cuaca…</p></div>
-            <div class="col-md-8">
+        <div class="row g-3">
+            <div class="col-lg-4"><div class="bmkg-now h-100" data-now><p class="mb-0 opacity-75">Memuat data cuaca…</p></div></div>
+            <div class="col-lg-8 d-flex flex-column">
+                <div class="small fw-semibold opacity-75 mb-2">Prakiraan per 3 jam</div>
                 <div class="bmkg-slots mb-3" data-slots></div>
-                <div data-warn></div>
+                <div class="mt-auto" data-warn></div>
             </div>
         </div>
         <small class="d-block mt-3 opacity-75">Sumber: <span data-source>BMKG (Badan Meteorologi, Klimatologi, dan Geofisika)</span> &middot; <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="text-white">bmkg.go.id</a></small>
