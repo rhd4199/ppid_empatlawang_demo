@@ -13,6 +13,11 @@
             <span class="sm-mini" aria-hidden="true"><i class="fas fa-robot"></i></span>
             <div class="sm-msg sm-bot">Halo! Saya Sapa Madani. Ada yang bisa saya bantu terkait informasi publik Kabupaten Empat Lawang?</div>
         </div>
+        <div class="sm-suggest" id="smSuggest" role="group" aria-label="Saran pertanyaan">
+            @foreach(['Cara mengajukan permohonan informasi', 'Daftar informasi berkala', 'Cara mengajukan keberatan', 'Jam layanan PPID'] as $question)
+                <button type="button" class="sm-chip">{{ $question }}</button>
+            @endforeach
+        </div>
     </div>
     <form class="sm-form" id="smForm">
         <input type="text" id="smInput" maxlength="1000" placeholder="Tulis pertanyaan..." autocomplete="off" aria-label="Pertanyaan" required>
@@ -86,12 +91,18 @@
     .sm-send:not(:disabled):hover { transform: scale(1.06); }
     .sm-send:disabled { background: #cbd5e1; color: #fff; cursor: not-allowed; }
     .sm-note { margin: 0; padding: 0 14px 10px; background: #fff; color: #64748b; font-size: .7rem; line-height: 1.35; text-align: center; }
+    .sm-suggest { display: flex; flex-wrap: wrap; gap: 6px; padding-left: 34px; animation: sm-msg-in .25s ease-out; }
+    .sm-chip {
+        padding: 6px 12px; border: 1px solid #bae6fd; border-radius: 999px; background: #f0f9ff; color: #075985;
+        font-size: .8rem; line-height: 1.3; text-align: left; transition: background .15s, border-color .15s;
+    }
+    .sm-chip:hover, .sm-chip:focus-visible { background: #e0f2fe; border-color: #0369a1; }
     .sm-note a { color: #0369a1; font-weight: 600; }
     @media (max-width: 767.98px) {
         .sm-panel { left: 12px; right: 12px; width: auto; bottom: 76px; max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); transform-origin: bottom center; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .sm-panel, .sm-row, .sm-typing span, .sm-send, .sm-close { animation: none !important; transition: none !important; }
+        .sm-panel, .sm-row, .sm-suggest, .sm-chip, .sm-typing span, .sm-send, .sm-close { animation: none !important; transition: none !important; }
     }
 </style>
 
@@ -135,11 +146,18 @@
     panel.querySelector('[data-sm-close]').addEventListener('click', () => toggle(false));
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen()) toggle(false); });
     input.addEventListener('input', sync);
+    document.getElementById('smSuggest').addEventListener('click', e => {
+        const chip = e.target.closest('.sm-chip');
+        if (!chip || busy) return;
+        input.value = chip.textContent.trim();
+        form.requestSubmit();
+    });
 
     form.addEventListener('submit', async e => {
         e.preventDefault();
         const message = input.value.trim();
         if (!message || busy) return;
+        document.getElementById('smSuggest')?.remove();
         add(message, 'user');
         input.value = '';
         busy = true; sync();

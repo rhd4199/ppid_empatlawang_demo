@@ -33,6 +33,7 @@ class AssistantTest extends TestCase
             ->assertSee('id="smPanel"', false)
             ->assertSee('id="smTeaser"', false)
             ->assertSee('Tanya Asisten AI')
+            ->assertSee('Cara mengajukan permohonan informasi')
             ->assertSee('sm-bottombar', false)
             ->assertDontSee('wa.me/', false);
     }
