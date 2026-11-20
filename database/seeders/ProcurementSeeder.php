@@ -68,16 +68,24 @@ class ProcurementSeeder extends Seeder
             ],
         ];
 
-        foreach ($items as $item) {
+        $this->store($items, 'pengadaan_regulasi');
+        $this->store(ProcurementInfo::items(), 'pengadaan_info');
+    }
+
+    /** firstOrCreate per title; created_at steps back so `latest()` keeps the list order. */
+    private function store(array $items, string $category): void
+    {
+        foreach (array_values($items) as $i => $item) {
             $path = isset($item['file']) ? $this->upload($item['file']) : null;
 
             Document::firstOrCreate(
-                ['title' => $item['title'], 'category' => 'pengadaan_regulasi'],
+                ['title' => $item['title'], 'category' => $category],
                 [
                     'description' => $item['description'],
                     'file_path' => $path,
                     'external_url' => $item['url'],
                     'is_published' => true,
+                    'created_at' => now()->subMinutes($i),
                 ]
             );
         }

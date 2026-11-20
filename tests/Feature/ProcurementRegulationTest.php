@@ -28,4 +28,24 @@ class ProcurementRegulationTest extends TestCase
             ->assertSee('Peraturan Bupati Empat Lawang Nomor 15 Tahun 2020')
             ->assertSee('https://peraturan.bpk.go.id/Details/318647/perpres-no-46-tahun-2025', false);
     }
+
+    public function test_seeder_fills_info_tab_without_duplicates(): void
+    {
+        Storage::fake('public');
+
+        $this->seed(ProcurementSeeder::class);
+        $this->seed(ProcurementSeeder::class);
+
+        $this->assertSame(9, Document::where('category', 'pengadaan_info')->count());
+        Storage::disk('public')->assertExists('documents/pengadaan/rup-2024.pdf');
+
+        $this->get('/pengadaan')->assertOk()
+            ->assertDontSee('Belum ada informasi pengadaan')
+            ->assertSeeInOrder([
+                'Daftar Tender/Seleksi Kabupaten Empat Lawang Tahun Anggaran 2026',
+                'Rencana Umum Pengadaan (RUP) Barang/Jasa Tahun Anggaran 2024',
+                'LPSE Kabupaten Empat Lawang (SPSE)',
+            ])
+            ->assertSee('https://spse.inaproc.id/empatlawangkab/pengumuman/10001386000', false);
+    }
 }
