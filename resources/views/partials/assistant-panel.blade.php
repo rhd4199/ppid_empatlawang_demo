@@ -103,7 +103,16 @@
     .sm-note a, .sm-bot a { color: #0369a1; font-weight: 600; }
     .sm-bot a { text-decoration: underline; text-underline-offset: 2px; }
     @media (max-width: 767.98px) {
-        .sm-panel { left: 12px; right: 12px; width: auto; bottom: 76px; max-height: calc(100vh - 140px); max-height: calc(100dvh - 140px); transform-origin: bottom center; }
+        /* phones: full screen like WhatsApp; JS (fit) shrinks it to the visual viewport so the input sits right above the keyboard */
+        .sm-panel {
+            top: 0; left: 0; right: 0; bottom: auto; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none;
+            border: 0; border-radius: 0; box-shadow: none; transform: translateY(16px); transform-origin: bottom center;
+        }
+        .sm-panel.is-open { transform: none; }
+        .sm-head { padding-top: calc(14px + env(safe-area-inset-top)); }
+        .sm-note { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+        .sm-form input { font-size: 16px; } /* < 16px makes iOS zoom in on focus */
+        html.sm-lock, html.sm-lock body { overflow: hidden; } /* page behind must not scroll */
     }
     @media (prefers-reduced-motion: reduce) {
         .sm-panel, .sm-row, .sm-suggest, .sm-chip, .sm-typing span, .sm-send, .sm-close { animation: none !important; transition: none !important; }
@@ -137,15 +146,31 @@
         document.querySelectorAll('[data-sm-open]').forEach(b => b.setAttribute('aria-expanded', show));
         if (show) {
             panel.hidden = false;
-            requestAnimationFrame(() => panel.classList.add('is-open'));
+            requestAnimationFrame(() => { panel.classList.add('is-open'); fit(); });
             if (focus) input.focus();
         } else {
             panel.classList.remove('is-open');
+            fit();
             setTimeout(() => { if (!panel.classList.contains('is-open')) panel.hidden = true; }, 200); // after the fade-out
         }
         state.open = show; save();
     }
     const isOpen = () => panel.classList.contains('is-open');
+    // Phones: the keyboard shrinks only the visual viewport (Android Chrome, iOS Safari), so size the full-screen
+    // panel to it — header on top, input right above the keyboard. Desktop keeps the CSS floating panel.
+    const phone = window.matchMedia('(max-width: 767.98px)');
+    const vv = window.visualViewport;
+    function fit() {
+        const on = phone.matches && isOpen();
+        document.documentElement.classList.toggle('sm-lock', on);
+        if (!on || !vv) { panel.style.height = panel.style.top = ''; return; }
+        panel.style.height = vv.height + 'px';
+        panel.style.top = vv.offsetTop + 'px';
+        box.scrollTop = box.scrollHeight;
+    }
+    vv?.addEventListener('resize', fit);
+    vv?.addEventListener('scroll', fit);
+    phone.addEventListener?.('change', fit);
     const sync = () => { input.readOnly = busy; send.disabled = busy || !input.value.trim(); }; // readOnly keeps focus, unlike disabled
     // text nodes + <a> built with createElement, never innerHTML: replies come from an external API.
     // Only http(s) URLs become links; other sites open in a new tab without referrer.
