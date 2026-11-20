@@ -17,19 +17,7 @@
             <span class="sm-label"><strong>Sapa Madani</strong><small>Tanya Asisten AI</small></span>
         </button>
 
-        <div class="sm-panel" id="smPanel" role="dialog" aria-label="Sapa Madani" hidden>
-            <div class="sm-head">
-                <div><i class="fas fa-robot me-2" aria-hidden="true"></i><strong>Sapa Madani</strong><small class="d-block">Asisten Virtual PPID Empat Lawang</small></div>
-                <button type="button" class="sm-close" data-sm-close aria-label="Tutup">&times;</button>
-            </div>
-            <div class="sm-body" id="smMessages" aria-live="polite">
-                <div class="sm-msg sm-bot">Halo! Saya Sapa Madani. Ada yang bisa saya bantu terkait informasi publik Kabupaten Empat Lawang?</div>
-            </div>
-            <form class="sm-form" id="smForm">
-                <input type="text" id="smInput" class="form-control" maxlength="1000" placeholder="Tulis pertanyaan..." autocomplete="off" required>
-                <button type="submit" class="btn btn-primary" aria-label="Kirim"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
-            </form>
-        </div>
+        @include('partials.assistant-panel')
     @endif
 
     {{-- Teaser bubble: shown once per session a few seconds after load --}}
@@ -92,20 +80,6 @@
     .sm-teaser-open { background: none; border: 0; padding: 0; color: inherit; text-align: left; }
     .sm-teaser-close { background: none; border: 0; padding: 0 4px; color: #94a3b8; font-size: 1.2rem; line-height: 1; }
     @keyframes sm-pop { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
-    .sm-panel {
-        position: fixed; right: 18px; bottom: 140px; z-index: 1085; width: 360px; max-width: calc(100vw - 24px);
-        height: 480px; max-height: calc(100vh - 160px); display: flex; flex-direction: column;
-        background: #fff; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,.25); overflow: hidden;
-    }
-    .sm-panel[hidden] { display: none; }
-    .sm-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--primary-color, #0284c7); color: #fff; }
-    .sm-head small { opacity: .85; font-size: .75rem; }
-    .sm-close { background: transparent; border: 0; color: #fff; font-size: 1.6rem; line-height: 1; }
-    .sm-body { flex: 1; overflow-y: auto; padding: 14px; background: #f8fafc; display: flex; flex-direction: column; gap: 8px; }
-    .sm-msg { max-width: 85%; padding: 9px 13px; border-radius: 14px; font-size: .9rem; white-space: pre-wrap; word-wrap: break-word; }
-    .sm-bot { align-self: flex-start; background: #fff; border: 1px solid #e2e8f0; }
-    .sm-user { align-self: flex-end; background: var(--primary-color, #0284c7); color: #fff; }
-    .sm-form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e2e8f0; }
 
     .sm-bottombar {
         position: fixed; left: 0; right: 0; bottom: 0; z-index: 1078; display: flex; justify-content: space-around; align-items: flex-end;
@@ -132,7 +106,6 @@
         body { padding-bottom: 64px; }
         .a11y-widget { bottom: 80px; }
         .a11y-panel { max-height: calc(100vh - 160px); max-height: calc(100dvh - 160px); }
-        .sm-panel { left: 12px; right: 12px; width: auto; bottom: 76px; max-height: calc(100vh - 140px); }
         .sm-teaser {
             right: auto; left: 50%; bottom: 84px; width: max-content; max-width: calc(100vw - 160px);
             transform: translateX(-50%); border-radius: 14px; animation: none;
@@ -161,59 +134,6 @@
         if (main) main.click();
     });
     mains.forEach(el => el.addEventListener('click', hide));
-})();
-</script>
-@endif
-
-@if($assistant['enabled'] && ! $waUrl)
-<script>
-(function () {
-    const panel = document.getElementById('smPanel');
-    const box = document.getElementById('smMessages');
-    const form = document.getElementById('smForm');
-    const input = document.getElementById('smInput');
-    const openers = document.querySelectorAll('[data-sm-open]');
-
-    function toggle(show) {
-        panel.hidden = !show;
-        openers.forEach(b => b.setAttribute('aria-expanded', show));
-        if (show) input.focus();
-    }
-    function add(text, who) {
-        const el = document.createElement('div');
-        el.className = 'sm-msg sm-' + who;
-        el.textContent = text; // never innerHTML: replies come from an external API
-        box.appendChild(el);
-        box.scrollTop = box.scrollHeight;
-        return el;
-    }
-
-    openers.forEach(b => b.addEventListener('click', () => toggle(panel.hidden)));
-    panel.querySelector('[data-sm-close]').addEventListener('click', () => toggle(false));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
-
-    form.addEventListener('submit', async e => {
-        e.preventDefault();
-        const message = input.value.trim();
-        if (!message) return;
-        add(message, 'user');
-        input.value = '';
-        const pending = add('…', 'bot');
-        try {
-            const res = await fetch(@json(route('assistant.chat')), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', 'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                },
-                body: JSON.stringify({ message }),
-            });
-            const data = await res.json();
-            pending.textContent = res.ok && data.reply ? data.reply : (res.status === 429 ? 'Terlalu banyak pesan, coba lagi sebentar.' : 'Maaf, terjadi kesalahan. Silakan coba lagi.');
-        } catch (err) {
-            pending.textContent = 'Koneksi gagal. Silakan coba lagi.';
-        }
-    });
 })();
 </script>
 @endif
