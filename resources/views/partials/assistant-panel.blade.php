@@ -6,6 +6,7 @@
             <strong id="smTitle">Sapa Madani</strong>
             <small><span class="sm-online">Online</span> · Asisten AI PPID Empat Lawang</small>
         </div>
+        <button type="button" class="sm-close sm-reset" data-sm-reset aria-label="Mulai percakapan baru" title="Mulai percakapan baru" hidden><i class="fas fa-rotate-left" aria-hidden="true"></i></button>
         <button type="button" class="sm-close" data-sm-close aria-label="Tutup">&times;</button>
     </div>
     <div class="sm-body" id="smMessages" aria-live="polite">
@@ -55,6 +56,8 @@
         color: #fff; font-size: 1.4rem; line-height: 1; transition: background .15s;
     }
     .sm-close:hover, .sm-close:focus-visible { background: rgba(255,255,255,.28); }
+    .sm-reset { font-size: .85rem; }
+    .sm-reset[hidden] { display: none; }
     .sm-body {
         flex: 1; overflow-y: auto; padding: 16px 14px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px;
         scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; overscroll-behavior: contain;
@@ -113,20 +116,33 @@
     const form = document.getElementById('smForm');
     const input = document.getElementById('smInput');
     const send = form.querySelector('.sm-send');
+    const reset = panel.querySelector('[data-sm-reset]');
+    const intro = box.innerHTML; // greeting + suggestion chips, restored on "new chat"
+    const KEY = 'smChat', MAX_MESSAGES = 20, MAX_HISTORY = 10;
     let busy = false;
-    const history = []; // last turns for follow-up questions; lives in this page only
+    // chat survives page changes within this tab (sessionStorage); storage blocked → page-only memory
+    const blank = () => ({ messages: [], history: [], open: false });
+    let state = blank();
+    try { state = Object.assign(blank(), JSON.parse(sessionStorage.getItem(KEY))); } catch (e) { /* blocked or corrupt */ }
+    if (!Array.isArray(state.messages) || !Array.isArray(state.history)) state = blank();
+    function save() {
+        state.messages = state.messages.slice(-MAX_MESSAGES);
+        state.history = state.history.slice(-MAX_HISTORY);
+        try { sessionStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage blocked: page-only memory */ }
+    }
 
-    function toggle(show) {
+    function toggle(show, focus = true) {
         // queried at click time: the mobile bottom-bar opener is rendered after this script
         document.querySelectorAll('[data-sm-open]').forEach(b => b.setAttribute('aria-expanded', show));
         if (show) {
             panel.hidden = false;
             requestAnimationFrame(() => panel.classList.add('is-open'));
-            input.focus();
+            if (focus) input.focus();
         } else {
             panel.classList.remove('is-open');
             setTimeout(() => { if (!panel.classList.contains('is-open')) panel.hidden = true; }, 200); // after the fade-out
         }
+        state.open = show; save();
     }
     const isOpen = () => panel.classList.contains('is-open');
     const sync = () => { input.readOnly = busy; send.disabled = busy || !input.value.trim(); }; // readOnly keeps focus, unlike disabled
@@ -142,12 +158,28 @@
         box.scrollTop = box.scrollHeight;
         return el;
     }
+    function remember(text, who) { state.messages.push({ who, text }); reset.hidden = false; save(); }
+
+    if (state.messages.length) {
+        document.getElementById('smSuggest')?.remove();
+        state.messages.forEach(m => { if (m && (m.who === 'user' || m.who === 'bot')) add(String(m.text), m.who); });
+        reset.hidden = false;
+    }
+    // reopen after navigation on desktop only: on phones the panel would cover the new page
+    if (state.open && window.matchMedia('(min-width: 768px)').matches) toggle(true, false);
 
     document.addEventListener('click', e => { if (e.target.closest('[data-sm-open]')) toggle(!isOpen()); });
     panel.querySelector('[data-sm-close]').addEventListener('click', () => toggle(false));
+    reset.addEventListener('click', () => {
+        if (busy) return;
+        state.messages = []; state.history = []; save();
+        box.innerHTML = intro;
+        reset.hidden = true;
+        input.focus();
+    });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen()) toggle(false); });
     input.addEventListener('input', sync);
-    document.getElementById('smSuggest').addEventListener('click', e => {
+    box.addEventListener('click', e => { // delegated: the chips are re-created on "new chat"
         const chip = e.target.closest('.sm-chip');
         if (!chip || busy) return;
         input.value = chip.textContent.trim();
@@ -160,6 +192,7 @@
         if (!message || busy) return;
         document.getElementById('smSuggest')?.remove();
         add(message, 'user');
+        remember(message, 'user');
         input.value = '';
         busy = true; sync();
         const pending = add('', 'bot');
@@ -174,10 +207,10 @@
                     'Content-Type': 'application/json', 'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
-                body: JSON.stringify({ message, history: history.slice(-10) }),
+                body: JSON.stringify({ message, history: state.history.slice(-MAX_HISTORY) }),
             });
             const data = await res.json();
-            if (res.ok && data.reply) history.push({ role: 'user', content: message }, { role: 'assistant', content: data.reply.slice(0, 1000) });
+            if (res.ok && data.reply) state.history.push({ role: 'user', content: message }, { role: 'assistant', content: data.reply.slice(0, 1000) });
             reply = res.ok && data.reply ? data.reply : (res.status === 429 ? 'Terlalu banyak pesan, coba lagi sebentar.' : 'Maaf, terjadi kesalahan. Silakan coba lagi.');
         } catch (err) {
             reply = 'Koneksi gagal. Silakan coba lagi.';
@@ -185,6 +218,7 @@
         pending.classList.remove('sm-typing');
         pending.removeAttribute('aria-label');
         pending.textContent = reply;
+        remember(reply, 'bot');
         box.scrollTop = box.scrollHeight;
         busy = false; sync();
         input.focus();
