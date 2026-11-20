@@ -78,6 +78,7 @@
         color: #1e293b; font-size: .9rem; outline: none; transition: border-color .15s, box-shadow .15s;
     }
     .sm-form input:focus { border-color: #0369a1; background: #fff; box-shadow: 0 0 0 3px rgba(3,105,161,.15); }
+    .sm-form input:read-only { background: #f1f5f9; color: #64748b; cursor: progress; }
     .sm-send {
         width: 42px; height: 42px; flex: none; border: 0; border-radius: 50%; color: #fff;
         background: linear-gradient(135deg, #0369a1, #075985); transition: transform .15s, opacity .15s;
@@ -116,7 +117,7 @@
         }
     }
     const isOpen = () => panel.classList.contains('is-open');
-    const sync = () => { send.disabled = busy || !input.value.trim(); };
+    const sync = () => { input.readOnly = busy; send.disabled = busy || !input.value.trim(); }; // readOnly keeps focus, unlike disabled
     function add(text, who) {
         const row = document.createElement('div');
         row.className = 'sm-row sm-row-' + who;
