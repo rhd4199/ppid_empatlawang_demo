@@ -54,13 +54,13 @@
 
                 <div class="mb-3">
                     <label for="cost" class="form-label fw-bold">Biaya</label>
-                    <input type="text" class="form-control @error('cost') is-invalid @enderror" id="cost" name="cost" value="{{ old('cost', $item->cost) }}" maxlength="255" placeholder="Contoh: Gratis">
+                    <textarea class="form-control @error('cost') is-invalid @enderror" id="cost" name="cost" rows="3" maxlength="2000" placeholder="Contoh: Gratis">{{ old('cost', $item->cost) }}</textarea>
                     @error('cost')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="duration" class="form-label fw-bold">Lama Proses</label>
-                    <input type="text" class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" value="{{ old('duration', $item->duration) }}" maxlength="255" placeholder="Contoh: 1 hari kerja">
+                    <textarea class="form-control @error('duration') is-invalid @enderror" id="duration" name="duration" rows="2" maxlength="2000" placeholder="Contoh: 1 hari kerja">{{ old('duration', $item->duration) }}</textarea>
                     @error('duration')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 

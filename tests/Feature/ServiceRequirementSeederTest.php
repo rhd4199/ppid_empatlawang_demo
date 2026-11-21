@@ -46,6 +46,22 @@ class ServiceRequirementSeederTest extends TestCase
             $this->assertStringContainsString('PP 76/2020', $item->cost . $item->legal_basis);
         }
 
+        foreach (['balik-nama-sertifikat-jual-beli', 'balik-nama-sertifikat-waris', 'balik-nama-sertifikat-hibah',
+            'pendaftaran-tanah-pertama-ptsl', 'sertifikat-tanah-hilang-rusak', 'pemecahan-penggabungan-bidang',
+            'roya-hak-tanggungan'] as $slug) {
+            $item = ServiceRequirement::where('slug', $slug)->sole();
+            $this->assertSame('pertanahan', $item->category);
+            $this->assertStringContainsString('PP 128/2015', $item->cost . $item->legal_basis);
+            $this->assertStringStartsWith('https://', $item->source_url);
+        }
+
+        // sqlite ignores varchar lengths; Postgres/MySQL do not.
+        foreach (ServiceRequirement::all() as $item) {
+            $this->assertLessThanOrEqual(255, mb_strlen($item->title), $item->slug);
+            $this->assertLessThanOrEqual(255, mb_strlen($item->agency), $item->slug);
+            $this->assertLessThanOrEqual(500, mb_strlen((string) $item->source_url), $item->slug);
+        }
+
         // Admin edits one row later; a seeded-but-unedited row gets stale text.
         $this->travel(1)->day();
         ServiceRequirement::where('slug', 'kia')->first()->update(['cost' => 'Diubah admin']);
