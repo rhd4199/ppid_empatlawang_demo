@@ -13,7 +13,7 @@ class ServiceRequirementSeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (['kependudukan', 'perizinan_usaha', 'kendaraan', 'pertanahan'] as $category) {
+        foreach (['kependudukan', 'perizinan_usaha', 'kendaraan', 'pertanahan', 'kepegawaian'] as $category) {
             $file = require __DIR__ . "/assets/service-requirements/$category.php";
 
             foreach ($file['items'] as $data) {

@@ -55,6 +55,13 @@ class ServiceRequirementSeederTest extends TestCase
             $this->assertStringStartsWith('https://', $item->source_url);
         }
 
+        foreach (['mutasi-pns-dalam-kabupaten', 'mutasi-pns-antar-kabupaten-sumsel', 'mutasi-pns-antar-provinsi',
+            'mutasi-pns-instansi-pusat', 'pindah-tugas-pppk'] as $slug) {
+            $item = ServiceRequirement::where('slug', $slug)->sole();
+            $this->assertSame('kepegawaian', $item->category);
+            $this->assertStringContainsString('UU 20/2023', $item->legal_basis);
+        }
+
         // sqlite ignores varchar lengths; Postgres/MySQL do not.
         foreach (ServiceRequirement::all() as $item) {
             $this->assertLessThanOrEqual(255, mb_strlen($item->title), $item->slug);
