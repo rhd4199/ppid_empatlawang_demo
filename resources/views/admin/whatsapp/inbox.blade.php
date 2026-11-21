@@ -59,6 +59,7 @@
                 <div class="fw-bold"><i class="fab fa-whatsapp text-success me-2"></i>Kotak masuk</div>
                 <div class="d-flex align-items-center gap-2">
                     <span class="small text-muted">{{ $conversations->total() }} percakapan</span>
+                    <button type="button" class="btn btn-sm btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#waNewChat" title="Kirim pesan ke nomor baru"><i class="fas fa-plus me-1"></i>Chat baru</button>
                     <a href="{{ route('admin.whatsapp.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill" title="Pengaturan WhatsApp (API key, provider, bot)"><i class="fas fa-gear me-1"></i>Pengaturan</a>
                 </div>
             </div>
@@ -183,10 +184,47 @@
         </div>
     </div>
 </div>
+
+{{-- Officer starts a chat; a number that already has a conversation reuses it. --}}
+<div class="modal fade" id="waNewChat" tabindex="-1" aria-labelledby="waNewChatTitle" aria-hidden="true" data-wa-new-open="{{ $errors->hasAny(['new_phone', 'new_name', 'new_body']) ? '1' : '' }}">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="{{ route('admin.wa-inbox.start') }}" method="POST" class="modal-content">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title" id="waNewChatTitle"><i class="fab fa-whatsapp text-success me-2"></i>Chat baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="waNewPhone" class="form-label small">Nomor WhatsApp</label>
+                    <input id="waNewPhone" name="new_phone" type="tel" inputmode="tel" maxlength="30" required value="{{ old('new_phone') }}" class="form-control @error('new_phone') is-invalid @enderror" placeholder="mis. 081234567890">
+                    @error('new_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div class="mb-3">
+                    <label for="waNewName" class="form-label small">Nama kontak <span class="text-muted">(opsional)</span></label>
+                    <input id="waNewName" name="new_name" maxlength="100" value="{{ old('new_name') }}" class="form-control @error('new_name') is-invalid @enderror" placeholder="mis. Ibu Rina">
+                    @error('new_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div>
+                    <label for="waNewBody" class="form-label small">Pesan pertama</label>
+                    <textarea id="waNewBody" name="new_body" rows="4" maxlength="4000" required class="form-control @error('new_body') is-invalid @enderror">{{ old('new_body') }}</textarea>
+                    @error('new_body')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane me-1"></i>Kirim</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
+    // Validation failed: show the "Chat baru" form again with the error.
+    const waNewChat = document.getElementById('waNewChat');
+    if (waNewChat?.dataset.waNewOpen) bootstrap.Modal.getOrCreateInstance(waNewChat).show();
     // Newest message in view, like a chat app.
     document.querySelectorAll('.wa-thread').forEach(el => { el.scrollTop = el.scrollHeight; });
     const waInput = document.getElementById('waInput');

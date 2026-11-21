@@ -82,7 +82,7 @@ class WhatsAppReplyTest extends TestCase
         $c = $this->incoming('Halo');
 
         $this->post(route('admin.wa-inbox.send', $c), ['body' => 'Balasan saya'])
-            ->assertSessionHas('error', 'Balasan gagal dikirim: Provider menolak: device disconnected');
+            ->assertSessionHas('error', 'Pesan gagal dikirim: Provider menolak: device disconnected');
 
         $c->refresh();
         $this->assertNotSame('done', $c->status);

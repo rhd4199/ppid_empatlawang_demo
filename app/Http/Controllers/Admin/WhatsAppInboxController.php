@@ -8,6 +8,7 @@ use App\Models\WaConversation;
 use App\Models\WaMessage;
 use App\Support\WhatsAppGateway;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class WhatsAppInboxController extends Controller
 {
@@ -78,17 +79,45 @@ class WhatsAppInboxController extends Controller
     {
         $text = trim($request->validate(['body' => 'required|string|max:4000'])['body']);
 
+        return $this->deliver($conversation, $text);
+    }
+
+    /** "Chat baru": officer writes first to a number; an existing conversation with it is reused. */
+    public function start(Request $request)
+    {
+        $data = $request->validate([
+            'new_phone' => 'required|string|max:30',
+            'new_name' => 'nullable|string|max:100',
+            'new_body' => 'required|string|max:4000',
+        ], [], ['new_phone' => 'nomor WhatsApp', 'new_name' => 'nama kontak', 'new_body' => 'pesan']);
+
+        // 08… / +62 8… → 628…; Indonesian mobile numbers are 10–15 digits with country code.
+        $phone = WhatsAppGateway::normalize($data['new_phone']);
+        if (! preg_match('/^628\d{7,12}$/', $phone)) {
+            throw ValidationException::withMessages(['new_phone' => 'Nomor WhatsApp tidak valid. Contoh: 081234567890 atau 6281234567890.']);
+        }
+
+        $conversation = WaConversation::createOrFirst(['phone' => $phone], ['status' => 'read', 'last_message_at' => now()]);
+        if (filled($data['new_name'] ?? null) && blank($conversation->contact_name)) {
+            $conversation->update(['contact_name' => trim($data['new_name'])]);
+        }
+
+        return $this->deliver($conversation, trim($data['new_body']));
+    }
+
+    private function deliver(WaConversation $conversation, string $text)
+    {
         $result = WhatsAppGateway::sendLogged($conversation, $text);
 
         if (! $result['ok']) {
             // Keep the officer's edited text so it can be retried.
             $conversation->update(['reply_draft' => $text]);
 
-            return redirect()->route('admin.wa-inbox.show', $conversation)->with('error', 'Balasan gagal dikirim: ' . $result['error']);
+            return redirect()->route('admin.wa-inbox.show', $conversation)->with('error', 'Pesan gagal dikirim: ' . $result['error']);
         }
         $conversation->update(['status' => 'done', 'reply_draft' => null, 'last_message_at' => now()]);
 
-        return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Balasan terkirim ke +' . $conversation->phone . '.');
+        return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Pesan terkirim ke +' . $conversation->phone . '.');
     }
 
     /** Contact card (CRM): officer-set name, label and notes. */
