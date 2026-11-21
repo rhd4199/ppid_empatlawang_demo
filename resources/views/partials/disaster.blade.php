@@ -34,10 +34,17 @@
     .bnpb-title h5 { margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--c); }
     .bnpb-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: #f1f5f9; color: #334155; font-size: .76rem; font-weight: 600; }
     .bnpb-badge-local { background: #b91c1c; color: #fff; }
-    .bnpb-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; margin: 10px 0; }
+    .bnpb-badge-new { background: #facc15; color: #713f12; text-transform: uppercase; letter-spacing: .04em; }
+    /* timeline: a vertical line with one dated header per day, events of that day below it */
+    .bnpb-timeline { position: relative; display: grid; gap: 14px; padding-left: 22px; }
+    .bnpb-timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: #fecaca; }
+    .bnpb-tl-day { display: grid; gap: 10px; }
+    .bnpb-tl-date { position: relative; display: flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 700; color: #991b1b; }
+    .bnpb-tl-date::before { content: ''; position: absolute; left: -21px; width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid #b91c1c; }
+    .bnpb-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 10px 0; }
     .bnpb-stat { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
-    .bnpb-stat i { width: 28px; height: 28px; flex: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #e2e8f0; color: #334155; font-size: .85rem; }
-    .bnpb-stat b { display: block; font-size: 1.15rem; line-height: 1.1; color: #0f172a; }
+    .bnpb-stat i { width: 38px; height: 38px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); font-size: 1.05rem; }
+    .bnpb-stat b { display: block; font-size: 1.4rem; font-weight: 800; line-height: 1.05; color: #0f172a; }
     .bnpb-stat small { display: block; font-size: .7rem; color: #64748b; line-height: 1.2; }
     .bnpb-stat.is-severe { background: #fef2f2; border-color: #fecaca; }
     .bnpb-stat.is-severe i { background: #b91c1c; color: #fff; }
@@ -84,6 +91,9 @@
         .bnpb-item { flex-direction: column; gap: 10px; padding: 12px; }
         .bnpb-icon { width: 40px; height: 40px; font-size: 1.05rem; }
         .bnpb-stats, .bnpb-sum-tiles { grid-template-columns: 1fr 1fr; }
+        .bnpb-stat b { font-size: 1.15rem; }
+        .bnpb-timeline { padding-left: 18px; }
+        .bnpb-tl-date::before { left: -17px; }
         .bnpb-sum-cols { grid-template-columns: 1fr; }
         .bnpb-sum.is-main { grid-column: 1 / -1; }
         .bnpb-sum b { font-size: 1.25rem; }
@@ -98,11 +108,11 @@
     // disaster type keyword → [Font Awesome icon, accent colour]; first match wins
     const kinds = [
         ['banjir bandang', 'fa-water', '#1d4ed8'], ['banjir', 'fa-house-flood-water', '#0284c7'], ['longsor', 'fa-hill-rockslide', '#92400e'],
-        ['puting beliung', 'fa-tornado', '#6d28d9'], ['cuaca ekstrem', 'fa-cloud-bolt', '#6d28d9'], ['gempa', 'fa-house-crack', '#b91c1c'],
+        ['puting beliung', 'fa-tornado', '#64748b'], ['angin', 'fa-wind', '#64748b'], ['cuaca ekstrem', 'fa-cloud-bolt', '#64748b'], ['gempa', 'fa-house-crack', '#7c3aed'],
         ['kebakaran', 'fa-fire', '#ea580c'], ['kekeringan', 'fa-sun-plant-wilt', '#ca8a04'], ['erupsi', 'fa-volcano', '#be123c'],
         ['gelombang', 'fa-water', '#0f766e'], ['abrasi', 'fa-water', '#0f766e'],
     ];
-    const kind = type => kinds.find(([k]) => type.toLowerCase().includes(k)) || [null, 'fa-triangle-exclamation', '#475569'];
+    const kind = type => kinds.find(([k]) => type.toLowerCase().includes(k)) || ['lainnya', 'fa-triangle-exclamation', '#475569']; // [key, icon, colour], shared by the infographic and the list
     // impact key from /bencana → [icon, label, severe]; shown in this order, zero values never reach the client
     const impacts = {
         meninggal: ['fa-heart-crack', 'meninggal', true], hilang: ['fa-person-circle-question', 'hilang', true], luka: ['fa-user-injured', 'luka-luka', true],
@@ -115,15 +125,21 @@
     const badge = (icon, text, cls = '') => { const b = el('span', ('bnpb-badge ' + cls).trim()); b.append(ico(icon), text); return b; };
     const SHORT = 140; // chronology longer than this folds behind "Selengkapnya"
 
-    function event(e, local) {
-        const [, icon, colour] = kind(e.type);
+    const isNew = d => (Date.now() - new Date(d + 'T00:00:00')) / 864e5 <= 3; // 'Baru' badge: event day within the last 3 days
+
+    // inTimeline: the date is shown by the timeline header, so no calendar badge
+    function event(e, local, inTimeline = false) {
+        const [key, icon, colour] = kind(e.type);
         const item = el('article', 'bnpb-item' + (local ? ' is-local' : ''));
+        item.dataset.kind = key;
         item.style.setProperty('--c', colour);
         const ic = el('span', 'bnpb-icon'); ic.append(ico(icon));
         const body = el('div', 'flex-grow-1');
 
         const title = el('div', 'bnpb-title');
-        title.append(el('h5', '', e.type), badge('fa-location-dot', e.region.startsWith('Kota ') ? e.region : 'Kab. ' + e.region, local ? 'bnpb-badge-local' : ''), badge('fa-calendar', day(e.date)));
+        title.append(el('h5', '', e.type), badge('fa-location-dot', e.region.startsWith('Kota ') ? e.region : 'Kab. ' + e.region, local ? 'bnpb-badge-local' : ''));
+        if (!inTimeline) title.append(badge('fa-calendar', day(e.date)));
+        if (isNew(e.date)) title.append(badge('fa-bolt', 'Baru', 'bnpb-badge-new'));
         body.append(title);
 
         const stats = el('div', 'bnpb-stats');
@@ -176,7 +192,24 @@
             return;
         }
         list.append(infographic(data));
-        data.events.slice(0, 6).forEach(e => list.append(event(e, e.region === data.regions[0])));
+        const shown = data.events.slice(0, 6), local = e => e.region === data.regions[0];
+        if (shown.length === 1) list.append(event(shown[0], local(shown[0])));
+        if (shown.length > 1) { // timeline grouped by day (events are newest first)
+            const tl = el('div', 'bnpb-timeline');
+            let group = null;
+            shown.forEach(e => {
+                if (!group || group.dataset.date !== e.date) {
+                    group = el('div', 'bnpb-tl-day');
+                    group.dataset.date = e.date;
+                    const head = el('div', 'bnpb-tl-date');
+                    head.append(ico('fa-calendar-day'), day(e.date));
+                    group.append(head);
+                    tl.append(group);
+                }
+                group.append(event(e, local(e), true));
+            });
+            list.append(tl);
+        }
         if (n > 6) list.append(el('p', 'bnpb-meta mb-0', 'Menampilkan 6 kejadian terbaru dari ' + n + ' kejadian.'));
     }
 
