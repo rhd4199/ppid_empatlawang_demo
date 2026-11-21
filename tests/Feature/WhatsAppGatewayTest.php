@@ -31,6 +31,14 @@ class WhatsAppGatewayTest extends TestCase
         $this->get(route('admin.whatsapp.index'))->assertRedirect(route('login'));
     }
 
+    public function test_old_menu_url_opens_chat_with_settings_tab(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $this->get('/admin/whatsapp-gateway')->assertRedirect('/admin/kotak-masuk-wa');
+        $this->get(route('admin.wa-inbox.index'))->assertOk()->assertSee(route('admin.whatsapp.index'));
+        $this->get(route('admin.whatsapp.index'))->assertOk()->assertSee(route('admin.wa-inbox.index'));
+    }
+
     public function test_settings_saved_and_token_never_shown(): void
     {
         $this->saveSettings();

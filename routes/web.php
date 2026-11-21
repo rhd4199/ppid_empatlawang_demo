@@ -137,9 +137,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/kotak-masuk-wa/{conversation}/draf', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'redraft'])->name('wa-inbox.redraft');
     Route::post('/kotak-masuk-wa/{conversation}/kirim', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'send'])->name('wa-inbox.send');
 
-    // WhatsApp Gateway
-    Route::get('/whatsapp-gateway', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'index'])->name('whatsapp.index');
-    Route::put('/whatsapp-gateway', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'update'])->name('whatsapp.update');
+    // WhatsApp Gateway: the old menu URL opens the chat; connection settings are a tab of it
+    Route::redirect('/whatsapp-gateway', '/admin/kotak-masuk-wa');
+    Route::get('/whatsapp-gateway/pengaturan', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'index'])->name('whatsapp.index');
+    Route::put('/whatsapp-gateway/pengaturan',[App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'update'])->name('whatsapp.update');
     Route::post('/whatsapp-gateway/uji', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'test'])->name('whatsapp.test');
 
     // Account Settings

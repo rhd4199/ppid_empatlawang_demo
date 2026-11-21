@@ -57,7 +57,10 @@
         <div class="col-lg-4 border-end h-100 flex-column {{ $conversation ? 'd-none d-lg-flex' : 'd-flex' }}">
             <div class="wa-pane-head d-flex align-items-center justify-content-between px-3">
                 <div class="fw-bold"><i class="fab fa-whatsapp text-success me-2"></i>Kotak masuk</div>
-                <span class="small text-muted">{{ $conversations->total() }} percakapan</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small text-muted">{{ $conversations->total() }} percakapan</span>
+                    <a href="{{ route('admin.whatsapp.index') }}" class="btn btn-sm btn-link text-secondary px-1" title="Pengaturan WhatsApp" aria-label="Pengaturan WhatsApp"><i class="fas fa-gear"></i></a>
+                </div>
             </div>
             @php
                 $filters = App\Http\Controllers\Admin\WhatsAppInboxController::filters();

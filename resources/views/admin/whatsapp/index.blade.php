@@ -1,13 +1,17 @@
 @extends('layouts.admin')
 
-@section('title', 'WhatsApp Gateway')
+@section('title', 'Pengaturan WhatsApp')
 
 @section('content')
 <div class="container-fluid pb-5">
-    <div class="mb-4">
-        <h1 class="h3 mb-1 text-gray-800 fw-bold">WhatsApp Gateway</h1>
+    <div class="mb-3">
+        <h1 class="h3 mb-1 text-gray-800 fw-bold">WhatsApp</h1>
         <p class="text-muted small mb-0">Koneksi ke provider WhatsApp untuk mengirim notifikasi otomatis.</p>
     </div>
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item"><a class="nav-link" href="{{ route('admin.wa-inbox.index') }}"><i class="fas fa-comments me-1"></i> Chat</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{ route('admin.whatsapp.index') }}"><i class="fas fa-gear me-1"></i> Pengaturan</a></li>
+    </ul>
 
     @foreach (['success' => 'success', 'error' => 'danger'] as $key => $class)
         @if (session($key))
