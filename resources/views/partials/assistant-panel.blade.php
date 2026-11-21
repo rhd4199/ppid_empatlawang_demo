@@ -1,4 +1,4 @@
-{{-- Sapa Madani chat panel (used when no WhatsApp number is configured). Opened by any [data-sm-open] button. --}}
+{{-- Sapa Madani chat panel. Opened by any [data-sm-open] button. --}}
 <div class="sm-panel" id="smPanel" role="dialog" aria-labelledby="smTitle" hidden>
     <div class="sm-head">
         <span class="sm-head-avatar" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"><span class="sm-online-dot"></span></span>
@@ -24,6 +24,9 @@
         <input type="text" id="smInput" maxlength="1000" placeholder="Tulis pertanyaan..." autocomplete="off" aria-label="Pertanyaan" required>
         <button type="submit" class="sm-send" aria-label="Kirim" disabled><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
     </form>
+    @if($waUrl ?? null)
+        <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="sm-wa"><i class="fab fa-whatsapp" aria-hidden="true"></i> Lebih nyaman lewat WhatsApp? Chat Sapa Madani di WA</a>
+    @endif
     <p class="sm-note">Jawaban AI bisa keliru — untuk permohonan resmi gunakan menu <a href="{{ route('request.create') }}">Permohonan</a>.</p>
 </div>
 
@@ -93,6 +96,8 @@
     }
     .sm-send:not(:disabled):hover { transform: scale(1.06); }
     .sm-send:disabled { background: #cbd5e1; color: #fff; cursor: not-allowed; }
+    .sm-wa { display: block; padding: 8px 14px 4px; background: #fff; color: #128c7e; font-size: .78rem; font-weight: 600; text-align: center; text-decoration: none; }
+    .sm-wa:hover { color: #075e54; text-decoration: underline; }
     .sm-note { margin: 0; padding: 0 14px 10px; background: #fff; color: #64748b; font-size: .7rem; line-height: 1.35; text-align: center; }
     .sm-suggest { display: flex; flex-wrap: wrap; gap: 6px; padding-left: 34px; animation: sm-msg-in .25s ease-out; }
     .sm-chip {

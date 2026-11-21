@@ -1,4 +1,4 @@
-{{-- Sapa Madani (AI Asisten / Chatbot) + mobile bottom bar. WA configured → open WhatsApp, else the chat panel. --}}
+{{-- Sapa Madani (AI Asisten / Chatbot) + mobile bottom bar. The chat panel always opens; a configured WhatsApp number adds a WA link inside it. --}}
 @php
     $assistant = $assistant ?? assistant_settings();
     $waUrl = $assistant['wa_url'];
@@ -6,19 +6,12 @@
 
 @if($assistant['enabled'])
     {{-- Desktop floating button (mobile uses the bottom bar) --}}
-    @if($waUrl)
-        <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="sm-fab d-none d-md-flex" aria-label="Sapa Madani via WhatsApp">
-            <span class="sm-avatar"><i class="fab fa-whatsapp" aria-hidden="true"></i><b class="sm-ai" aria-hidden="true">AI</b></span>
-            <span class="sm-label"><strong>Sapa Madani</strong><small>Tanya Asisten AI</small></span>
-        </a>
-    @else
-        <button type="button" class="sm-fab d-none d-md-flex" data-sm-open aria-controls="smPanel" aria-expanded="false" aria-label="Tanya Asisten AI Sapa Madani">
-            <span class="sm-avatar sm-avatar-logo"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"><b class="sm-ai" aria-hidden="true">AI</b></span>
-            <span class="sm-label"><strong>Sapa Madani</strong><small>Tanya Asisten AI</small></span>
-        </button>
+    <button type="button" class="sm-fab d-none d-md-flex" data-sm-open aria-controls="smPanel" aria-expanded="false" aria-label="Tanya Asisten AI Sapa Madani">
+        <span class="sm-avatar sm-avatar-logo"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"><b class="sm-ai" aria-hidden="true">AI</b></span>
+        <span class="sm-label"><strong>Sapa Madani</strong><small>Tanya Asisten AI</small></span>
+    </button>
 
-        @include('partials.assistant-panel')
-    @endif
+    @include('partials.assistant-panel')
 
     {{-- Teaser bubble: shown once per session a few seconds after load --}}
     <div class="sm-teaser" id="smTeaser" role="status" hidden>
@@ -32,11 +25,7 @@
     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="fas fa-house" aria-hidden="true"></i><span>Beranda</span></a>
     <a href="{{ route('informasi-publik.index') }}" class="{{ request()->routeIs('informasi-publik.*') ? 'active' : '' }}"><i class="fas fa-folder-open" aria-hidden="true"></i><span>Informasi</span></a>
     @if($assistant['enabled'])
-        @if($waUrl)
-            <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="sm-bb-main" aria-label="Sapa Madani via WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i><span>Sapa Madani</span></a>
-        @else
-            <button type="button" class="sm-bb-main" data-sm-open aria-controls="smPanel" aria-label="Tanya Asisten AI Sapa Madani"><i class="sm-bb-logo" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"></i><span>Sapa Madani</span></button>
-        @endif
+        <button type="button" class="sm-bb-main" data-sm-open aria-controls="smPanel" aria-label="Tanya Asisten AI Sapa Madani"><i class="sm-bb-logo" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"></i><span>Sapa Madani</span></button>
     @endif
     <a href="{{ route('request.create') }}" class="{{ request()->routeIs('request.*') ? 'active' : '' }}"><i class="fas fa-file-signature" aria-hidden="true"></i><span>Permohonan</span></a>
     <button type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" onclick="window.scrollTo({top: 0})"><i class="fas fa-bars" aria-hidden="true"></i><span>Menu</span></button>
@@ -55,7 +44,6 @@
         position: relative; width: 42px; height: 42px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
         background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); font-size: 1.2rem; animation: sm-glow 3s ease-out infinite;
     }
-    .sm-avatar .fa-whatsapp { font-size: 1.4rem; }
     /* Sapa Madani logo (public/assets/images/sapa-madani.png, white background) fills its round avatar; also used in the chat panel */
     .sm-logo { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
     .sm-avatar-logo { background: #fff; padding: 2px; }
@@ -104,7 +92,6 @@
         content: "AI"; position: absolute; top: -5px; right: -8px; padding: 0 4px; border-radius: 999px;
         font: 800 .55rem/1.5 system-ui, sans-serif; background: #facc15; color: #1e293b;
     }
-    .sm-bottombar .sm-bb-main i.fa-whatsapp::after { content: none; }
     .sm-bottombar .sm-bb-main i.sm-bb-logo { background: #fff; padding: 2px; }
     @media (max-width: 767.98px) {
         body { padding-bottom: 64px; }

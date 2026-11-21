@@ -49,14 +49,31 @@ class AssistantTest extends TestCase
             ->assertDontSee('wa.me/', false);
     }
 
-    public function test_with_whatsapp_buttons_open_whatsapp(): void
+    public function test_whatsapp_number_adds_links_next_to_the_chat_panel(): void
     {
-        $this->set(['assistant_whatsapp' => '0812-3456-7890']);
+        $this->seed(\Database\Seeders\PpidSettingSeeder::class); // default line 628972007121
 
+        $link = '<a href="https://wa.me/628972007121" target="_blank" rel="noopener" class="btn btn-hero-action btn-hero-wa">';
         $this->get('/')->assertOk()
-            ->assertSee('https://wa.me/6281234567890', false)
-            ->assertSee('id="smTeaser"', false)
-            ->assertDontSee('id="smPanel"', false);
+            ->assertSee($link, false)
+            ->assertSee('Chat WhatsApp Sapa Madani')
+            ->assertSee('class="sm-wa"', false)
+            ->assertSee('id="smPanel"', false)          // AI chat still opens
+            ->assertSee('data-sm-open', false)
+            ->assertSee('id="smTeaser"', false);
+
+        // only the home page carries the hero button; the panel link is on every page
+        $this->get('/kontak')->assertOk()->assertDontSee('btn-hero-wa', false)->assertSee('class="sm-wa"', false);
+
+        // number changed in admin → links follow
+        $this->actingAs(\App\Models\User::factory()->create())
+            ->put(route('admin.contact-settings.update-assistant'), ['assistant_enabled' => '1', 'assistant_whatsapp' => '0812-3456-7890'])
+            ->assertSessionHasNoErrors();
+        $this->get('/')->assertSee('https://wa.me/6281234567890', false)->assertDontSee('wa.me/628972007121', false);
+
+        // disabled → no WA links either
+        $this->set(['assistant_enabled' => '0']);
+        $this->get('/')->assertDontSee('wa.me/', false);
     }
 
     public function test_disabled_hides_assistant_but_keeps_bottom_bar(): void

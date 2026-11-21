@@ -105,6 +105,8 @@
         border: 1px solid rgba(255, 255, 255, 0.4);
     }
     .btn-hero-action-alt:hover { color: #fff; }
+    .btn-hero-wa { background: #25d366; color: #fff; border: 1px solid #25d366; }
+    .btn-hero-wa:hover { background: #1ebe5b; color: #fff; }
 
     /* Pencarian section (moved out of hero) */
     .search-section {
@@ -307,6 +309,12 @@
                     <a href="{{ route('complaint.create') }}" class="btn btn-hero-action btn-hero-action-alt">
                         <i class="fas fa-gavel me-2"></i> Form Pengajuan Keberatan
                     </a>
+                    {{-- WhatsApp line of Sapa Madani (Admin > Pengaturan Kontak > Sapa Madani), next to the AI chat panel --}}
+                    @if(($sm = assistant_settings())['enabled'] && $sm['wa_url'])
+                        <a href="{{ $sm['wa_url'] }}" target="_blank" rel="noopener" class="btn btn-hero-action btn-hero-wa">
+                            <i class="fab fa-whatsapp me-2"></i> Chat WhatsApp Sapa Madani
+                        </a>
+                    @endif
                 </div>
             </div>
             <div class="col-lg-5 text-center d-none d-lg-block">

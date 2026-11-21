@@ -16,5 +16,7 @@ class PpidSettingSeeder extends Seeder
         PpidSetting::firstOrCreate(['key' => 'address'], ['value' => 'Jl. Poros No. 1, Tebing Tinggi, Empat Lawang']);
         PpidSetting::firstOrCreate(['key' => 'email'], ['value' => 'ppid@empatlawangkab.go.id']);
         PpidSetting::firstOrCreate(['key' => 'phone'], ['value' => '(0702) 123456']);
+        // Sapa Madani WhatsApp line (owner, task #119); admins change it in Pengaturan Kontak > Sapa Madani
+        PpidSetting::firstOrCreate(['key' => 'assistant_whatsapp'], ['value' => '628972007121']);
     }
 }

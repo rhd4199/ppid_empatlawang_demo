@@ -81,7 +81,7 @@ if (! function_exists('plain_text')) {
 if (! function_exists('assistant_settings')) {
     /**
      * Sapa Madani (virtual assistant) settings from ppid_settings.
-     * wa_url is set when a WhatsApp number is configured: the button then opens WA instead of the chat panel.
+     * wa_url is set when a WhatsApp number is configured: extra WA links (home hero, chat panel) next to the AI chat.
      */
     function assistant_settings(): array
     {
