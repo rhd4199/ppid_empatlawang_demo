@@ -300,6 +300,12 @@
             </a>
             
             <div class="menu-header">Interaksi</div>
+
+            @php $waUnread = App\Models\WaConversation::where('status', 'new')->count(); @endphp
+            <a href="{{ route('admin.wa-inbox.index') }}" class="menu-item {{ request()->routeIs('admin.wa-inbox.*') ? 'active' : '' }}">
+                <i class="fab fa-whatsapp"></i> Kotak Masuk WA
+                @if ($waUnread)<span class="badge rounded-pill bg-success ms-auto" data-wa-unread>{{ $waUnread }}</span>@endif
+            </a>
             
             <!-- Interaksi Dropdown -->
             <a href="#interactionSubmenu" data-bs-toggle="collapse" class="menu-item dropdown-toggle {{ request()->routeIs('admin.contact.*') || request()->routeIs('admin.requests.*') || request()->routeIs('admin.complaints.*') ? 'active' : '' }}" role="button" aria-expanded="false">
