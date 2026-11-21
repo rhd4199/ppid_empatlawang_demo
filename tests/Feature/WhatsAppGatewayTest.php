@@ -106,7 +106,7 @@ class WhatsAppGatewayTest extends TestCase
         $this->assertTrue(WhatsAppGateway::sendLogged($c, 'Balasan')['ok']);
         $row = $c->messages()->sole();
         $this->assertSame('sent', $row->status);
-        Http::assertSent(fn (Request $r) => $r['ref'] === 'wa-out-' . $row->id);
+        Http::assertSent(fn (Request $r) => ($r->data()['ref'] ?? null) === 'wa-out-' . $row->id);
     }
 
     public function test_larika_422_and_429_are_reported_without_retry(): void

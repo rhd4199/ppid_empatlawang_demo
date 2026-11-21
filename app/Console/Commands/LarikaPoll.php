@@ -4,8 +4,10 @@ namespace App\Console\Commands;
 
 use App\Models\PpidSetting;
 use App\Support\LarikaEvents;
+use App\Support\LarikaStatus;
 use App\Support\WhatsAppBot;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Sleep;
@@ -79,6 +81,8 @@ class LarikaPoll extends Command
 
             return 'retry';
         }
+
+        Cache::forever(LarikaStatus::POLL_KEY, now()->toIso8601String()); // heartbeat for the settings page
 
         $handled = $cursor;
         try {

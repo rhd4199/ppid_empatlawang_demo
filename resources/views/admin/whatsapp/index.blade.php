@@ -24,6 +24,8 @@
         </div>
     @endif
 
+    @include('admin.whatsapp._status')
+
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-header bg-white py-3">
             <h5 class="mb-0 fw-bold"><i class="fab fa-whatsapp me-2 text-success"></i>Pengaturan Koneksi</h5>

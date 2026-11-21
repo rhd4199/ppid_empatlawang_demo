@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\LarikaStatus;
 use App\Support\WhatsAppGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -12,8 +13,11 @@ class WhatsAppGatewayController extends Controller
 {
     public function index()
     {
+        $wa = WhatsAppGateway::settings();
+
         return view('admin.whatsapp.index', [
-            'wa' => WhatsAppGateway::settings(),
+            'wa' => $wa,
+            'larika' => $wa['provider'] === 'larika' ? LarikaStatus::check() : null,
             'webhookUrl' => route('api.whatsapp.webhook', ['secret' => WhatsAppGateway::webhookSecret()]),
         ]);
     }
