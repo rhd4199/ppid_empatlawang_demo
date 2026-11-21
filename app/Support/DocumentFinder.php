@@ -24,6 +24,27 @@ class DocumentFinder
         'nanya', 'bertanya', 'gan', 'sis', 'bang', 'mas', 'mbak', 'tolongin', 'dapatkan', 'mendapatkan', 'memperoleh', 'kalau', 'kalo', 'klo', 'pengen',
         'pingin', 'pgn', 'mo', 'yg', 'dgn', 'utk', 'sy', 'aja', 'saja', 'juga', 'lagi', 'dulu', 'tsb', 'tersebut'];
 
+    /**
+     * Detailed / non-routine data that is rarely published as a document (contracts, recipient lists, village-level detail):
+     * the answer explains the request procedure even when some documents match.
+     * ponytail: keyword list; extend with the requests citizens actually make.
+     */
+    public static function isSpecific(string $text): bool
+    {
+        return (bool) preg_match('/\b(salinan|kontrak|spk|rab|rincian|detail|penerima|nama.nama|daftar nama|kuitansi|kwitansi|spj|nota|bukti (bayar|pembayaran|transfer)|penawaran|absensi|gaji|honor|desa|kelurahan|dusun|rt|rw)\b/u', $text);
+    }
+
+    /** How to request data that is not in the Daftar Informasi Publik; wording and deadline as on the Standar Layanan page. */
+    public static function requestProcedure(): string
+    {
+        return 'Data yang belum tersedia atau bersifat khusus dapat dimohonkan ke PPID:'
+            . "\n1. Isi formulir Permohonan Informasi (" . route('request.create') . ').'
+            . "\n2. Siapkan identitas: nama lengkap, NIK/No. KTP, email, nomor telepon/HP, alamat, dan scan/foto KTP."
+            . "\n3. Tulis rincian informasi yang dibutuhkan dan tujuan penggunaannya, lalu pilih cara mendapatkannya (email, pos, atau ambil langsung)."
+            . "\nPermohonan diproses dan dijawab paling lambat 10 + 7 hari kerja (apabila informasi belum dikuasai/didokumentasikan)."
+            . ' Prosedur lengkap ada di halaman Standar Layanan (' . route('standard-service.index') . '#permohonan).';
+    }
+
     /** Request intent: the message asks for a document/data, not e.g. how to file a request. */
     public static function wants(string $text): bool
     {

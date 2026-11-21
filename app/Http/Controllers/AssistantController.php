@@ -111,7 +111,12 @@ TXT;
                 $lines[] = "- {$doc['title']}: {$doc['url']}";
             }
             if (! $docs) {
-                $lines[] = '- Tidak ada dokumen yang cocok. Sampaikan bahwa dokumen itu belum tersedia di daftar dan sarankan mengajukan permohonan informasi.';
+                $lines[] = '- Tidak ada dokumen yang cocok. Sampaikan bahwa dokumen itu belum tersedia di daftar, lalu jelaskan prosedur permohonan di bawah.';
+            }
+            if (! $docs || DocumentFinder::isSpecific($text)) {
+                $lines[] = '';
+                $lines[] = 'Data ini rinci/khusus atau belum tersedia: jelaskan singkat prosedur permohonan berikut (persis, dengan tautannya):';
+                $lines[] = DocumentFinder::requestProcedure();
             }
         }
 

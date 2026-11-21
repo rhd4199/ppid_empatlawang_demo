@@ -269,6 +269,37 @@ class AssistantTest extends TestCase
         $this->postJson('/sapa-madani/chat', ['message' => 'ada data APBD?'])->assertOk();
         Http::assertSent(fn ($req) => str_contains($req['messages'][0]['content'], 'Ringkasan APBD Tahun 2025: ' . route('informasi-publik.show', $docs['apbd']->id))
             && ! str_contains($req['messages'][0]['content'], 'Laporan Keuangan'));
+
+        // not found or specific data → the prompt carries the request procedure with the #permohonan link
+        $this->postJson('/sapa-madani/chat', ['message' => 'minta salinan kontrak proyek jalan desa X'])->assertOk();
+        Http::assertSent(fn ($req) => str_contains($req['messages'][0]['content'], route('standard-service.index') . '#permohonan'));
+    }
+
+    public function test_fallback_sends_specific_or_missing_data_to_the_request_procedure(): void
+    {
+        $docs = $this->seedDocuments();
+        $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');
+        $procedure = route('standard-service.index') . '#permohonan';
+
+        foreach (['minta salinan kontrak proyek jalan desa X', 'data penerima bansos desa Tanjung Raya'] as $message) {
+            $specific = $reply($message);
+            $this->assertStringContainsString($procedure, $specific, $message);
+            $this->assertStringContainsString(route('request.create'), $specific);
+            $this->assertStringContainsString('NIK/No. KTP', $specific);
+            $this->assertStringContainsString('tujuan penggunaannya', $specific);
+            $this->assertStringContainsString('10 + 7 hari kerja', $specific);
+        }
+
+        $common = $reply('laporan keuangan 2024');
+        $this->assertStringContainsString(route('informasi-publik.show', $docs['lk']->id), $common);
+        $this->assertStringNotContainsString('#permohonan', $common);
+
+        // procedure wording matches the Standar Layanan page
+        $page = preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($this->get(route('standard-service.index'))->assertOk()->getContent())));
+        foreach (['NIK / No. KTP', 'Rincian Informasi yang Dibutuhkan', 'Tujuan Penggunaan Informasi', 'Ambil Langsung',
+            'Permohonan diproses dan dijawab paling lambat 10 + 7 hari kerja (apabila informasi belum dikuasai/didokumentasikan).'] as $text) {
+            $this->assertStringContainsString($text, $page);
+        }
     }
 
     public function test_fallback_small_talk_and_civil_registration(): void

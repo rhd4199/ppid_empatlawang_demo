@@ -124,12 +124,15 @@ class AssistantFallback
         }
         $docs = DocumentFinder::search($keywords);
         if (! $docs) {
-            return 'Dokumen tentang "' . implode(' ', $keywords) . '" belum tersedia di Daftar Informasi Publik. Bapak/Ibu dapat memintanya lewat menu Permohonan Informasi (' . route('request.create') . '); PPID akan menjawab paling lambat 10 hari kerja.';
+            return 'Dokumen tentang "' . implode(' ', $keywords) . '" belum tersedia di Daftar Informasi Publik. ' . DocumentFinder::requestProcedure();
         }
 
         $lines = array_map(fn ($d, $i) => ($i + 1) . ". {$d['title']}\n   {$d['url']}", $docs, array_keys($docs));
+        $list = "Berikut dokumen yang cocok di Daftar Informasi Publik:\n" . implode("\n", $lines);
 
-        return "Berikut dokumen yang cocok di Daftar Informasi Publik:\n" . implode("\n", $lines) . "\nBila yang dicari belum ada, Bapak/Ibu dapat mengajukan permohonan informasi (" . route('request.create') . ').';
+        return DocumentFinder::isSpecific($text)
+            ? "{$list}\nBila data yang Bapak/Ibu maksud lebih rinci dari dokumen di atas: " . DocumentFinder::requestProcedure()
+            : "{$list}\nBila yang dicari belum ada, Bapak/Ibu dapat mengajukan permohonan informasi (" . route('request.create') . ').';
     }
 
     /** Answers with the ContactSetting data that was asked for (all of it for a plain "kontak"); links to /kontak only when it is missing. */
