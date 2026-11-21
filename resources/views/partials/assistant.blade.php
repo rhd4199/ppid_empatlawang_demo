@@ -13,7 +13,7 @@
         </a>
     @else
         <button type="button" class="sm-fab d-none d-md-flex" data-sm-open aria-controls="smPanel" aria-expanded="false" aria-label="Tanya Asisten AI Sapa Madani">
-            <span class="sm-avatar"><i class="fas fa-robot" aria-hidden="true"></i><b class="sm-ai" aria-hidden="true">AI</b></span>
+            <span class="sm-avatar sm-avatar-logo"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"><b class="sm-ai" aria-hidden="true">AI</b></span>
             <span class="sm-label"><strong>Sapa Madani</strong><small>Tanya Asisten AI</small></span>
         </button>
 
@@ -35,7 +35,7 @@
         @if($waUrl)
             <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="sm-bb-main" aria-label="Sapa Madani via WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i><span>Sapa Madani</span></a>
         @else
-            <button type="button" class="sm-bb-main" data-sm-open aria-controls="smPanel" aria-label="Tanya Asisten AI Sapa Madani"><i class="fas fa-robot" aria-hidden="true"></i><span>Sapa Madani</span></button>
+            <button type="button" class="sm-bb-main" data-sm-open aria-controls="smPanel" aria-label="Tanya Asisten AI Sapa Madani"><i class="sm-bb-logo" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"></i><span>Sapa Madani</span></button>
         @endif
     @endif
     <a href="{{ route('request.create') }}" class="{{ request()->routeIs('request.*') ? 'active' : '' }}"><i class="fas fa-file-signature" aria-hidden="true"></i><span>Permohonan</span></a>
@@ -56,6 +56,9 @@
         background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); font-size: 1.2rem; animation: sm-glow 3s ease-out infinite;
     }
     .sm-avatar .fa-whatsapp { font-size: 1.4rem; }
+    /* Sapa Madani logo (public/assets/images/sapa-madani.png, white background) fills its round avatar; also used in the chat panel */
+    .sm-logo { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #fff; }
+    .sm-avatar-logo { background: #fff; padding: 2px; }
     .sm-ai {
         position: absolute; top: -4px; right: -6px; padding: 0 5px; border-radius: 999px; font-size: .6rem; font-weight: 800; line-height: 1.5;
         background: #facc15; color: #1e293b; box-shadow: 0 1px 4px rgba(0,0,0,.25);
@@ -102,6 +105,7 @@
         font: 800 .55rem/1.5 system-ui, sans-serif; background: #facc15; color: #1e293b;
     }
     .sm-bottombar .sm-bb-main i.fa-whatsapp::after { content: none; }
+    .sm-bottombar .sm-bb-main i.sm-bb-logo { background: #fff; padding: 2px; }
     @media (max-width: 767.98px) {
         body { padding-bottom: 64px; }
         .a11y-widget { bottom: 80px; }

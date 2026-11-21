@@ -1,7 +1,7 @@
 {{-- Sapa Madani chat panel (used when no WhatsApp number is configured). Opened by any [data-sm-open] button. --}}
 <div class="sm-panel" id="smPanel" role="dialog" aria-labelledby="smTitle" hidden>
     <div class="sm-head">
-        <span class="sm-head-avatar" aria-hidden="true"><i class="fas fa-robot"></i><span class="sm-online-dot"></span></span>
+        <span class="sm-head-avatar" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"><span class="sm-online-dot"></span></span>
         <div class="sm-head-text">
             <strong id="smTitle">Sapa Madani</strong>
             <small><span class="sm-online">Online</span> · Asisten AI PPID Empat Lawang</small>
@@ -11,7 +11,7 @@
     </div>
     <div class="sm-body" id="smMessages" aria-live="polite">
         <div class="sm-row sm-row-bot">
-            <span class="sm-mini" aria-hidden="true"><i class="fas fa-robot"></i></span>
+            <span class="sm-mini" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"></span>
             <div class="sm-msg sm-bot">Halo! Saya Sapa Madani. Ada yang bisa saya bantu terkait informasi publik Kabupaten Empat Lawang?</div>
         </div>
         <div class="sm-suggest" id="smSuggest" role="group" aria-label="Saran pertanyaan">
@@ -44,7 +44,7 @@
     }
     .sm-head-avatar {
         position: relative; width: 42px; height: 42px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35); font-size: 1.15rem;
+        background: #fff; border: 2px solid rgba(255,255,255,.6); padding: 1px;
     }
     .sm-online-dot { position: absolute; right: 0; bottom: 1px; width: 11px; height: 11px; border-radius: 50%; background: #22c55e; border: 2px solid #075985; }
     .sm-head-text { flex: 1; min-width: 0; line-height: 1.25; }
@@ -69,7 +69,7 @@
     .sm-row-user { align-self: flex-end; }
     .sm-mini {
         width: 26px; height: 26px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        background: linear-gradient(135deg, #0369a1, #075985); color: #fff; font-size: .7rem;
+        background: #fff; border: 1px solid #e2e8f0;
     }
     .sm-msg { min-width: 0; padding: 9px 13px; font-size: .9rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
     .sm-bot { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; border-radius: 16px 16px 16px 4px; box-shadow: 0 1px 2px rgba(15,23,42,.05); }
@@ -202,7 +202,7 @@
         const row = document.createElement('div');
         row.className = 'sm-row sm-row-' + who;
         row.dataset.m = '';
-        if (who === 'bot') row.innerHTML = '<span class="sm-mini" aria-hidden="true"><i class="fas fa-robot"></i></span>'; // static markup only
+        if (who === 'bot') row.innerHTML = '<span class="sm-mini" aria-hidden="true"><img src="' + @json(asset('assets/images/sapa-madani.png')) + '" alt="" class="sm-logo"></span>'; // static markup only (server-side URL)
         const el = document.createElement('div');
         el.className = 'sm-msg sm-' + who;
         if (who === 'bot') fill(el, text); else el.textContent = text;
