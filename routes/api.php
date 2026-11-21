@@ -4,7 +4,13 @@ use App\Http\Controllers\Api;
 use App\Http\Middleware\BearerToken;
 use Illuminate\Support\Facades\Route;
 
-// All endpoints: Authorization: Bearer <API_TOKEN>. Docs: API.md
+// WhatsApp provider webhook: public, guarded by ?secret= (see Admin → WhatsApp Gateway).
+Route::prefix('v1/whatsapp')->name('api.whatsapp.')->middleware('throttle:300,1')->group(function () {
+    Route::get('webhook', [Api\WhatsAppWebhookController::class, 'verify'])->name('verify');
+    Route::post('webhook', [Api\WhatsAppWebhookController::class, 'receive'])->name('webhook');
+});
+
+// All other endpoints: Authorization: Bearer <API_TOKEN>. Docs: API.md
 Route::prefix('v1')->name('api.')->middleware([BearerToken::class, 'throttle:120,1'])->group(function () {
     Route::post('documents/bulk', [Api\DocumentController::class, 'bulk']);
     Route::post('documents/{document}/toggle-status', [Api\DocumentController::class, 'toggleStatus']);

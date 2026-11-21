@@ -6,6 +6,7 @@ use App\Models\PpidSetting;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -57,6 +58,15 @@ class WhatsAppGateway
         foreach ($values as $key => $value) {
             PpidSetting::updateOrCreate(['key' => $key], ['value' => $value, 'description' => 'WhatsApp Gateway']);
         }
+    }
+
+    /** Shared secret in the webhook URL (?secret=…); created on first use. Also the Meta verify token. */
+    public static function webhookSecret(): string
+    {
+        return PpidSetting::firstOrCreate(
+            ['key' => 'wa_webhook_secret'],
+            ['value' => Str::random(40), 'description' => 'WhatsApp Gateway']
+        )->value;
     }
 
     /** "0812-3456 789" / "+62812…" → "62812…"; '' when too short. */

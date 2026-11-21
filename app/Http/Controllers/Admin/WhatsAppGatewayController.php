@@ -11,7 +11,10 @@ class WhatsAppGatewayController extends Controller
 {
     public function index()
     {
-        return view('admin.whatsapp.index', ['wa' => WhatsAppGateway::settings()]);
+        return view('admin.whatsapp.index', [
+            'wa' => WhatsAppGateway::settings(),
+            'webhookUrl' => route('api.whatsapp.webhook', ['secret' => WhatsAppGateway::webhookSecret()]),
+        ]);
     }
 
     public function update(Request $request)

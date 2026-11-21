@@ -63,6 +63,11 @@
                         <input type="text" name="sender" class="form-control" value="{{ old('sender', $wa['sender']) }}" placeholder="mis. 628972007121">
                         <small class="text-muted">Cloud API: isi <strong>Phone Number ID</strong> dari Meta. Fonnte/Wablas/WAHA: pengirim mengikuti perangkat token (hanya catatan).</small>
                     </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">URL Webhook (pesan masuk)</label>
+                        <input type="text" class="form-control font-monospace small" value="{{ $webhookUrl }}" readonly onclick="this.select()">
+                        <small class="text-muted">Tempel di pengaturan webhook provider. Rahasiakan — siapa pun yang tahu URL ini bisa memasukkan pesan. Cloud API: Verify Token = nilai <code>secret</code> di URL.</small>
+                    </div>
                 </div>
             </div>
             <div class="card-footer bg-white text-end p-3">
