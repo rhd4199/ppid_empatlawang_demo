@@ -10,10 +10,15 @@ class GalleryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $galleries = Gallery::where('is_published', true)->withCount('items')->latest()->paginate(12);
-        return view('gallery.index', compact('galleries'));
+        // ?tipe=foto|video; anything else = all albums
+        $type = ['foto' => 'photo', 'video' => 'video'][(string) $request->query('tipe')] ?? null;
+        $galleries = Gallery::where('is_published', true)
+            ->when($type, fn ($q) => $q->where('type', $type))
+            ->withCount('items')->latest()->paginate(12)->withQueryString();
+
+        return view('gallery.index', compact('galleries', 'type'));
     }
 
     public function show($slug)

@@ -305,6 +305,7 @@ Makes the item the **only** headline (clears any other); calling again on the cu
   "created_at": "...",
   "updated_at": "...",
   "cover_image_url": "https://.../galleries/covers/x.jpg",
+  "youtube_id": null,
   "source_url": null,
   "items": [
     {
@@ -326,7 +327,9 @@ Query: `is_published`, `page`, `per_page`. Each item includes `items_count`.
 | Field | Rules |
 |---|---|
 | `title` | **required**, string ≤255 |
-| `cover_image` | image file: jpeg, png, jpg, gif, webp — max 10 MB. **Required unless** `cover_image_url` is sent |
+| `type` | optional `photo` (default) or `video` |
+| `url` | **required when `type=video`**: YouTube link (`youtube.com/watch?v=…`, `youtu.be/…`, `youtube.com/shorts/…`, `/embed/…`, `/live/…`); other links → `422` on `url` |
+| `cover_image` | image file: jpeg, png, jpg, gif, webp — max 10 MB. **Required unless** `cover_image_url` is sent or `type=video` |
 | `cover_image_url` | public `http(s)` URL of a jpg/png/webp (max 5 MB); downloaded by the server. Required unless `cover_image` is sent; the file wins if both are sent |
 | `photos` | optional array (max 50) of `{ "url": "https://…", "caption": "…" }`: photos downloaded (jpg/png/webp, max 5 MB each) and added in this order |
 | `description` | optional string |
@@ -334,6 +337,12 @@ Query: `is_published`, `page`, `per_page`. Each item includes `items_count`.
 | `is_published` | optional boolean, default `true` |
 
 `slug` is generated once from the title and never changes (shared links stay valid).
+
+**Video album:** `type=video` + `url`. Without a cover, `cover_image_url` returns the YouTube thumbnail (`https://i.ytimg.com/vi/<id>/hqdefault.jpg`) and `youtube_id` holds the video id. `/galeri` shows a play icon and filters with `?tipe=foto` / `?tipe=video`; `/galeri/{slug}` embeds the video (youtube-nocookie, lazy). Photos can still be added to a video album.
+
+```bash
+curl -X POST https://.../api/v1/galleries \n  -H "Authorization: Bearer $API_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \n  -d '{"title":"Pelantikan Bupati","type":"video","url":"https://youtu.be/VIDEO_ID"}'
+```
 
 Downloads use the same checks as news `image_url` (http/https only, no local/private/reserved IPs, type read from the bytes). All downloads happen before the album is saved: if any URL fails the response is `422` on that field (e.g. `photos.1.url`), **no album is created** and the files already downloaded are deleted.
 
@@ -346,7 +355,7 @@ curl -X POST https://.../api/v1/galleries \n  -H "Authorization: Bearer $API_TOK
 ```
 
 ### `PUT|PATCH /galleries/{id}` — update
-`title`, `description`, `cover_image` or `cover_image_url` (replaces and deletes the old cover), `photos` (URL list, appended; URLs already in the album skipped), `is_published` — all optional. Returns the gallery with `items`.
+`title`, `description`, `type`/`url` (switching to `photo` clears `url`), `cover_image` or `cover_image_url` (replaces and deletes the old cover), `photos` (URL list, appended; URLs already in the album skipped), `is_published` — all optional. Returns the gallery with `items`.
 
 ### `DELETE /galleries/{id}` → `204` (cover + all photos deleted)
 

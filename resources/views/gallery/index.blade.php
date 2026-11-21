@@ -22,14 +22,22 @@
 </div>
 
 <div class="container pb-5">
+    <ul class="nav nav-pills justify-content-center gap-2 mb-4" aria-label="Filter galeri">
+        @foreach(['' => ['Semua', 'fa-th-large'], 'foto' => ['Foto', 'fa-camera'], 'video' => ['Video', 'fa-play-circle']] as $key => [$label, $icon])
+            <li class="nav-item">
+                <a class="nav-link rounded-pill px-4 {{ ($type ? ($type === 'photo' ? 'foto' : 'video') : '') === $key ? 'active' : '' }}" href="{{ route('galleries.index', array_filter(['tipe' => $key])) }}"><i class="fas {{ $icon }} me-1"></i> {{ $label }}</a>
+            </li>
+        @endforeach
+    </ul>
+
     <div class="row g-4">
         @forelse($galleries as $gallery)
         <div class="col-md-6 col-lg-4">
             <a href="{{ route('galleries.show', $gallery->slug) }}" class="text-decoration-none gallery-card-link">
                 <div class="card h-100 border-0 shadow-sm gallery-card overflow-hidden">
                     <div class="gallery-img-wrapper position-relative">
-                        @if($gallery->cover_image)
-                            <img src="{{ Str::startsWith($gallery->cover_image, ['http://', 'https://']) ? $gallery->cover_image : storage_url($gallery->cover_image) }}" class="card-img-top" alt="{{ $gallery->title }}">
+                        @if($gallery->cover_image_url)
+                            <img src="{{ $gallery->cover_image_url }}" class="card-img-top" alt="{{ $gallery->title }}" loading="lazy">
                         @else
                             <div class="bg-light text-muted d-flex align-items-center justify-content-center card-img-top">
                                 <i class="fas fa-images fa-3x opacity-25"></i>
@@ -40,12 +48,17 @@
                                 <span class="btn btn-light rounded-circle shadow-lg mb-2" style="width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-search-plus text-primary"></i>
                                 </span>
-                                <div class="text-white fw-bold">Lihat Album</div>
+                                <div class="text-white fw-bold">{{ $gallery->youtube_id ? 'Tonton Video' : 'Lihat Album' }}</div>
                             </div>
                         </div>
-                        <div class="photo-count-badge">
-                            <i class="fas fa-camera me-1"></i> {{ $gallery->items_count }} Foto
-                        </div>
+                        @if($gallery->youtube_id)
+                            <span class="video-play-icon" aria-hidden="true"><i class="fas fa-play"></i></span>
+                            <div class="photo-count-badge"><i class="fas fa-video me-1"></i> Video</div>
+                        @else
+                            <div class="photo-count-badge">
+                                <i class="fas fa-camera me-1"></i> {{ $gallery->items_count }} Foto
+                            </div>
+                        @endif
                     </div>
                     <div class="card-body p-4 text-center">
                         <h5 class="card-title font-playfair fw-bold text-dark mb-2">{{ $gallery->title }}</h5>
@@ -82,6 +95,12 @@
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
+    .video-play-icon {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;
+        width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        background: rgba(220, 38, 38, .9); color: #fff; font-size: 1.5rem; box-shadow: 0 6px 18px rgba(0,0,0,.35); pointer-events: none;
+    }
+    .video-play-icon i { margin-left: 4px; }
     .gallery-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }

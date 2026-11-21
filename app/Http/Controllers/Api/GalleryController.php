@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class GalleryController extends Controller
 {
@@ -40,11 +41,14 @@ class GalleryController extends Controller
             'source_url' => 'nullable|string|max:500|unique:galleries,source_url',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'cover_image' => 'required_without:cover_image_url|nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
-            'cover_image_url' => 'required_without:cover_image|nullable|url:http,https|max:2048',
+            // a video album may skip the cover: the YouTube thumbnail is used
+            'cover_image' => [Rule::requiredIf(fn () => $request->input('type') !== 'video' && ! $request->filled('cover_image_url')), 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
+            'cover_image_url' => [Rule::requiredIf(fn () => $request->input('type') !== 'video' && ! $request->hasFile('cover_image')), 'nullable', 'url:http,https', 'max:2048'],
             'is_published' => 'nullable|boolean',
             ...self::PHOTO_URL_RULES,
+            ...self::VIDEO_RULES,
         ]);
+        $this->assertVideo($data['type'] ?? 'photo', $data['url'] ?? null);
 
         // Files first (no DB yet): a failed download deletes what was already stored, nothing half-created stays behind.
         $gallery = $this->withStoredFiles(function (array &$stored) use ($request, $data) {
@@ -56,7 +60,8 @@ class GalleryController extends Controller
                     'title' => $data['title'],
                     'description' => $data['description'] ?? null,
                     'source_url' => $data['source_url'] ?? null,
-                    'type' => 'photo',
+                    'type' => $data['type'] ?? 'photo',
+                    'url' => ($data['type'] ?? 'photo') === 'video' ? $data['url'] : null,
                     'cover_image' => $cover,
                     'is_published' => (bool) ($data['is_published'] ?? true),
                 ]);
@@ -79,9 +84,14 @@ class GalleryController extends Controller
             'cover_image_url' => 'nullable|url:http,https|max:2048',
             'is_published' => 'nullable|boolean',
             ...self::PHOTO_URL_RULES,
+            ...self::VIDEO_RULES,
         ]);
+        $this->assertVideo($data['type'] ?? $gallery->type, $data['url'] ?? $gallery->url);
         $photos = $this->newPhotos($gallery, $data['photos'] ?? []);
         $fields = collect($data)->except(['cover_image', 'cover_image_url', 'photos'])->all();
+        if (($fields['type'] ?? null) === 'photo') {
+            $fields['url'] = null; // back to a photo album: drop the video link
+        }
         $oldCover = $gallery->cover_image;
 
         $replaced = $this->withStoredFiles(function (array &$stored) use ($request, $gallery, $photos, $fields) {
@@ -190,6 +200,19 @@ class GalleryController extends Controller
         $item->delete();
 
         return response()->noContent();
+    }
+
+    /** type=video needs a YouTube link (checked with Gallery::youtubeId). */
+    private const VIDEO_RULES = [
+        'type' => 'nullable|in:photo,video',
+        'url' => 'nullable|required_if:type,video|string|max:500',
+    ];
+
+    private function assertVideo(string $type, ?string $url): void
+    {
+        if ($type === 'video' && ! Gallery::youtubeId($url)) {
+            throw ValidationException::withMessages(['url' => 'Album video wajib berisi link video YouTube (youtube.com/watch?v=…, youtu.be/…, shorts/…).']);
+        }
     }
 
     private const PHOTO_URL_RULES = [

@@ -39,10 +39,28 @@ class Gallery extends Model
         return $this->hasMany(GalleryItem::class);
     }
 
-    protected $appends = ['cover_image_url'];
+    protected $appends = ['cover_image_url', 'youtube_id'];
 
+    /** Stored cover (disk path or absolute URL); a video album without one uses the YouTube thumbnail. */
     public function getCoverImageUrlAttribute(): ?string
     {
-        return storage_url($this->cover_image);
+        if ($this->cover_image) {
+            return Str::startsWith($this->cover_image, ['http://', 'https://']) ? $this->cover_image : storage_url($this->cover_image);
+        }
+
+        return $this->youtube_id ? "https://i.ytimg.com/vi/{$this->youtube_id}/hqdefault.jpg" : null;
+    }
+
+    public function getYoutubeIdAttribute(): ?string
+    {
+        return $this->type === 'video' ? self::youtubeId($this->url) : null;
+    }
+
+    /** 11-char video id from watch?v=, youtu.be/, embed/, shorts/ or live/ links; null when not a YouTube video link. */
+    public static function youtubeId(?string $url): ?string
+    {
+        $pattern = '~^https?://(?:www\.|m\.)?(?:youtu\.be/|youtube(?:-nocookie)?\.com/(?:watch\?(?:[^#]*&)?v=|embed/|shorts/|live/))([\w-]{11})(?![\w-])~i';
+
+        return preg_match($pattern, trim((string) $url), $m) ? $m[1] : null;
     }
 }

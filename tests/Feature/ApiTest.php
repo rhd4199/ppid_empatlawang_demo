@@ -243,6 +243,42 @@ class ApiTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_video_album_from_youtube_link(): void
+    {
+        $video = $this->postJson('/api/v1/galleries', [
+            'title' => 'Video Pelantikan Bupati', 'type' => 'video', 'url' => 'https://youtu.be/dQw4w9WgXcQ?si=abc',
+        ], $this->auth)->assertCreated()
+            ->assertJsonPath('type', 'video')
+            ->assertJsonPath('youtube_id', 'dQw4w9WgXcQ')
+            ->assertJsonPath('cover_image', null)
+            ->assertJsonPath('cover_image_url', 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg')
+            ->json();
+        $this->post('/api/v1/galleries', ['title' => 'Album Foto', 'cover_image' => UploadedFile::fake()->image('a.jpg')], $this->auth)->assertCreated();
+
+        $this->get('/galeri')->assertOk()
+            ->assertSee('Video Pelantikan Bupati')->assertSee('video-play-icon', false)
+            ->assertSee('https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg', false)
+            ->assertSee('Album Foto');
+        $this->get('/galeri?tipe=video')->assertOk()->assertSee('Video Pelantikan Bupati')->assertDontSee('Album Foto');
+        $this->get('/galeri?tipe=foto')->assertOk()->assertSee('Album Foto')->assertDontSee('Video Pelantikan Bupati');
+
+        $this->get('/galeri/' . $video['slug'])->assertOk()
+            ->assertSee('<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"', false)
+            ->assertSee('loading="lazy"', false);
+
+        // other link shapes; non-YouTube or missing link rejected
+        foreach (['https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10', 'https://m.youtube.com/shorts/dQw4w9WgXcQ', 'https://www.youtube.com/embed/dQw4w9WgXcQ'] as $url) {
+            $this->assertSame('dQw4w9WgXcQ', \App\Models\Gallery::youtubeId($url), $url);
+        }
+        foreach (['https://vimeo.com/123', 'https://www.youtube.com/channel/UCxyz', 'javascript:alert(1)', ''] as $url) {
+            $this->postJson('/api/v1/galleries', ['title' => 'X', 'type' => 'video', 'url' => $url], $this->auth)
+                ->assertUnprocessable()->assertJsonValidationErrors('url');
+        }
+
+        // switching to photo drops the link
+        $this->putJson("/api/v1/galleries/{$video['id']}", ['type' => 'photo'], $this->auth)->assertOk()->assertJsonPath('url', null);
+    }
+
     public function test_web_route_names_untouched(): void
     {
         $this->assertSame(url('/berita'), route('news.index'));

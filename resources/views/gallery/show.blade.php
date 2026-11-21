@@ -3,9 +3,9 @@
 @section('title', $gallery->title)
 @section('description', plain_text($gallery->description) ?: 'Dokumentasi kegiatan: '.$gallery->title)
 @section('og_type', 'article')
-@php($ogImage = $gallery->cover_image ?: $gallery->items->whereNotNull('image_path')->first()?->image_path)
+@php($ogImage = $gallery->cover_image_url ?: storage_url($gallery->items->whereNotNull('image_path')->first()?->image_path))
 @if($ogImage)
-    @section('og_image', url(storage_url($ogImage)))
+    @section('og_image', url($ogImage))
 @endif
 
 @section('content')
@@ -34,13 +34,30 @@
             <div class="mb-3 text-muted">
                 <i class="far fa-calendar-alt me-2"></i> {{ $gallery->created_at->format('d F Y') }}
                 <span class="mx-2">|</span>
-                <i class="fas fa-camera me-2"></i> {{ $gallery->items->count() }} Foto
+                @if($gallery->youtube_id)
+                    <i class="fas fa-video me-2"></i> Video
+                @else
+                    <i class="fas fa-camera me-2"></i> {{ $gallery->items->count() }} Foto
+                @endif
             </div>
             @if($gallery->description)
                 <p class="lead text-dark">{{ $gallery->description }}</p>
             @endif
         </div>
     </div>
+
+    @if($gallery->youtube_id)
+        {{-- privacy-enhanced embed, loaded only when scrolled near --}}
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow">
+                    <iframe src="https://www.youtube-nocookie.com/embed/{{ $gallery->youtube_id }}" title="{{ $gallery->title }}" loading="lazy"
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+                <div class="text-end mt-2 small"><a href="https://www.youtube.com/watch?v={{ $gallery->youtube_id }}" target="_blank" rel="noopener"><i class="fab fa-youtube me-1 text-danger"></i>Buka di YouTube</a></div>
+            </div>
+        </div>
+    @endif
 
     <!-- Masonry Grid -->
     <div class="row g-3" id="gallery-grid">

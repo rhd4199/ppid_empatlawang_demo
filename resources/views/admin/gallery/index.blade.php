@@ -67,7 +67,7 @@
                 <div class="col-md-4 mb-4">
                     <div class="card h-100 shadow-sm {{ $gallery->is_published ? 'border-success' : '' }}">
                         <div class="position-relative">
-                            <img src="{{ storage_url($gallery->cover_image) }}" class="card-img-top" alt="{{ $gallery->title }}" style="height: 200px; object-fit: cover;">
+                            <img src="{{ $gallery->cover_image_url }}" class="card-img-top" alt="{{ $gallery->title }}" style="height: 200px; object-fit: cover;">
                             
                             <!-- Checkbox Overlay -->
                             <div class="position-absolute top-0 start-0 p-2">

@@ -578,8 +578,8 @@
                 <div class="swiper-slide">
                     <a href="{{ route('galleries.show', $gallery->slug) }}" class="text-decoration-none">
                         <div class="gallery-card shadow-sm">
-                            @if($gallery->cover_image)
-                                <img src="{{ storage_url($gallery->cover_image) }}" alt="{{ $gallery->title }}">
+                            @if($gallery->cover_image_url)
+                                <img src="{{ $gallery->cover_image_url }}" alt="{{ $gallery->title }}">
                             @else
                                 <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100" style="min-height: 250px;">
                                     <i class="fas fa-image fa-3x"></i>
@@ -587,7 +587,7 @@
                             @endif
                             <div class="gallery-overlay">
                                 <h5 class="fw-bold mb-1 text-white">{{ Str::limit($gallery->title, 40) }}</h5>
-                                <small class="text-white-50"><i class="fas fa-camera me-1"></i> {{ $gallery->items_count }} Foto</small>
+                                <small class="text-white-50">@if($gallery->youtube_id)<i class="fas fa-video me-1"></i> Video @else<i class="fas fa-camera me-1"></i> {{ $gallery->items_count }} Foto @endif</small>
                             </div>
                         </div>
                     </a>
