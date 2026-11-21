@@ -93,9 +93,13 @@ class AssistantFallback
     {
         $topics = [
             '\b(keberatan|sengketa|banding)\b' => 'Bila permohonan informasi ditolak, tidak ditanggapi, atau jawabannya belum sesuai, Bapak/Ibu dapat mengajukan keberatan lewat menu Pengajuan Keberatan (' . route('complaint.create') . '). Cukup isi identitas, nomor registrasi permohonan, dan alasannya, paling lambat 30 hari kerja. Atasan PPID akan menanggapi paling lambat 30 hari kerja.',
-            // civil registration is Disdukcapil's service, not PPID's; no requirement list here (it must not be made up)
+            // researched requirements of other agencies' services (/persyaratan); pattern unused, find() returns null on no match
+            '^(?#req)' => fn () => RequirementFinder::reply($text),
+            // civil registration without a match in /persyaratan: point to Disdukcapil (requirements must not be made up)
             '\b(ktp|e-?ktp|ktp-?el|kk|kartu keluarga|akta|akte|kia|kartu identitas anak|domisili|pindah datang|adminduk|kependudukan|dukcapil|disdukcapil)\b' => 'Pembuatan KTP-el, KK, akta, dan dokumen kependudukan lainnya dilayani oleh Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Empat Lawang, jadi persyaratan resminya paling tepat ditanyakan langsung ke Disdukcapil. Bila Bapak/Ibu ingin informasi persyaratannya secara tertulis, bisa juga diajukan lewat Permohonan Informasi (' . route('request.create') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',
+            // "syarat X" with X not in /persyaratan (checked before fee/duration answers about PPID itself)
+            '^(?#req-none)' => fn () => RequirementFinder::wants($text) ? RequirementFinder::notFound() : null,
             // pattern unused: AssistantInfo matches its own questions (contact, hours, fees, duration, officials) and returns null otherwise
             '^' => fn () => AssistantInfo::reply($text), // distinct key: two '' keys would overwrite each other
             // pattern unused here: documents() checks request intent and keywords itself and returns null to fall through

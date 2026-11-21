@@ -7,6 +7,7 @@ use App\Support\AssistantComplaint;
 use App\Support\AssistantFallback;
 use App\Support\AssistantInfo;
 use App\Support\DocumentFinder;
+use App\Support\RequirementFinder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -92,6 +93,7 @@ TXT;
             'Pengajuan Keberatan' => route('complaint.create'),
             'Daftar Informasi Publik' => route('informasi-publik.index'),
             'Kontak' => route('contact.index'),
+            'Persyaratan Layanan (KTP, SIM, tanah, izin usaha, dll.)' => route('service-requirements.index'),
             'Standar Layanan – Permohonan' => route('standard-service.index') . '#permohonan',
             'Standar Layanan – Pengaduan' => route('standard-service.index') . '#pengaduan',
         ];
@@ -114,8 +116,10 @@ TXT;
         $lines[] = '4. Pengaduan/laporan warga: bila jenisnya belum jelas, tanyakan balik dulu (jalan/fasilitas umum rusak, pelayanan publik, penyalahgunaan wewenang/pungli, lainnya). Bila sudah jelas, sebut kanal sesuai jenis dan beri tautan "Standar Layanan – Pengaduan". '
             . 'Jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
             . 'Jangan arahkan pengaduan ke Permohonan Informasi atau Pengajuan Keberatan (keberatan hanya untuk permohonan informasi yang ditolak/tidak ditanggapi).';
+        $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari blok "Data Persyaratan Layanan" di bawah (bila ada) beserta tautannya; bila tidak ada, arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
 
         $text = mb_strtolower($message);
+        $lines = [...$lines, ...$this->requirementFacts($text)];
         if (DocumentFinder::wants($text) && $keywords = DocumentFinder::keywords($text)) {
             $docs = DocumentFinder::search($keywords);
             $lines[] = '';
@@ -134,6 +138,29 @@ TXT;
         }
 
         return implode("\n", $lines);
+    }
+
+    /** Only the matching rows of /persyaratan (never the whole table), or a "not listed" instruction for an explicit "syarat X". */
+    private function requirementFacts(string $text): array
+    {
+        $found = RequirementFinder::find($text);
+        if ($found->isEmpty()) {
+            return RequirementFinder::wants($text)
+                ? ['', 'Persyaratan layanan yang ditanyakan tidak ada di data Persyaratan Layanan. Jangan mengarang persyaratan; sampaikan belum tersedia, arahkan ke ' . route('service-requirements.index') . ' dan ke instansi yang melayani atau halaman Kontak.']
+                : [];
+        }
+        $lines = ['', 'Data Persyaratan Layanan yang cocok (layanan instansi lain, bukan PPID). Bila pertanyaannya tentang layanan ini, jawab ringkas persyaratan utamanya dari data ini saja, sebut instansinya, beri tautan rinciannya, dan ingatkan bahwa ini informasi umum yang perlu dipastikan ke instansi:'];
+        foreach ($found as $item) {
+            $lines[] = "- {$item->title} | instansi: {$item->agency} | tautan: " . route('service-requirements.show', $item->slug);
+            $lines[] = '  Persyaratan: ' . mb_strimwidth(implode('; ', RequirementFinder::items($item->requirements)), 0, 700, '…');
+            foreach (['Biaya' => $item->cost, 'Lama proses' => $item->duration] as $label => $value) {
+                if ($value) {
+                    $lines[] = "  {$label}: " . mb_strimwidth($value, 0, 300, '…');
+                }
+            }
+        }
+
+        return $lines;
     }
 
     private function reply(callable $call, string $source)
