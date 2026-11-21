@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactSetting;
+use App\Support\AssistantComplaint;
 use App\Support\AssistantFallback;
+use App\Support\AssistantInfo;
 use App\Support\DocumentFinder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -90,6 +92,8 @@ TXT;
             'Pengajuan Keberatan' => route('complaint.create'),
             'Daftar Informasi Publik' => route('informasi-publik.index'),
             'Kontak' => route('contact.index'),
+            'Standar Layanan – Permohonan' => route('standard-service.index') . '#permohonan',
+            'Standar Layanan – Pengaduan' => route('standard-service.index') . '#pengaduan',
         ];
 
         $lines = [trim($persona !== '' ? $persona : self::DEFAULT_PROMPT), '', 'Kontak resmi PPID:'];
@@ -101,6 +105,15 @@ TXT;
         foreach ($links as $label => $url) {
             $lines[] = "- {$label}: {$url}";
         }
+        // fixed block, also kept when an admin replaces the persona: it depends on the links and channels above
+        $lines[] = '';
+        $lines[] = 'Kenali dulu niat pengguna, lalu jawab sesuai tujuannya:';
+        $lines[] = '1. Tanya informasi umum (kantor, alamat/lokasi, jam layanan, telepon/email, biaya, lama proses): jawab dengan kontak resmi di atas. Biaya: ' . AssistantInfo::FEE . ' Lama proses: ' . AssistantInfo::DURATION;
+        $lines[] = '2. Permohonan data publik yang umum (APBD, laporan, peraturan): sebut dokumen dari hasil pencarian Daftar Informasi Publik di bawah (bila ada) beserta tautannya.';
+        $lines[] = '3. Permohonan data khusus/tidak umum atau yang tidak ada di hasil pencarian (kontrak, daftar penerima, rincian per desa): jelaskan singkat prosedur permohonan dan beri tautan "Standar Layanan – Permohonan" serta "Permohonan Informasi".';
+        $lines[] = '4. Pengaduan/laporan warga: bila jenisnya belum jelas, tanyakan balik dulu (jalan/fasilitas umum rusak, pelayanan publik, penyalahgunaan wewenang/pungli, lainnya). Bila sudah jelas, sebut kanal sesuai jenis dan beri tautan "Standar Layanan – Pengaduan". '
+            . 'Jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
+            . 'Jangan arahkan pengaduan ke Permohonan Informasi atau Pengajuan Keberatan (keberatan hanya untuk permohonan informasi yang ditolak/tidak ditanggapi).';
 
         $text = mb_strtolower($message);
         if (DocumentFinder::wants($text) && $keywords = DocumentFinder::keywords($text)) {

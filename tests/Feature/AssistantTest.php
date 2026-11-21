@@ -124,6 +124,31 @@ class AssistantTest extends TestCase
             && ! str_contains($req['messages'][0]['content'], 'petugas layanan informasi virtual'));
     }
 
+    public function test_openai_prompt_guides_the_four_intents_even_with_admin_persona(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::response(['choices' => [['message' => ['content' => 'ok']]]])]);
+        $standard = route('standard-service.index');
+
+        foreach ([null, 'Persona khusus admin.'] as $persona) {
+            $this->set(['assistant_prompt' => $persona]);
+            $this->postJson('/sapa-madani/chat', ['message' => 'saya mau melapor'])->assertOk();
+            Http::assertSent(function ($req) use ($standard, $persona) {
+                $system = $req['messages'][0]['content'];
+
+                return (! $persona || str_starts_with($system, $persona))
+                    && str_contains($system, "Standar Layanan – Permohonan: {$standard}#permohonan")
+                    && str_contains($system, "Standar Layanan – Pengaduan: {$standard}#pengaduan")
+                    && str_contains($system, 'Kenali dulu niat pengguna')
+                    && str_contains($system, 'tanyakan balik dulu')
+                    && str_contains($system, 'Inspektorat Daerah Kabupaten Empat Lawang')
+                    && str_contains($system, 'SMS ke 1708')
+                    && str_contains($system, 'GRATIS')
+                    && str_contains($system, 'Jangan arahkan pengaduan ke Permohonan Informasi');
+            });
+        }
+    }
+
     public function test_history_is_validated_and_sent_between_system_and_new_message(): void
     {
         config(['services.openai.key' => 'sk-test']);
