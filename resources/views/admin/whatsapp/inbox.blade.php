@@ -4,8 +4,8 @@
 
 @push('styles')
 <style>
-    /* Full height under the sticky header: cancel <main>'s padding (layouts/admin). */
-    .wa-app { margin: calc(-1 * (var(--header-height) + 1rem)) -1.5rem -1.5rem; height: calc(100vh - var(--header-height)); min-height: 420px; background: #fff; }
+    /* Full height under the sticky header (in flow): cancel <main>'s p-4 padding (layouts/admin; p-4 is !important, so its inline padding-top does not apply). */
+    .wa-app { margin: -1.5rem; height: calc(100vh - var(--header-height)); min-height: 420px; background: #fff; }
     .wa-app > .row { height: 100%; }
     .wa-pane-head { background: #f0f2f5; min-height: 60px; }
     .wa-list, .wa-thread { overflow-y: auto; }
