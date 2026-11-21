@@ -153,7 +153,7 @@ class WhatsAppGateway
      * Sends a reply in a conversation and stores it as an outgoing wa_messages row (sent / failed + error).
      * The row is created first so its id is the provider ref ("wa-out-<id>").
      *
-     * @return array{ok: bool, error: ?string}
+     * @return array{ok: bool, error: ?string, message: \App\Models\WaMessage}
      */
     public static function sendLogged(WaConversation $conversation, string $text, ?string $sender = null): array
     {
@@ -163,7 +163,7 @@ class WhatsAppGateway
         $result = self::send($conversation->phone, $text, ref: 'wa-out-' . $message->id);
         $message->update(['status' => $result['ok'] ? 'sent' : 'failed', 'error' => $result['error']]);
 
-        return $result;
+        return $result + ['message' => $message];
     }
 
     /** 202 queued / 200 sent = ok; 429 daily cap = not queued, report when to retry (never retried here); else the API's error. */

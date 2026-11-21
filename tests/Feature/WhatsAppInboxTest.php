@@ -87,7 +87,7 @@ class WhatsAppInboxTest extends TestCase
         foreach (['wa-tick-read', 'wa-tick-delivered', 'wa-tick-sent', 'wa-tick-failed'] as $tick) {
             $this->assertStringContainsString($tick, $html);
         }
-        $this->assertSame(8, substr_count($html, 'class="wa-bubble'));
+        $this->assertSame(8, substr_count(strstr($html, '<template data-wa-pending>', true), 'class="wa-bubble')); // thread only, not the pending-bubble template
 
         // New conversation: badge counts citizen messages after the last successful reply (failed one ignored).
         $c->update(['status' => 'new']);

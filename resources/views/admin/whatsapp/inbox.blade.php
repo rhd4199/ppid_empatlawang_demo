@@ -150,6 +150,15 @@
                         @include('admin.whatsapp._message')
                     @endforeach
                 </div>
+                {{-- Optimistic bubble for a reply being sent (same markup as _message, pending tick). --}}
+                <template data-wa-pending>
+                    <div class="d-flex mb-2" data-wa-msg="" data-wa-msg-day="Hari ini">
+                        <div class="wa-bubble wa-out">
+                            <div class="small fw-bold" style="color:#008069">Petugas PPID</div>
+                            <span class="wa-text"></span><span class="wa-meta"><span data-wa-time></span><i class="wa-tick wa-tick-pending {{ App\Models\WaMessage::TICKS['pending'][0] }}" title="Menunggu" aria-label="Menunggu"></i></span>
+                        </div>
+                    </div>
+                </template>
                 <div class="wa-composer px-3 py-2">
                     <form id="redraftForm" action="{{ route('admin.wa-inbox.redraft', $conversation) }}" method="POST">@csrf</form>
                     @if (filled($conversation->reply_draft))
@@ -241,10 +250,6 @@
         waGrow();
         waInput.focus();
     });
-    // One submit per form: no double message on a double click/Enter.
-    document.querySelectorAll('[data-wa-compose], [data-wa-suggest]').forEach(f => f.addEventListener('submit', () => {
-        f.querySelectorAll('button[type=submit]').forEach(b => { b.disabled = true; });
-    }));
     // Live updates (poll ~5 s, like WhatsApp): new messages + ticks in the open chat, contact list, sidebar badge.
     // The reply input and suggestion card are never touched, so typed text is kept.
     (() => {
@@ -253,6 +258,20 @@
         const getJson = url => fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
             .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
         const toNode = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+        // Append a bubble, with a day separator when the day changes.
+        const appendMsg = (node, dayLabel) => {
+            const last = [...thread.querySelectorAll('[data-wa-msg]')].pop();
+            if (!last || last.dataset.waMsgDay !== dayLabel) {
+                const day = document.createElement('div'), label = document.createElement('span');
+                day.className = 'text-center my-2';
+                day.dataset.waDay = '';
+                label.className = 'wa-day';
+                label.textContent = dayLabel;
+                day.append(label);
+                thread.append(day);
+            }
+            thread.append(node);
+        };
         const pollThread = () => {
             const url = new URL(thread.dataset.waPoll, location.href);
             url.searchParams.set('after', thread.dataset.waAfter);
@@ -261,18 +280,9 @@
                 const atBottom = thread.scrollHeight - thread.scrollTop - thread.clientHeight < 80;
                 d.changed.forEach(m => thread.querySelector(`[data-wa-msg="${m.id}"]`)?.replaceWith(toNode(m.html)));
                 d.messages.forEach(m => {
-                    if (thread.querySelector(`[data-wa-msg="${m.id}"]`)) return;
-                    const last = [...thread.querySelectorAll('[data-wa-msg]')].pop();
-                    if (!last || last.dataset.waMsgDay !== m.day) {
-                        const day = document.createElement('div'), label = document.createElement('span');
-                        day.className = 'text-center my-2';
-                        day.dataset.waDay = '';
-                        label.className = 'wa-day';
-                        label.textContent = m.day;
-                        day.append(label);
-                        thread.append(day);
-                    }
-                    thread.append(toNode(m.html));
+                    // Already shown (a reply sent from this page): refresh it, its tick may have moved.
+                    const shown = thread.querySelector(`[data-wa-msg="${m.id}"]`);
+                    shown ? shown.replaceWith(toNode(m.html)) : appendMsg(toNode(m.html), m.day);
                     thread.dataset.waAfter = Math.max(+thread.dataset.waAfter, m.id);
                 });
                 thread.dataset.waSince = d.since;
@@ -291,6 +301,31 @@
             }
             if (badge) d.unread ? (badge.textContent = d.unread) : badge.remove();
         });
+        // Send without reloading: a pending bubble shows at once; the stored one (sent/failed) replaces it.
+        // waAfter is left to the poll, so citizen messages that arrive meanwhile are not skipped.
+        const pending = document.querySelector('[data-wa-pending]');
+        const restore = text => { if (waInput && !waInput.value) { waInput.value = text; waGrow(); } };
+        if (thread) document.querySelectorAll('[data-wa-compose], [data-wa-suggest]').forEach(f => f.addEventListener('submit', e => {
+            e.preventDefault();
+            const data = new FormData(f), text = String(data.get('body') || '').trim();
+            if (f.dataset.waBusy || !text) return; // Enter twice / double click: one message
+            f.dataset.waBusy = '1';
+            if (f.matches('[data-wa-compose]')) { waInput.value = ''; waGrow(); }
+            const temp = pending.content.firstElementChild.cloneNode(true);
+            temp.querySelector('.wa-text').textContent = text;
+            temp.querySelector('[data-wa-time]').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
+            appendMsg(temp, 'Hari ini');
+            thread.scrollTop = thread.scrollHeight;
+            fetch(f.action, { method: 'POST', body: data, credentials: 'same-origin', headers: { Accept: 'application/json', 'X-CSRF-TOKEN': data.get('_token') } })
+                .then(r => r.json().catch(() => ({})).then(d => { if (!r.ok) throw new Error(d.message || 'HTTP ' + r.status); return d; }))
+                .then(d => {
+                    thread.querySelector(`[data-wa-msg="${d.id}"]`) ? temp.remove() : temp.replaceWith(toNode(d.html));
+                    if (!d.ok) return restore(text); // failed bubble stays, text back for a retry
+                    if (f.matches('[data-wa-suggest]')) f.remove(); // draft sent and cleared
+                })
+                .catch(err => { temp.remove(); restore(text); alert('Pesan gagal dikirim: ' + err.message); })
+                .finally(() => { delete f.dataset.waBusy; });
+        }));
         let busy = false;
         const tick = () => {
             if (busy || document.hidden) return;

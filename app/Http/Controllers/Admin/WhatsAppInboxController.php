@@ -109,15 +109,29 @@ class WhatsAppInboxController extends Controller
     {
         $result = WhatsAppGateway::sendLogged($conversation, $text);
 
-        if (! $result['ok']) {
+        if ($result['ok']) {
+            $conversation->update(['status' => 'done', 'reply_draft' => null, 'last_message_at' => now()]);
+        } else {
             // Keep the officer's edited text so it can be retried.
             $conversation->update(['reply_draft' => $text]);
-
-            return redirect()->route('admin.wa-inbox.show', $conversation)->with('error', 'Pesan gagal dikirim: ' . $result['error']);
         }
-        $conversation->update(['status' => 'done', 'reply_draft' => null, 'last_message_at' => now()]);
 
-        return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Pesan terkirim ke +' . $conversation->phone . '.');
+        // Inbox script (fetch): the stored bubble replaces its optimistic copy, no page reload.
+        if (request()->expectsJson()) {
+            $m = $result['message'];
+
+            return response()->json([
+                'ok' => $result['ok'],
+                'error' => $result['error'],
+                'id' => $m->id,
+                'day' => WaMessage::dayLabel($m->sent_at),
+                'html' => view('admin.whatsapp._message', ['m' => $m])->render(),
+            ]);
+        }
+
+        return $result['ok']
+            ? redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Pesan terkirim ke +' . $conversation->phone . '.')
+            : redirect()->route('admin.wa-inbox.show', $conversation)->with('error', 'Pesan gagal dikirim: ' . $result['error']);
     }
 
     /** Contact card (CRM): officer-set name, label and notes. */

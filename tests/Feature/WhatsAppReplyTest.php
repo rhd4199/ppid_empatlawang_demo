@@ -123,9 +123,39 @@ class WhatsAppReplyTest extends TestCase
         // No draft (empty or none): bar stays, suggestion card hidden.
         foreach ([null, ''] as $draft) {
             $c->update(['reply_draft' => $draft]);
-            $html = $this->get(route('admin.wa-inbox.show', $c))->assertOk()->assertSee('Petugas PPID')->getContent();
+            $html = $this->get(route('admin.wa-inbox.show', $c))->assertOk()->assertSee('Petugas PPID')->assertSee('Ketik bebas petugas')->getContent();
             $this->assertStringContainsString('data-wa-compose', $html);
             $this->assertStringNotContainsString('Saran balasan Sapa Madani', $html);
         }
+    }
+
+    public function test_json_send_returns_bubble_without_redirect(): void
+    {
+        Http::fake(['api.fonnte.com/*' => Http::response(['status' => true])]);
+        $c = $this->incoming('Halo');
+
+        $res = $this->postJson(route('admin.wa-inbox.send', $c), ['body' => 'Balasan <b>cepat</b>'])->assertOk();
+
+        $out = $c->messages()->where('direction', 'out')->sole();
+        $res->assertJson(['ok' => true, 'error' => null, 'id' => $out->id, 'day' => 'Hari ini']);
+        $this->assertStringContainsString('data-wa-msg="' . $out->id . '"', $res->json('html'));
+        $this->assertStringContainsString('Balasan &lt;b&gt;cepat&lt;/b&gt;', $res->json('html'));
+        $this->assertStringContainsString('wa-tick-sent', $res->json('html'));
+        $this->assertSame(['done', null], [$c->fresh()->status, $c->fresh()->reply_draft]);
+
+        $this->postJson(route('admin.wa-inbox.send', $c), ['body' => ' '])->assertStatus(422)->assertJsonValidationErrors('body');
+    }
+
+    public function test_json_send_failure_returns_failed_bubble_and_keeps_draft(): void
+    {
+        Http::fake(['api.fonnte.com/*' => Http::response(['status' => false, 'reason' => 'device disconnected'])]);
+        $c = $this->incoming('Halo');
+
+        $res = $this->postJson(route('admin.wa-inbox.send', $c), ['body' => 'Balasan saya'])->assertOk()
+            ->assertJson(['ok' => false, 'error' => 'Provider menolak: device disconnected']);
+
+        $this->assertStringContainsString('Gagal terkirim', $res->json('html'));
+        $this->assertSame('Balasan saya', $c->fresh()->reply_draft);
+        $this->assertSame('failed', $c->messages()->where('direction', 'out')->sole()->status);
     }
 }
