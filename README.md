@@ -48,6 +48,7 @@ Tanpa kredensial S3, gambar upload tidak tampil (halaman tetap jalan).
 | `php artisan route:list` | Daftar route |
 | `php artisan mail:test <email>` | Kirim email uji (cek konfigurasi SMTP) |
 | `php artisan config:clear` | Setelah ubah `.env` di server yang memakai `config:cache` |
+| `php artisan whatsapp:larika-poll` | Terima pesan WhatsApp Larika (proses terus-menerus, lihat "WhatsApp Larika") |
 
 ## Konfigurasi (.env)
 
@@ -59,6 +60,37 @@ Lihat `.env.example`. Variabel khusus aplikasi ini:
 | `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_ROOT_DIR`, `S3_USE_PATH_STYLE_ENDPOINT` | Penyimpanan semua upload (disk `public`). |
 | `DB_CONNECTION`, `DB_URL` / `DB_HOST`… | Database. |
 | `MAIL_*` | Pengiriman email (reset password). Lihat "Email (SMTP)" di bawah. |
+| `LARIKA_KEY` | API key nomor Larika WhatsApp API (provider "Larika" di Admin → WhatsApp Gateway). Hanya di server. |
+
+### WhatsApp Larika (pesan masuk)
+
+Pesan warga dan status kiriman diambil dari Larika (`GET https://gateway.larika.id/v1/events`) oleh
+`php artisan whatsapp:larika-poll`. Perintah ini jalan terus (long polling 25 detik), menyimpan posisi
+terakhir di `ppid_settings.larika_events_cursor`, dan lanjut dari situ setelah restart. Gangguan jaringan /
+HTTP 5xx → coba lagi tiap 5 detik; key salah (401/403) → berhenti dengan exit code 2 (Supervisor tidak menyalakan ulang), perbaiki `LARIKA_KEY` lalu
+jalankan lagi. `--once` = satu kali poll (cek manual). Jangan dijalankan dari web/cron per menit: pakai
+process manager supaya selalu hidup.
+
+Supervisor (`/etc/supervisor/conf.d/ppid-larika-poll.conf`):
+
+```ini
+[program:ppid-larika-poll]
+command=php /var/www/ppid/artisan whatsapp:larika-poll
+directory=/var/www/ppid
+user=www-data
+autostart=true
+autorestart=unexpected
+exitcodes=0,2
+startretries=10
+stopwaitsecs=40
+redirect_stderr=true
+stdout_logfile=/var/www/ppid/storage/logs/larika-poll.log
+```
+
+Lalu `supervisorctl reread && supervisorctl update`. Setelah deploy kode baru: `supervisorctl restart ppid-larika-poll`.
+systemd / PM2 / process manager panel hosting: jalankan perintah yang sama dengan restart otomatis.
+Shared hosting tanpa proses terus-menerus: poller tidak dipakai; pesan masuk lewat webhook
+`/api/v1/whatsapp/webhook?secret=…` (URL ada di Admin → WhatsApp Gateway).
 
 ### Email (SMTP)
 
