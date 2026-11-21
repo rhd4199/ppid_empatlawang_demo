@@ -20,9 +20,24 @@
         <dl class="row small mb-0">
             <dt class="col-sm-4">Provider aktif</dt>
             <dd class="col-sm-8">{{ App\Support\WhatsAppGateway::PROVIDERS[$wa['provider']] ?? $wa['provider'] }} · {{ $wa['enabled'] ? 'aktif' : 'nonaktif' }} · bot {{ $wa['auto_reply'] ? 'membalas otomatis' : 'mati' }}</dd>
+            {{-- API key: only whether it is set, never the value (it lives in the server env, not the DB). --}}
+            <dt class="col-sm-4">API key Larika (<code>LARIKA_KEY</code>)</dt>
+            <dd class="col-sm-8" data-wa-key="{{ config('services.larika.key') ? 'set' : 'missing' }}">
+                {!! config('services.larika.key') ? '<span class="text-success">terisi</span>' : '<span class="text-danger">belum diisi</span>' !!}
+                @if ($larika && $larika['error']) · <span class="text-danger">{{ $larika['error'] }}</span>@endif
+                · gateway <code>{{ config('services.larika.url') }}</code>
+                <details class="mt-1" @if (! config('services.larika.key') || ($larika['state'] ?? '') === 'rejected') open @endif>
+                    <summary class="text-primary">Cara mengisi / mengganti API key</summary>
+                    <ol class="mb-0 mt-1 ps-3 text-muted">
+                        <li>Buat API key nomor di panel Larika › WA Gateway › nomor Sapa Madani › API.</li>
+                        <li>Isi di env server (file <code>.env</code>): <code>LARIKA_KEY=lk_…</code>. Key sengaja tidak disimpan di database atau form ini.</li>
+                        <li>Di form di bawah pilih provider <strong>Larika WhatsApp API</strong>, centang Aktif, lalu Simpan.</li>
+                        <li>Nyalakan ulang penerima pesan: <code>php artisan whatsapp:larika-poll</code> (Supervisor, README "WhatsApp Larika").</li>
+                        <li>Opsional, webhook cadangan (APP_URL harus https): <code>php artisan whatsapp:larika-webhook</code>, salin <code>LARIKA_WEBHOOK_KEY</code> yang dicetak ke <code>.env</code>.</li>
+                    </ol>
+                </details>
+            </dd>
             @if ($larika)
-                <dt class="col-sm-4">LARIKA_KEY (env server)</dt>
-                <dd class="col-sm-8">{!! $larika['state'] === 'missing' ? '<span class="text-danger">belum diisi</span>' : '<span class="text-success">terisi</span>' !!}@if ($larika['error']) · <span class="text-danger">{{ $larika['error'] }}</span>@endif</dd>
                 @if ($n = $larika['number'])
                     <dt class="col-sm-4">Nomor</dt>
                     <dd class="col-sm-8">

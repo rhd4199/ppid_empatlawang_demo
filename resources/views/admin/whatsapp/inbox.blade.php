@@ -59,7 +59,7 @@
                 <div class="fw-bold"><i class="fab fa-whatsapp text-success me-2"></i>Kotak masuk</div>
                 <div class="d-flex align-items-center gap-2">
                     <span class="small text-muted">{{ $conversations->total() }} percakapan</span>
-                    <a href="{{ route('admin.whatsapp.index') }}" class="btn btn-sm btn-link text-secondary px-1" title="Pengaturan WhatsApp" aria-label="Pengaturan WhatsApp"><i class="fas fa-gear"></i></a>
+                    <a href="{{ route('admin.whatsapp.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill" title="Pengaturan WhatsApp (API key, provider, bot)"><i class="fas fa-gear me-1"></i>Pengaturan</a>
                 </div>
             </div>
             @php

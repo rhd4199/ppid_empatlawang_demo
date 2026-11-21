@@ -35,7 +35,8 @@ class LarikaStatusTest extends TestCase
     {
         config(['services.larika.key' => '']);
 
-        $this->page()->assertSee('data-wa-status="missing"', false)->assertSee('LARIKA_KEY belum diisi');
+        $this->page()->assertSee('data-wa-status="missing"', false)->assertSee('LARIKA_KEY belum diisi')
+            ->assertSee('data-wa-key="missing"', false)->assertSee('Cara mengisi');
         Http::assertNothingSent();
     }
 
@@ -55,7 +56,7 @@ class LarikaStatusTest extends TestCase
         Cache::forever(LarikaStatus::POLL_KEY, now()->subSeconds(10)->toIso8601String());
         DB::table('larika_events')->insert(['event_id' => 'ev1', 'event' => 'message.incoming', 'handled_at' => now()]);
 
-        $this->page()->assertSee('data-wa-status="ok"', false)->assertSee('Tersambung')
+        $this->page()->assertSee('data-wa-status="ok"', false)->assertSee('data-wa-key="set"', false)->assertSee('Tersambung')
             ->assertSee('+628972007121')->assertSee('3 / 200')->assertSee('berjalan')->assertDontSee('belum pernah');
         Http::assertSent(fn ($r) => $r->url() === 'https://gateway.larika.id/v1/number' && $r->header('Authorization') === ['Bearer ' . self::KEY]);
     }

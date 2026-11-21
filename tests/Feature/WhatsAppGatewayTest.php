@@ -35,7 +35,7 @@ class WhatsAppGatewayTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
         $this->get('/admin/whatsapp-gateway')->assertRedirect('/admin/kotak-masuk-wa');
-        $this->get(route('admin.wa-inbox.index'))->assertOk()->assertSee(route('admin.whatsapp.index'));
+        $this->get(route('admin.wa-inbox.index'))->assertOk()->assertSee(route('admin.whatsapp.index'))->assertSee('Pengaturan WhatsApp');
         $this->get(route('admin.whatsapp.index'))->assertOk()->assertSee(route('admin.wa-inbox.index'));
     }
 

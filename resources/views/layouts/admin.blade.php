@@ -302,7 +302,7 @@
             <div class="menu-header">Interaksi</div>
 
             @php $waUnread = App\Models\WaConversation::where('status', 'new')->count(); @endphp
-            <a href="{{ route('admin.wa-inbox.index') }}" class="menu-item {{ request()->routeIs('admin.wa-inbox.*', 'admin.whatsapp.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.wa-inbox.index') }}" class="menu-item {{ request()->routeIs('admin.wa-inbox.*') ? 'active' : '' }}">
                 <i class="fab fa-whatsapp"></i> WhatsApp
                 @if ($waUnread)<span class="badge rounded-pill bg-success ms-auto" data-wa-unread>{{ $waUnread }}</span>@endif
             </a>
@@ -329,6 +329,9 @@
 
             <a href="{{ route('admin.contact-settings.index') }}" class="menu-item {{ request()->routeIs('admin.contact-settings.*') ? 'active' : '' }}">
                 <i class="fas fa-cogs"></i> Kontak & Alamat
+            </a>
+            <a href="{{ route('admin.whatsapp.index') }}" class="menu-item {{ request()->routeIs('admin.whatsapp.*') ? 'active' : '' }}">
+                <i class="fas fa-key"></i> Pengaturan WhatsApp
             </a>
 
             <div class="menu-header">Website</div>
