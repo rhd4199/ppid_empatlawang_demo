@@ -45,6 +45,26 @@ class WhatsAppWebhookController extends Controller
         return response()->json(['stored' => count($conversations)]);
     }
 
+    /**
+     * Larika webhook (backup of the whatsapp:larika-poll poller): same event body, same handler, so an event that
+     * arrives through both is stored once. Auth: x-larika-webhook-key = LARIKA_WEBHOOK_KEY (the webhook's secret).
+     * ponytail: x-larika-signature (HMAC of the body) not checked; the shared key already proves the sender.
+     */
+    public function larika(Request $request)
+    {
+        $expected = (string) config('services.larika.webhook_key');
+        $given = $request->header('x-larika-webhook-key');
+        if ($expected === '' || ! is_string($given) || ! hash_equals($expected, $given)) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        foreach (LarikaEvents::handle($request->all()) as $conversation) {
+            app()->terminating(fn () => WhatsAppBot::handle($conversation)); // bot reply after the 200
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     private function validSecret(mixed $given): bool
     {
         return is_string($given) && $given !== '' && hash_equals(WhatsAppGateway::webhookSecret(), $given);

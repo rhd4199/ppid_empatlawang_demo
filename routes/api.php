@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1/whatsapp')->name('api.whatsapp.')->middleware('throttle:300,1')->group(function () {
     Route::get('webhook', [Api\WhatsAppWebhookController::class, 'verify'])->name('verify');
     Route::post('webhook', [Api\WhatsAppWebhookController::class, 'receive'])->name('webhook');
+    // Larika WhatsApp API webhook (backup of the poller), guarded by x-larika-webhook-key.
+    Route::post('larika', [Api\WhatsAppWebhookController::class, 'larika'])->name('larika');
 });
 
 // All other endpoints: Authorization: Bearer <API_TOKEN>. Docs: API.md

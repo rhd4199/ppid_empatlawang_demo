@@ -61,6 +61,7 @@ Lihat `.env.example`. Variabel khusus aplikasi ini:
 | `DB_CONNECTION`, `DB_URL` / `DB_HOST`… | Database. |
 | `MAIL_*` | Pengiriman email (reset password). Lihat "Email (SMTP)" di bawah. |
 | `LARIKA_KEY` | API key nomor Larika WhatsApp API (provider "Larika" di Admin → WhatsApp Gateway). Hanya di server. |
+| `LARIKA_WEBHOOK_KEY` | `secret` webhook Larika; dicek di `POST /api/v1/whatsapp/larika`. |
 
 ### WhatsApp Larika (pesan masuk)
 
@@ -89,8 +90,18 @@ stdout_logfile=/var/www/ppid/storage/logs/larika-poll.log
 
 Lalu `supervisorctl reread && supervisorctl update`. Setelah deploy kode baru: `supervisorctl restart ppid-larika-poll`.
 systemd / PM2 / process manager panel hosting: jalankan perintah yang sama dengan restart otomatis.
-Shared hosting tanpa proses terus-menerus: poller tidak dipakai; pesan masuk lewat webhook
-`/api/v1/whatsapp/webhook?secret=…` (URL ada di Admin → WhatsApp Gateway).
+
+**Webhook cadangan** `POST /api/v1/whatsapp/larika`: Larika mengirim event ke sini bila poller mati/tidak dipakai
+(shared hosting tanpa proses terus-menerus: cukup webhook ini). Event yang datang lewat poller dan webhook
+diproses sekali (dedupe id event). Header `x-larika-webhook-key` harus sama dengan `LARIKA_WEBHOOK_KEY`
+(kosong/salah → 401). Daftarkan sekali dengan key nomor, lalu simpan `secret` dari jawabannya sebagai
+`LARIKA_WEBHOOK_KEY` di env server:
+
+```bash
+curl -X POST https://gateway.larika.id/v1/webhooks -H "Authorization: Bearer $LARIKA_KEY" \
+  -H "content-type: application/json" \
+  -d '{"url":"https://<domain-ppid>/api/v1/whatsapp/larika","events":["message.incoming","message.sent","message.status","message.failed","message.expired"]}'
+```
 
 ### Email (SMTP)
 

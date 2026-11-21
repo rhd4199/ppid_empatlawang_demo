@@ -34,6 +34,8 @@ return [
     'larika' => [
         'key' => env('LARIKA_KEY'),
         'url' => env('LARIKA_URL', 'https://gateway.larika.id'),
+        // secret returned by POST /v1/webhooks; Larika sends it as x-larika-webhook-key
+        'webhook_key' => env('LARIKA_WEBHOOK_KEY'),
     ],
 
     'openai' => [
