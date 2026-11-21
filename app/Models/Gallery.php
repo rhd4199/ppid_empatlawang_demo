@@ -15,6 +15,7 @@ class Gallery extends Model
         'cover_image',
         'url',
         'is_published',
+        'source_url',
     ];
 
     protected static function booted(): void

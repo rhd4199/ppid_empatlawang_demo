@@ -223,6 +223,7 @@ Same fields, all optional. Uploading a new `file` deletes the old one. Use `POST
   "slug": "rapat-koordinasi-ppid-1758770000",
   "content": "<p>HTML content...</p>",
   "image": "news/abc.jpg",
+  "source_url": "https://empatlawangkab.go.id/berita/rapat-ppid",
   "author": "Admin",
   "published_at": "2026-09-25 09:00:00",
   "is_published": 1,
@@ -254,10 +255,13 @@ Same fields, all optional. Uploading a new `file` deletes the old one. Use `POST
 | `image` | optional image file: jpg, jpeg, png, webp — max 5 MB |
 | `image_url` | optional public `http(s)` URL of a jpg/png/webp image (max 5 MB). The server downloads it (15 s timeout, ≤3 redirects) and stores it like an upload. Rejected with `422` on `image_url`: non-http(s) schemes, URLs with user:password, hosts resolving to localhost/private/link-local/reserved IPs (also after a redirect), non-image bodies, HTTP errors. If both `image` and `image_url` are sent, the file wins. |
 | `author` | optional string ≤100, default `Admin` |
+| `source_url` | optional string ≤500, unique — see Anti-duplicate below |
 | `published_at` | optional date (`2026-09-25 09:00`), default now. Future date = scheduled (hidden on public site until then) |
 | `is_published` | optional boolean, default `true` |
 
-`slug` is generated: `slug(title)-<unix time>`.
+`slug` is generated: `slug(title)-<unix time>` (suffix `-2`, `-3`… if the same title is posted twice in one second).
+
+**Anti-duplicate (`source_url`)** — optional, string ≤500, unique: the origin URL or a stable ID of the article in the sending system. `POST` with a `source_url` that already exists **updates that row** (same rules as `PUT`, all fields optional, response `200` instead of `201`), so a cron that re-sends the same articles never creates duplicates. Without `source_url` every `POST` creates a new row. Note: the update overwrites edits an admin made to that row.
 
 ```bash
 curl -X POST https://.../api/v1/news \
@@ -301,6 +305,7 @@ Makes the item the **only** headline (clears any other); calling again on the cu
   "created_at": "...",
   "updated_at": "...",
   "cover_image_url": "https://.../galleries/covers/x.jpg",
+  "source_url": null,
   "items": [
     {
       "id": 41, "gallery_id": 3, "image_path": "galleries/items/a.jpg",
@@ -323,6 +328,7 @@ Query: `is_published`, `page`, `per_page`. Each item includes `items_count`.
 | `title` | **required**, string ≤255 |
 | `cover_image` | **required** image: jpeg, png, jpg, gif, webp — max 10 MB |
 | `description` | optional string |
+| `source_url` | optional string ≤500, unique: origin URL/ID. `POST` with an existing `source_url` updates that album (`200`, all fields optional, `cover_image` may be omitted and the old cover is kept). Photos added via `/galleries/{id}/photos` are **not** de-duplicated. |
 | `is_published` | optional boolean, default `true` |
 
 `slug` is generated once from the title and never changes (shared links stay valid).

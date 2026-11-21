@@ -138,6 +138,39 @@ class ApiTest extends TestCase
         Http::assertSentCount(3); // only the three public URLs were fetched
     }
 
+    public function test_news_post_with_same_source_url_updates_instead_of_duplicating(): void
+    {
+        $src = 'https://empatlawangkab.go.id/berita/rapat-ppid';
+        $first = $this->postJson('/api/v1/news', ['title' => 'Rapat PPID', 'content' => 'v1', 'source_url' => $src], $this->auth)
+            ->assertCreated()->assertJsonPath('source_url', $src)->json();
+
+        $this->postJson('/api/v1/news', ['title' => 'Rapat PPID (revisi)', 'content' => 'v2', 'source_url' => $src], $this->auth)
+            ->assertOk()->assertJsonPath('id', $first['id'])->assertJsonPath('content', 'v2')->assertJsonPath('title', 'Rapat PPID (revisi)');
+        $this->assertSame(1, News::count());
+
+        // without source_url every POST still creates; another source is another row
+        $this->postJson('/api/v1/news', ['title' => 'Lain', 'content' => 'x'], $this->auth)->assertCreated();
+        $other = $this->postJson('/api/v1/news', ['title' => 'Lain', 'content' => 'x', 'source_url' => 'ID-42'], $this->auth)->assertCreated()->json('id');
+        $this->assertSame(3, News::count());
+
+        // a PUT cannot steal another row's source
+        $this->putJson("/api/v1/news/$other", ['source_url' => $src], $this->auth)->assertUnprocessable()->assertJsonValidationErrors('source_url');
+    }
+
+    public function test_gallery_post_with_same_source_url_updates_instead_of_duplicating(): void
+    {
+        $src = 'https://empatlawangkab.go.id/galeri/hut-ri';
+        $first = $this->post('/api/v1/galleries', [
+            'title' => 'HUT RI', 'source_url' => $src, 'cover_image' => UploadedFile::fake()->image('a.jpg'),
+        ], $this->auth)->assertCreated()->json();
+
+        // repeat without a cover: allowed on the upsert path, old cover kept
+        $this->post('/api/v1/galleries', ['title' => 'HUT RI ke-81', 'source_url' => $src], $this->auth)
+            ->assertOk()->assertJsonPath('id', $first['id'])->assertJsonPath('title', 'HUT RI ke-81')
+            ->assertJsonPath('cover_image', $first['cover_image']);
+        $this->assertSame(1, \App\Models\Gallery::count());
+    }
+
     public function test_web_route_names_untouched(): void
     {
         $this->assertSame(url('/berita'), route('news.index'));

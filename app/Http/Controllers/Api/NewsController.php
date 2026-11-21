@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class NewsController extends Controller
 {
@@ -33,10 +34,14 @@ class NewsController extends Controller
         return $news;
     }
 
+    // A known source_url (repeated push by a cron/scraper) updates that row → 200 instead of a duplicate.
     public function store(Request $request)
     {
+        if ($existing = $this->bySource($request)) {
+            return $this->update($request, $existing);
+        }
         $data = $this->validated($request);
-        $data['slug'] = Str::slug($data['title']).'-'.time();
+        $data['slug'] = News::newSlug($data['title']);
         $data['author'] ??= 'Admin';
         $data['published_at'] ??= now();
         $data['is_published'] = $request->boolean('is_published', true);
@@ -48,7 +53,7 @@ class NewsController extends Controller
 
     public function update(Request $request, News $news)
     {
-        $data = $this->validated($request, true);
+        $data = $this->validated($request, $news);
 
         if (isset($data['title'])) {
             $data['slug'] = Str::slug($data['title']).'-'.$news->id;
@@ -114,11 +119,20 @@ class NewsController extends Controller
         return response()->json(['affected' => count($data['ids'])]);
     }
 
-    private function validated(Request $request, bool $partial = false): array
+    private function bySource(Request $request): ?News
     {
-        $req = $partial ? 'sometimes|required' : 'required';
+        $source = trim((string) $request->input('source_url'));
+
+        return $source === '' ? null : News::where('source_url', $source)->first();
+    }
+
+    /** $news set = partial update of that row. */
+    private function validated(Request $request, ?News $news = null): array
+    {
+        $req = $news ? 'sometimes|required' : 'required';
 
         return collect($request->validate([
+            'source_url' => ['nullable', 'string', 'max:500', Rule::unique('news', 'source_url')->ignore($news?->id)],
             'title' => "$req|string|max:255",
             'content' => "$req|string",
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',

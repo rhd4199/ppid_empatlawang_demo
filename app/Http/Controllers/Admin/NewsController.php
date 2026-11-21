@@ -52,7 +52,7 @@ class NewsController extends Controller
 
         $data = [
             'title' => $request->title,
-            'slug' => Str::slug($request->title) . '-' . time(),
+            'slug' => News::newSlug($request->title),
             'content' => $request->content,
             'author' => $request->author ?? 'Admin',
             'published_at' => $request->published_at ?? now(),

@@ -8,6 +8,7 @@ use App\Models\GalleryItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class GalleryController extends Controller
 {
@@ -27,9 +28,15 @@ class GalleryController extends Controller
         return $gallery->load(['items' => fn ($q) => $q->orderBy('order')]);
     }
 
+    // A known source_url (repeated push by a cron/scraper) updates that album → 200 instead of a duplicate.
     public function store(Request $request)
     {
+        $source = trim((string) $request->input('source_url'));
+        if ($source !== '' && $existing = Gallery::where('source_url', $source)->first()) {
+            return $this->update($request, $existing);
+        }
         $data = $request->validate([
+            'source_url' => 'nullable|string|max:500|unique:galleries,source_url',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
@@ -46,6 +53,7 @@ class GalleryController extends Controller
     public function update(Request $request, Gallery $gallery)
     {
         $data = $request->validate([
+            'source_url' => ['nullable', 'string', 'max:500', Rule::unique('galleries', 'source_url')->ignore($gallery->id)],
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
