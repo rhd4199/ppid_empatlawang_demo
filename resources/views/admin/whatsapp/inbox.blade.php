@@ -56,6 +56,7 @@
                                     </div>
                                 </div>
                                 <div class="small text-muted text-truncate mt-1">{{ Str::limit($c->last_body, 80) }}</div>
+                                @if ($c->status !== 'done' && $c->handoff_reason)<div class="small text-warning-emphasis text-truncate"><i class="fas fa-user-tie me-1"></i>Butuh petugas: {{ $c->handoff_reason }}</div>@endif
                             </div>
                         </a>
                     @empty
@@ -80,11 +81,11 @@
                         <a href="{{ wa_link($conversation->phone) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success ms-auto"><i class="fab fa-whatsapp"></i></a>
                     </div>
                     <div class="wa-thread flex-grow-1 p-3">
-                        <div class="text-center mb-3"><span class="badge bg-white text-muted shadow-sm fw-normal">Pertanyaan warga · diteruskan dari bot WhatsApp</span></div>
+                        <div class="text-center mb-3"><span class="badge bg-white text-muted shadow-sm fw-normal">Pertanyaan warga · diteruskan dari bot WhatsApp{{ $conversation->handoff_reason ? " · " . $conversation->handoff_reason : "" }}</span></div>
                         @foreach ($messages as $m)
                             <div class="d-flex mb-2">
                                 <div class="wa-bubble {{ $m->direction === 'out' ? 'wa-out' : 'wa-in' }}">
-                                    @if ($m->direction === 'out')<div class="small fw-bold text-success">Petugas PPID</div>@endif
+                                    @if ($m->direction === 'out')<div class="small fw-bold text-success">{{ $m->sender === 'bot' ? 'Bot Sapa Madani (otomatis)' : 'Petugas PPID' }}</div>@endif
                                     <div>{{ $m->body }}</div>
                                     <div class="text-end text-muted" style="font-size:.7rem">
                                         {{ $m->sent_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') }}

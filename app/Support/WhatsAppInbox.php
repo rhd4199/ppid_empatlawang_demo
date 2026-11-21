@@ -84,10 +84,10 @@ class WhatsAppInbox
         return $rows;
     }
 
-    /** Stores parsed messages; returns how many were new (duplicate provider ids are skipped). */
-    public static function store(array $messages): int
+    /** Stores parsed messages (duplicate provider ids skipped); returns the conversations that got a new message, keyed by id. */
+    public static function store(array $messages): array
     {
-        $stored = 0;
+        $stored = [];
         foreach ($messages as $m) {
             if ($m['id'] !== null && WaMessage::where('provider_message_id', $m['id'])->exists()) {
                 continue;
@@ -110,7 +110,7 @@ class WhatsAppInbox
                 'reply_draft' => null,
                 'last_message_at' => $at,
             ]);
-            $stored++;
+            $stored[$conversation->id] = $conversation;
         }
 
         return $stored;

@@ -32,6 +32,11 @@
                     <input class="form-check-input" type="checkbox" role="switch" id="waEnabled" name="enabled" value="1" {{ old('enabled', $wa['enabled']) ? 'checked' : '' }}>
                     <label class="form-check-label fw-bold" for="waEnabled">Aktif (kirim notifikasi WhatsApp)</label>
                 </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" id="waAutoReply" name="auto_reply" value="1" {{ old('auto_reply', $wa['auto_reply']) ? 'checked' : '' }}>
+                    <label class="form-check-label fw-bold" for="waAutoReply">Bot Sapa Madani membalas otomatis</label>
+                    <div class="small text-muted">Pertanyaan umum (jam layanan, alamat, biaya, lama proses, persyaratan layanan, salam) dijawab bot langsung. Permintaan dokumen/permohonan, aduan, keberatan, dan pertanyaan yang tidak dipahami bot diteruskan ke Kotak Masuk WA. Mati = semua pesan menunggu petugas.</div>
+                </div>
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Provider</label>

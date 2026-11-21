@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\WhatsAppBot;
 use App\Support\WhatsAppGateway;
 use App\Support\WhatsAppInbox;
 use Illuminate\Http\Request;
@@ -28,10 +29,16 @@ class WhatsAppWebhookController extends Controller
         abort_unless($this->validSecret($request->query('secret') ?? $request->header('X-Webhook-Secret')), 403);
 
         $provider = WhatsAppGateway::settings()['provider'];
-        $stored = WhatsAppInbox::store(WhatsAppInbox::parse($provider, $request->all()));
+        $conversations = WhatsAppInbox::store(WhatsAppInbox::parse($provider, $request->all()));
+
+        // Bot reply (may wait on OpenAI + provider) after the response, so the provider's webhook call does not time out.
+        // ponytail: no queue worker in this app; move to a queued job if replies get slow.
+        foreach ($conversations as $conversation) {
+            app()->terminating(fn () => WhatsAppBot::handle($conversation));
+        }
 
         // Always 200 for a valid secret, otherwise providers keep retrying status/group events.
-        return response()->json(['stored' => $stored]);
+        return response()->json(['stored' => count($conversations)]);
     }
 
     private function validSecret(mixed $given): bool

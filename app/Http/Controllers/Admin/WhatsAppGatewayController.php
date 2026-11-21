@@ -25,12 +25,13 @@ class WhatsAppGatewayController extends Controller
             'token' => 'nullable|string|max:2000',
             'sender' => 'nullable|string|max:60',
             'enabled' => 'nullable|boolean',
+            'auto_reply' => 'nullable|boolean',
             'clear_token' => 'nullable|boolean',
         ]);
 
         // Empty token field = keep the stored one; it is never sent back to the browser.
         $token = $request->boolean('clear_token') ? '' : (trim($data['token'] ?? '') ?: null);
-        WhatsAppGateway::save(['enabled' => $request->boolean('enabled')] + $data, $token);
+        WhatsAppGateway::save(['enabled' => $request->boolean('enabled'), 'auto_reply' => $request->boolean('auto_reply')] + $data, $token);
 
         return redirect()->route('admin.whatsapp.index')->with('success', 'Pengaturan WhatsApp Gateway disimpan.');
     }

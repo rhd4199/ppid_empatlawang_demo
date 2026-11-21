@@ -28,7 +28,7 @@ class WhatsAppGateway
         'cloud' => 'https://graph.facebook.com/v21.0',
     ];
 
-    private const KEYS = ['wa_enabled', 'wa_provider', 'wa_api_url', 'wa_token', 'wa_sender'];
+    private const KEYS = ['wa_enabled', 'wa_auto_reply', 'wa_provider', 'wa_api_url', 'wa_token', 'wa_sender'];
 
     public static function settings(): array
     {
@@ -36,6 +36,8 @@ class WhatsAppGateway
 
         return [
             'enabled' => ($v['wa_enabled'] ?? '0') === '1',
+            // off by default: replies go out only via "Setujui & kirim" until an admin turns the bot on
+            'auto_reply' => ($v['wa_auto_reply'] ?? '0') === '1',
             'provider' => $v['wa_provider'] ?? 'fonnte',
             'api_url' => $v['wa_api_url'] ?? '',
             'sender' => $v['wa_sender'] ?? '',
@@ -48,6 +50,7 @@ class WhatsAppGateway
     {
         $values = [
             'wa_enabled' => !empty($data['enabled']) ? '1' : '0',
+            'wa_auto_reply' => !empty($data['auto_reply']) ? '1' : '0',
             'wa_provider' => $data['provider'],
             'wa_api_url' => rtrim(trim($data['api_url'] ?? ''), '/'),
             'wa_sender' => trim($data['sender'] ?? ''),

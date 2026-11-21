@@ -24,7 +24,7 @@ class AssistantInfo
         $standard = route('standard-service.index');
 
         // "minta data biaya perjalanan dinas" is a document request, not a fee question
-        if (preg_match('/\b(biaya|bayar|berbayar|gratis|tarif|ongkos|dipungut|harga)\b/u', $text) && ! preg_match('/\b(data|dokumen|laporan|anggaran|apbd|perjalanan)\b/u', $text)) {
+        if (preg_match('/\b(biaya|biayanya|bayar|bayarnya|berbayar|gratis|tarif|ongkos|dipungut|harga)\b/u', $text) && ! preg_match('/\b(data|dokumen|laporan|anggaran|apbd|perjalanan)\b/u', $text)) {
             return self::FEE . " Rinciannya ada di halaman Standar Layanan ({$standard}#biaya).";
         }
         if (preg_match('/\b(berapa lama|berapa hari|lamanya|lama (proses|prosesnya|diproses|dijawab|jawab)|waktu proses|jangka waktu|kapan (selesai|dijawab|diproses|keluar))\b/u', $text)) {
