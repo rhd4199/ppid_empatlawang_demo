@@ -324,6 +324,9 @@
             <a href="{{ route('admin.contact-settings.index') }}" class="menu-item {{ request()->routeIs('admin.contact-settings.*') ? 'active' : '' }}">
                 <i class="fas fa-cogs"></i> Kontak & Alamat
             </a>
+            <a href="{{ route('admin.whatsapp.index') }}" class="menu-item {{ request()->routeIs('admin.whatsapp.*') ? 'active' : '' }}">
+                <i class="fab fa-whatsapp"></i> WhatsApp Gateway
+            </a>
 
             <div class="menu-header">Website</div>
             <a href="{{ url('/') }}" class="menu-item">

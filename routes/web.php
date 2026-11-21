@@ -129,6 +129,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/pengaturan-kontak/asisten', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateAssistant'])->name('contact-settings.update-assistant');
     Route::put('/pengaturan-kontak/statistik', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateStats'])->name('contact-settings.update-stats');
 
+    // WhatsApp Gateway
+    Route::get('/whatsapp-gateway', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'index'])->name('whatsapp.index');
+    Route::put('/whatsapp-gateway', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'update'])->name('whatsapp.update');
+    Route::post('/whatsapp-gateway/uji', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'test'])->name('whatsapp.test');
+
     // Account Settings
     Route::get('/akun', [App\Http\Controllers\Admin\AccountController::class, 'index'])->name('account.index');
     Route::put('/akun', [App\Http\Controllers\Admin\AccountController::class, 'update'])->name('account.update');

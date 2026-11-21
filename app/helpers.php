@@ -102,12 +102,9 @@ if (! function_exists('wa_link')) {
     /** "0812-3456 789" / "+62812…" → https://wa.me/62812…; null when no usable number. */
     function wa_link(?string $number): ?string
     {
-        $digits = preg_replace('/\D/', '', (string) $number);
-        if (str_starts_with($digits, '0')) {
-            $digits = '62' . substr($digits, 1);
-        }
+        $digits = App\Support\WhatsAppGateway::normalize($number);
 
-        return strlen($digits) >= 9 ? 'https://wa.me/' . $digits : null;
+        return $digits !== '' ? 'https://wa.me/' . $digits : null;
     }
 }
 
