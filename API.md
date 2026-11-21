@@ -34,9 +34,78 @@ curl -H "Authorization: Bearer $API_TOKEN" -H "Accept: application/json" \
 > **Security**
 > - `secret-token` is a placeholder. Set a long random value in production:
 >   `php -r "echo bin2hex(random_bytes(32));"`
-> - The token grants full admin access (create/update/delete everything). Keep it server-side only — never put it in browser JS or a mobile app bundle.
+> - `API_TOKEN` grants full admin access (create/update/delete everything). Keep it server-side only — never put it in browser JS or a mobile app bundle. Give content pushers `API_INJECT_TOKEN` instead (below).
 > - Rotate by changing `API_TOKEN` in `.env`, then `php artisan config:clear` (or `config:cache` if you cache config).
 > - Always call the API over HTTPS.
+
+### Limited token for content pushers (`API_INJECT_TOKEN`)
+
+Systems that only push content (scraper, n8n, another app) should get the **inject token**, not the admin token:
+
+```env
+API_INJECT_TOKEN=another-long-random-secret
+```
+
+| Allowed with `API_INJECT_TOKEN` | Everything else (delete, bulk, toggle-status/headline, photo order/delete, documents, events, officials, profiles, contacts, information requests, complaints, settings) |
+|---|---|
+| `GET /news`, `GET /news/{id}`, `POST /news`, `PUT/PATCH /news/{id}`, `GET /galleries`, `GET /galleries/{id}`, `POST /galleries`, `PUT/PATCH /galleries/{id}`, `POST /galleries/{id}/photos` | `403 {"message":"This token may only create/update news and galleries."}` |
+
+Empty `API_INJECT_TOKEN` = disabled. Both tokens can be set at the same time; change either one to rotate it.
+
+### Quick start: pushing content
+
+Ready-to-run examples (replace the host and token). Send a stable `source_url` per article/album: re-sending the same item updates it (`200`) instead of creating a duplicate. Add `"is_published": false` to keep an item as draft for an admin to review.
+
+**1. News with a cover from a URL**
+
+```bash
+curl -X POST https://ppid.example.go.id/api/v1/news \
+  -H "Authorization: Bearer $API_INJECT_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+  -d '{
+    "title": "Rapat Koordinasi PPID Kabupaten Empat Lawang",
+    "content": "<p>Isi berita dalam HTML.</p>",
+    "author": "Diskominfo",
+    "published_at": "2026-11-21 09:00",
+    "source_url": "https://empatlawangkab.go.id/berita/rapat-koordinasi-ppid",
+    "image_url": "https://empatlawangkab.go.id/uploads/rapat.jpg",
+    "is_published": true
+  }'
+```
+→ `201` news object (`200` when `source_url` already existed).
+
+**2. Photo album with cover + photos from URLs (one call)**
+
+```bash
+curl -X POST https://ppid.example.go.id/api/v1/galleries \
+  -H "Authorization: Bearer $API_INJECT_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+  -d '{
+    "title": "Upacara HUT RI ke-81",
+    "description": "Dokumentasi upacara di halaman Pemkab.",
+    "source_url": "https://empatlawangkab.go.id/galeri/upacara-hut-ri-81",
+    "cover_image_url": "https://empatlawangkab.go.id/uploads/upacara-cover.jpg",
+    "photos": [
+      { "url": "https://empatlawangkab.go.id/uploads/upacara-1.jpg", "caption": "Pengibaran bendera" },
+      { "url": "https://empatlawangkab.go.id/uploads/upacara-2.jpg", "caption": "Barisan peserta" }
+    ]
+  }'
+```
+→ `201` gallery object with `items`. If one image cannot be downloaded the call returns `422` (e.g. on `photos.1.url`) and nothing is saved.
+
+**3. Video album (YouTube)**
+
+```bash
+curl -X POST https://ppid.example.go.id/api/v1/galleries \
+  -H "Authorization: Bearer $API_INJECT_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \
+  -d '{
+    "title": "Pelantikan Pejabat Pemkab Empat Lawang",
+    "type": "video",
+    "url": "https://www.youtube.com/watch?v=VIDEO_ID",
+    "source_url": "https://www.youtube.com/watch?v=VIDEO_ID"
+  }'
+```
+→ `201`; the cover is the YouTube thumbnail unless `cover_image_url` is sent.
+
+Results appear on `/berita/{slug}` and `/galeri/{slug}` (only when `is_published` is true and, for news, `published_at` is not in the future). Typical errors: `401` wrong token, `403` endpoint not allowed for the inject token, `422` validation (`errors` per field), `429` over 120 requests/minute.
 
 Rate limit: **120 requests / minute** per client IP. Over limit → `429 Too Many Requests` (see `Retry-After` header).
 
@@ -716,6 +785,8 @@ curl -X PATCH https://.../api/v1/settings/contact \
 ## 15. Setup checklist
 
 1. Add to `.env`: `API_TOKEN=<long-random-value>`
+   - and, for content pushers, `API_INJECT_TOKEN=<another-long-random-value>` (generate each with `php -r "echo bin2hex(random_bytes(32));"`)
 2. `php artisan config:clear` (or `php artisan config:cache` in production)
 3. Test: `curl -i -H "Authorization: Bearer <token>" {APP_URL}/api/v1/profiles` → `200`
 4. Without header → `401`
+5. Inject token: `GET /api/v1/news` → `200`, `GET /api/v1/complaints` → `403`

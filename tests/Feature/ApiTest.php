@@ -279,6 +279,33 @@ class ApiTest extends TestCase
         $this->putJson("/api/v1/galleries/{$video['id']}", ['type' => 'photo'], $this->auth)->assertOk()->assertJsonPath('url', null);
     }
 
+    public function test_inject_token_may_only_create_and_update_news_and_galleries(): void
+    {
+        config(['services.api.inject_token' => 'inject-token']);
+        $inject = ['Authorization' => 'Bearer inject-token'];
+
+        $news = $this->postJson('/api/v1/news', ['title' => 'Dari scraper', 'content' => 'x', 'source_url' => 'S-1'], $inject)
+            ->assertCreated()->json('id');
+        $this->postJson('/api/v1/news', ['title' => 'Dari scraper', 'content' => 'y', 'source_url' => 'S-1'], $inject)->assertOk();
+        $this->putJson("/api/v1/news/$news", ['content' => 'z'], $inject)->assertOk();
+        $this->getJson('/api/v1/news', $inject)->assertOk();
+        $album = $this->postJson('/api/v1/galleries', ['title' => 'Video', 'type' => 'video', 'url' => 'https://youtu.be/dQw4w9WgXcQ'], $inject)
+            ->assertCreated()->json('id');
+        $this->getJson("/api/v1/galleries/$album", $inject)->assertOk();
+
+        foreach ([['delete', "/api/v1/news/$news"], ['post', '/api/v1/news/bulk'], ['post', "/api/v1/news/$news/toggle-headline"],
+            ['delete', "/api/v1/galleries/$album"], ['get', '/api/v1/complaints'], ['get', '/api/v1/information-requests'],
+            ['get', '/api/v1/settings/contact'], ['post', '/api/v1/documents']] as [$method, $uri]) {
+            $this->json($method, $uri, [], $inject)->assertForbidden();
+        }
+        $this->assertSame(1, News::count());
+
+        // the admin token still does everything; an empty inject token never matches "Bearer "
+        $this->deleteJson("/api/v1/news/$news", [], $this->auth)->assertNoContent();
+        config(['services.api.inject_token' => '']);
+        $this->getJson('/api/v1/news', ['Authorization' => 'Bearer '])->assertUnauthorized();
+    }
+
     public function test_web_route_names_untouched(): void
     {
         $this->assertSame(url('/berita'), route('news.index'));

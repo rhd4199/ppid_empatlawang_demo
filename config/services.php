@@ -21,6 +21,7 @@ return [
     // Static bearer token for /api/* (see API.md)
     'api' => [
         'token' => env('API_TOKEN'),
+        'inject_token' => env('API_INJECT_TOKEN'), // limited: news & galleries create/update only
     ],
 
     'openai' => [

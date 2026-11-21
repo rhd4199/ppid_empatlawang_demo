@@ -17,7 +17,7 @@ Route::prefix('v1')->name('api.')->middleware([BearerToken::class, 'throttle:120
 
     Route::post('galleries/bulk', [Api\GalleryController::class, 'bulk']);
     Route::post('galleries/{gallery}/toggle-status', [Api\GalleryController::class, 'toggleStatus']);
-    Route::post('galleries/{gallery}/photos', [Api\GalleryController::class, 'uploadPhotos']);
+    Route::post('galleries/{gallery}/photos', [Api\GalleryController::class, 'uploadPhotos'])->name('galleries.photos');
     Route::put('galleries/{gallery}/photos/order', [Api\GalleryController::class, 'updateOrder']);
     Route::delete('gallery-photos/{item}', [Api\GalleryController::class, 'deletePhoto']);
     Route::apiResource('galleries', Api\GalleryController::class);
