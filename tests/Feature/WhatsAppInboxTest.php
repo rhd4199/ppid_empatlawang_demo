@@ -125,4 +125,29 @@ class WhatsAppInboxTest extends TestCase
         $this->assertStringContainsString('>Baru</span>', $list);
         $this->assertLessThan(strpos($list, 'Budi'), strpos($list, 'Sari'));
     }
+
+    public function test_search_and_status_filters(): void
+    {
+        $this->conversation('6281200000001', 'Budi Santoso', 'new', [['in', 'Syarat KTP apa saja?']]);
+        $this->conversation('6281277770002', 'Sari Dewi', 'done', [['in', 'Halo'], ['out', 'Sudah dijawab']]);
+        $this->conversation('6281200000003', 'Andi', 'read', [['in', 'Minta data APBD']])->update(['handoff_reason' => 'Permohonan informasi']);
+        $this->actingAs(User::factory()->create());
+        $index = fn (array $query) => $this->get(route('admin.wa-inbox.index', $query))->assertOk();
+
+        $index(['q' => '081277770002'])->assertSee('Sari Dewi')->assertDontSee('Budi Santoso')->assertDontSee('Andi'); // 08… = 628…
+        $index(['q' => 'ktp'])->assertSee('Budi Santoso')->assertDontSee('Sari Dewi'); // message text, any case
+        $index(['q' => 'budi'])->assertSee('Budi Santoso')->assertDontSee('Andi');
+        $index(['status' => 'done'])->assertSee('Sari Dewi')->assertDontSee('Budi Santoso')->assertDontSee('Andi');
+        $index(['status' => 'new'])->assertSee('Budi Santoso')->assertDontSee('Sari Dewi');
+        $index(['status' => 'handoff'])->assertSee('Andi')->assertDontSee('Budi Santoso')->assertDontSee('Sari Dewi');
+        $index(['q' => 'tidak ada'])->assertSee('Tidak ada percakapan yang cocok.');
+
+        // Filters stay in conversation links and the live list poll.
+        $index(['status' => 'done', 'q' => 'sari'])
+            ->assertSee('status=done', false)
+            ->assertSee(route('admin.wa-inbox.summary', ['q' => 'sari', 'status' => 'done'])); // escaped &amp;
+        $list = $this->getJson(route('admin.wa-inbox.summary', ['status' => 'done']))->assertOk()->json('list');
+        $this->assertStringContainsString('Sari Dewi', $list);
+        $this->assertStringNotContainsString('Budi Santoso', $list);
+    }
 }

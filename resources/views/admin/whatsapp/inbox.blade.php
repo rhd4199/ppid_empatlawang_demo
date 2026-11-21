@@ -19,6 +19,8 @@
     .wa-item.unread .wa-time { color: #25d366; font-weight: 600; }
     .wa-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: #25d366; color: #fff;
         font-size: .72rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+    .wa-chip { background: #f0f2f5; color: #54656f; }
+    .wa-chip.active { background: #d9fdd3; color: #008069; font-weight: 600; }
     .wa-tag { background: #d9fdd3; color: #008069; font-weight: 600; }
     /* WhatsApp wallpaper: beige with a faint dot pattern */
     .wa-thread { background-color: #efeae2;
@@ -57,6 +59,24 @@
                 <div class="fw-bold"><i class="fab fa-whatsapp text-success me-2"></i>Kotak masuk</div>
                 <span class="small text-muted">{{ $conversations->total() }} percakapan</span>
             </div>
+            @php
+                $filters = App\Http\Controllers\Admin\WhatsAppInboxController::filters();
+                $chips = ['' => 'Semua', 'new' => 'Baru', 'handoff' => 'Butuh petugas', 'done' => 'Selesai'];
+            @endphp
+            {{-- Search + quick filters, like WhatsApp; GET so the URL can be shared. --}}
+            <form action="{{ route('admin.wa-inbox.index') }}" method="GET" class="px-3 py-2 border-bottom" role="search" data-wa-search>
+                @if (! empty($filters['status']))<input type="hidden" name="status" value="{{ $filters['status'] }}">@endif
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light border-0 rounded-start-pill"><i class="fas fa-magnifying-glass text-muted"></i></span>
+                    <input type="search" name="q" value="{{ $filters['q'] ?? '' }}" maxlength="100" class="form-control bg-light border-0 rounded-end-pill" placeholder="Cari nama, nomor atau pesan" aria-label="Cari percakapan">
+                </div>
+                <div class="d-flex flex-wrap gap-1 mt-2">
+                    @foreach ($chips as $key => $label)
+                        <a href="{{ route('admin.wa-inbox.index', array_filter(['q' => $filters['q'] ?? null, 'status' => $key ?: null])) }}"
+                           class="badge rounded-pill text-decoration-none fw-normal px-3 py-2 wa-chip {{ ($filters['status'] ?? '') === $key ? 'active' : '' }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+            </form>
             <div class="wa-list flex-grow-1" data-wa-list data-wa-poll="{{ route('admin.wa-inbox.summary', array_filter(['current' => $conversation?->id] + request()->only('page', 'q', 'status'))) }}">
                 @include('admin.whatsapp._list', ['currentId' => $conversation?->id])
             </div>
@@ -76,7 +96,7 @@
 
             @if ($conversation)
                 <div class="wa-pane-head d-flex align-items-center gap-3 px-3">
-                    <a href="{{ route('admin.wa-inbox.index') }}" class="btn btn-sm btn-link text-secondary d-lg-none px-1" aria-label="Kembali"><i class="fas fa-arrow-left"></i></a>
+                    <a href="{{ route('admin.wa-inbox.index', $filters) }}" class="btn btn-sm btn-link text-secondary d-lg-none px-1" aria-label="Kembali"><i class="fas fa-arrow-left"></i></a>
                     <div class="wa-avatar sm">{{ $initial($conversation) }}</div>
                     <div style="min-width:0">
                         <div class="fw-semibold text-truncate">{{ $conversation->name ?: 'Warga' }}</div>

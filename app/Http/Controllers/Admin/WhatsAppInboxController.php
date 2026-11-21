@@ -121,7 +121,33 @@ class WhatsAppInboxController extends Controller
                 ->whereColumn('wa_conversation_id', 'wa_conversations.id')
                 ->where('direction', 'in')
                 ->whereRaw("sent_at > coalesce((select max(o.sent_at) from wa_messages o where o.wa_conversation_id = wa_messages.wa_conversation_id and o.direction = 'out' and o.status <> 'failed'), ?)", ['1970-01-01 00:00:00'])])
+            ->when(self::filters()['status'] ?? null, fn ($q, $status) => match ($status) {
+                'new', 'done' => $q->where('status', $status),
+                'handoff' => $q->whereNotNull('handoff_reason')->where('status', '!=', 'done'),
+                default => $q,
+            })
+            ->when(self::filters()['q'] ?? null, function ($q, $term) {
+                // Name, number (0812… = 62812…) or any message text, case-insensitive (pg LIKE is not).
+                // ponytail: % and _ typed by the officer act as wildcards; harmless for a search box.
+                $like = '%' . mb_strtolower($term) . '%';
+                $digits = preg_replace('/\D/', '', $term);
+                $q->where(fn ($q) => $q->whereRaw('LOWER(name) LIKE ?', [$like])
+                    ->when(strlen($digits) >= 3, fn ($q) => $q->orWhere('phone', 'like', '%' . preg_replace('/^0/', '62', $digits) . '%'))
+                    ->orWhereHas('messages', fn ($m) => $m->whereRaw('LOWER(body) LIKE ?', [$like])));
+            })
             ->orderByDesc('last_message_at')
-            ->paginate(30);
+            ->paginate(30)
+            ->withQueryString();
+    }
+
+    /** List filters from the query string (?q=&status=), kept in list links, pagination and the poll. */
+    public static function filters(): array
+    {
+        [$q, $status] = [request()->query('q'), request()->query('status')];
+
+        return array_filter([
+            'q' => is_string($q) ? trim(mb_substr($q, 0, 100)) : null,
+            'status' => in_array($status, ['new', 'handoff', 'done'], true) ? $status : null,
+        ]);
     }
 }

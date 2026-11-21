@@ -12,7 +12,7 @@
 @endphp
 @forelse ($conversations as $c)
     @php $unread = $c->status === 'new' ? max(1, (int) $c->unread_count) : 0; @endphp
-    <a href="{{ route('admin.wa-inbox.show', $c) }}" class="wa-item d-flex gap-3 px-3 py-2 align-items-center {{ $currentId === $c->id ? 'active' : '' }} {{ $unread ? 'unread' : '' }}">
+    <a href="{{ route('admin.wa-inbox.show', [$c] + App\Http\Controllers\Admin\WhatsAppInboxController::filters()) }}" class="wa-item d-flex gap-3 px-3 py-2 align-items-center {{ $currentId === $c->id ? 'active' : '' }} {{ $unread ? 'unread' : '' }}">
         <div class="wa-avatar">{{ mb_strtoupper(mb_substr($c->name ?: 'W', 0, 1)) }}</div>
         <div class="flex-grow-1" style="min-width:0">
             <div class="d-flex justify-content-between gap-2">
@@ -31,5 +31,5 @@
         </div>
     </a>
 @empty
-    <div class="p-4 text-center text-muted small">Belum ada pesan WhatsApp masuk.</div>
+    <div class="p-4 text-center text-muted small">{{ App\Http\Controllers\Admin\WhatsAppInboxController::filters() ? 'Tidak ada percakapan yang cocok.' : 'Belum ada pesan WhatsApp masuk.' }}</div>
 @endforelse
