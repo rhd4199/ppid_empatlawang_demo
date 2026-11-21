@@ -12,18 +12,16 @@ use Illuminate\Support\Arr;
  */
 class AssistantFallback
 {
-    private const REPORT_ASK = 'Boleh saya tahu laporannya tentang apa?';
-
     /** $lastReply = previous bot message (from the panel history), only used to read an answer to the complaint ask-back. */
     public static function reply(string $message, ?string $lastReply = null): string
     {
         $text = mb_strtolower(trim($message));
         $greeting = self::greeting($text);
-        if ($lastReply && str_contains($lastReply, self::REPORT_ASK) && ! $greeting) {
+        if ($lastReply && str_contains($lastReply, AssistantComplaint::ASK) && ! $greeting) {
             // "jalan rusak" or a list number answers "laporannya tentang apa?"
             $text = 'lapor ' . ([1 => 'fasilitas rusak', 2 => 'pelayanan publik', 3 => 'pungli', 4 => 'lainnya'][(int) $text] ?? $text);
         }
-        if ($report = self::report($text)) {
+        if ($report = AssistantComplaint::reply($text)) {
             return ($greeting ? "{$greeting} " : '') . $report;
         }
         $topic = self::topic($text);
@@ -112,32 +110,6 @@ class AssistantFallback
         }
 
         return null;
-    }
-
-    /**
-     * Citizen complaints ("mau melapor", "pengaduan pungli"); "laporan keuangan" is a document and is not matched here.
-     * Bare intent → ask which kind; with a subject → how to report it via SP4N-LAPOR!. Never points to Permohonan Informasi.
-     */
-    private static function report(string $text): ?string
-    {
-        $verbs = ['lapor', 'melapor', 'melaporkan', 'laporkan', 'mengadu', 'mengadukan', 'adukan', 'aduan', 'pengaduan', 'komplain'];
-        if (! preg_match('/\b(' . implode('|', $verbs) . ')\b/u', $text)) {
-            return null;
-        }
-        $prepare = 'Siapkan juga: apa yang terjadi, lokasi dan waktunya, pihak yang terlibat (bila ada), serta foto atau dokumen pendukung.';
-        $subject = array_diff(DocumentFinder::keywords($text), $verbs, ['pak', 'bu', 'nih', 'bagaimana', 'caranya', 'gimana', 'kah', 'mana', 'kemana', 'ke']);
-        if (! $subject) {
-            return 'Bisa, Bapak/Ibu. ' . self::REPORT_ASK . "\n"
-                . "1. Jalan, jembatan, atau fasilitas umum rusak\n"
-                . "2. Pelayanan publik (lambat, dipersulit, tidak ramah)\n"
-                . "3. Penyalahgunaan wewenang atau pungutan liar (pungli)\n"
-                . "4. Lainnya\n"
-                . $prepare;
-        }
-
-        return 'Bisa, Bapak/Ibu. Laporan seperti ini disampaikan lewat SP4N-LAPOR!, kanal pengaduan resmi pemerintah: https://www.lapor.go.id atau aplikasi LAPOR! di ponsel. '
-            . 'Tuliskan kronologinya, lalu simpan nomor tiket untuk memantau tindak lanjutnya. Identitas pelapor dapat dirahasiakan atau laporan dikirim secara anonim. '
-            . $prepare . ' Bila perlu bantuan, Bapak/Ibu juga bisa menghubungi kami lewat halaman Kontak (' . route('contact.index') . ').';
     }
 
     /** Matching documents as a numbered list, or "not listed yet" + permohonan link; null when the message is not a document request. */

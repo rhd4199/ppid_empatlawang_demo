@@ -344,6 +344,45 @@ class AssistantTest extends TestCase
         $this->assertStringContainsString(route('informasi-publik.show', $docs['lk']->id), $chat('laporan pak'));
     }
 
+    public function test_fallback_complaint_reply_names_the_right_channel_per_kind(): void
+    {
+        $chat = fn ($m, $history = []) => $this->postJson('/sapa-madani/chat', ['message' => $m, 'history' => $history])->assertOk()->json('reply');
+        $link = route('standard-service.index') . '#pengaduan';
+
+        $road = $chat('mau lapor jalan rusak di desa saya');
+        $this->assertStringContainsString($link, $road);
+        $this->assertStringContainsString('SMS ke 1708', $road);
+        $this->assertStringNotContainsString('Inspektorat', $road);
+
+        foreach (['saya ingin melapor penyalahgunaan wewenang', 'ada pungli di kantor kecamatan', 'mau mengadukan pejabat yang minta suap'] as $message) {
+            $abuse = $chat($message);
+            $this->assertStringContainsString($link, $abuse, $message);
+            $this->assertStringContainsString('Inspektorat Daerah Kabupaten Empat Lawang', $abuse);
+            $this->assertStringContainsString('WhatsApp 0811-9553-737', $abuse);
+            $this->assertStringContainsString('nama dan/atau jabatan pejabat yang diadukan', $abuse);
+            $this->assertStringContainsString('dijaga kerahasiaannya', $abuse);
+            $this->assertStringNotContainsString('Permohonan Informasi', $abuse);
+        }
+
+        $service = $chat('mau lapor pelayanan di puskesmas lambat');
+        $this->assertStringContainsString($link, $service);
+        $this->assertStringContainsString('www.lapor.go.id', $service);
+
+        $history = [['role' => 'assistant', 'content' => 'Bisa, Bapak/Ibu. Boleh saya tahu laporannya tentang apa?']];
+        $this->assertStringContainsString('Inspektorat', $chat('3', $history));
+
+        // bot texts must match the Kanal Pengaduan table on the page (no invented numbers)
+        $page = html_entity_decode(strip_tags($this->get(route('standard-service.index'))->assertOk()->getContent()));
+        $page = preg_replace('/\s+/u', ' ', $page);
+        foreach (['www.lapor.go.id', 'SMS ke 1708 (Telkomsel, Indosat, XL)', 'Aplikasi SP4N-LAPOR! (Android/iOS)', 'Inspektorat Daerah Kabupaten Empat Lawang',
+            'Jl. Lintas Sumatera, Tebing Tinggi, Kabupaten Empat Lawang — datang langsung atau surat tertulis pada jam kerja', 'www.ombudsman.go.id',
+            'Telepon 137', 'WhatsApp 0811-9553-737', 'Perwakilan Sumatera Selatan', 'nama dan/atau jabatan pejabat yang diadukan',
+            'Identitas pengadu dijaga kerahasiaannya dan hanya diketahui petugas yang menangani aduan.'] as $text) {
+            $this->assertStringContainsStringIgnoringCase($text, $page);
+        }
+        $this->assertStringContainsString('href="#pengaduan"', $this->get(route('standard-service.index'))->getContent());
+    }
+
     public function test_fallback_invites_the_question_when_user_only_wants_to_ask(): void
     {
         $reply = fn ($m) => $this->postJson('/sapa-madani/chat', ['message' => $m])->assertOk()->json('reply');

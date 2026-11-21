@@ -818,14 +818,16 @@
         @endif
 
         // Activate tab based on hash
-        var hash = window.location.hash;
-        if (hash) {
-            var triggerEl = document.querySelector('.list-group-item[href="' + hash + '"]');
+        function showHashTab() {
+            var hash = window.location.hash;
+            var triggerEl = hash && document.querySelector('.list-group-item[href="' + hash + '"]');
             if (triggerEl) {
-                var tab = new bootstrap.Tab(triggerEl);
-                tab.show();
+                bootstrap.Tab.getOrCreateInstance(triggerEl).show();
             }
         }
+        showHashTab();
+        // a link to #pengaduan clicked while already on this page (e.g. from Sapa Madani) only changes the hash
+        window.addEventListener('hashchange', showHashTab);
 
         // Update hash when tab changes
         var tabElList = [].slice.call(document.querySelectorAll('a[data-bs-toggle="list"]'))
