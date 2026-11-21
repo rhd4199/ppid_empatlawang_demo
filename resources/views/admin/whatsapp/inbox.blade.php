@@ -48,34 +48,7 @@
 @endpush
 
 @section('content')
-@php
-    // Day separator label (WIB), like WhatsApp: Hari ini / Kemarin / 21 November 2026.
-    $dayLabel = function ($date) {
-        $date = $date->copy()->timezone('Asia/Jakarta');
-        $today = now('Asia/Jakarta');
-
-        return $date->isSameDay($today) ? 'Hari ini' : ($date->isSameDay($today->copy()->subDay()) ? 'Kemarin' : $date->locale('id')->translatedFormat('j F Y'));
-    };
-    // Contact list time: 14:05 today, "Kemarin", else 19/11/26.
-    $listTime = function ($date) use ($dayLabel) {
-        if (! $date) {
-            return '';
-        }
-        $label = $dayLabel($date);
-        $local = $date->copy()->timezone('Asia/Jakarta');
-
-        return $label === 'Hari ini' ? $local->format('H:i') : ($label === 'Kemarin' ? 'Kemarin' : $local->format('d/m/y'));
-    };
-    // Outgoing status → WhatsApp tick (pending clock, sent ✓, delivered ✓✓ grey, read ✓✓ blue, failed !).
-    $ticks = [
-        'pending' => ['fa-regular fa-clock', 'Menunggu'],
-        'sent' => ['fas fa-check', 'Terkirim'],
-        'delivered' => ['fas fa-check-double', 'Diterima'],
-        'read' => ['fas fa-check-double', 'Dibaca'],
-        'failed' => ['fas fa-circle-exclamation', 'Gagal terkirim'],
-    ];
-    $initial = fn ($c) => mb_strtoupper(mb_substr($c->name ?: 'W', 0, 1));
-@endphp
+@php $initial = fn ($c) => mb_strtoupper(mb_substr($c->name ?: 'W', 0, 1)); @endphp
 <div class="wa-app">
     <div class="row g-0">
         {{-- Contacts; on phones hidden while a conversation is open. --}}
@@ -84,30 +57,8 @@
                 <div class="fw-bold"><i class="fab fa-whatsapp text-success me-2"></i>Kotak masuk</div>
                 <span class="small text-muted">{{ $conversations->total() }} percakapan</span>
             </div>
-            <div class="wa-list flex-grow-1">
-                @forelse ($conversations as $c)
-                    @php $unread = $c->status === 'new' ? max(1, (int) $c->unread_count) : 0; @endphp
-                    <a href="{{ route('admin.wa-inbox.show', $c) }}" class="wa-item d-flex gap-3 px-3 py-2 align-items-center {{ $conversation?->id === $c->id ? 'active' : '' }} {{ $unread ? 'unread' : '' }}">
-                        <div class="wa-avatar">{{ $initial($c) }}</div>
-                        <div class="flex-grow-1" style="min-width:0">
-                            <div class="d-flex justify-content-between gap-2">
-                                <div class="fw-semibold text-truncate">{{ $c->name ?: '+' . $c->phone }}</div>
-                                <div class="wa-time flex-shrink-0">{{ $listTime($c->last_message_at) }}</div>
-                            </div>
-                            <div class="small text-muted text-truncate">
-                                <span class="text-success">Warga · WhatsApp</span>@if ($c->name) · +{{ $c->phone }}@endif
-                                @if ($c->status === 'new')<span class="badge rounded-pill wa-tag ms-1">Baru</span>@endif
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center gap-2">
-                                <div class="small text-muted text-truncate">{{ Str::limit($c->last_body, 80) }}</div>
-                                @if ($unread)<span class="wa-count flex-shrink-0" title="Belum dibaca">{{ $unread }}</span>@endif
-                            </div>
-                            @if ($c->status !== 'done' && $c->handoff_reason)<div class="small text-warning-emphasis text-truncate"><i class="fas fa-user-tie me-1"></i>Butuh petugas: {{ $c->handoff_reason }}</div>@endif
-                        </div>
-                    </a>
-                @empty
-                    <div class="p-4 text-center text-muted small">Belum ada pesan WhatsApp masuk.</div>
-                @endforelse
+            <div class="wa-list flex-grow-1" data-wa-list data-wa-poll="{{ route('admin.wa-inbox.summary', array_filter(['current' => $conversation?->id] + request()->only('page', 'q', 'status'))) }}">
+                @include('admin.whatsapp._list', ['currentId' => $conversation?->id])
             </div>
             @if ($conversations->hasPages())
                 <div class="p-2 border-top">{{ $conversations->links() }}</div>
@@ -133,22 +84,16 @@
                     </div>
                     <a href="{{ wa_link($conversation->phone) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success rounded-circle ms-auto" title="Buka di WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
-                <div class="wa-thread flex-grow-1 px-3 px-md-5 py-3">
+                <div class="wa-thread flex-grow-1 px-3 px-md-5 py-3" data-wa-thread data-wa-poll="{{ route('admin.wa-inbox.messages', $conversation) }}" data-wa-after="{{ $messages->max('id') ?? 0 }}" data-wa-since="{{ now()->toDateTimeString() }}">
                     <div class="text-center mb-2"><span class="wa-day">Pertanyaan warga · diteruskan dari bot WhatsApp{{ $conversation->handoff_reason ? ' · ' . $conversation->handoff_reason : '' }}</span></div>
                     @php $lastDay = null; @endphp
                     @foreach ($messages as $m)
-                        @php $day = $dayLabel($m->sent_at); @endphp
+                        @php $day = App\Models\WaMessage::dayLabel($m->sent_at); @endphp
                         @if ($day !== $lastDay)
                             <div class="text-center my-2" data-wa-day><span class="wa-day">{{ $day }}</span></div>
                             @php $lastDay = $day; @endphp
                         @endif
-                        <div class="d-flex mb-2">
-                            <div class="wa-bubble {{ $m->direction === 'out' ? 'wa-out' : 'wa-in' }}">
-                                @if ($m->direction === 'out')<div class="small fw-bold" style="color:#008069">{{ $m->sender === 'bot' ? 'Bot Sapa Madani (otomatis)' : 'Petugas PPID' }}</div>@endif
-                                <span class="wa-text">{{ $m->body }}</span><span class="wa-meta">{{ $m->sent_at->timezone('Asia/Jakarta')->format('H:i') }}@if ($m->direction === 'out' && isset($ticks[$m->status]))<i class="wa-tick wa-tick-{{ $m->status }} {{ $ticks[$m->status][0] }}" title="{{ $ticks[$m->status][1] }}" aria-label="{{ $ticks[$m->status][1] }}"></i>@endif</span>
-                                @if ($m->status === 'failed')<div class="small text-danger mt-1" style="clear:both">Gagal terkirim{{ $m->error ? ': ' . $m->error : '' }}</div>@endif
-                            </div>
-                        </div>
+                        @include('admin.whatsapp._message')
                     @endforeach
                 </div>
                 <div class="wa-composer px-3 py-2">
@@ -209,5 +154,60 @@
     document.querySelectorAll('[data-wa-compose], [data-wa-suggest]').forEach(f => f.addEventListener('submit', () => {
         f.querySelectorAll('button[type=submit]').forEach(b => { b.disabled = true; });
     }));
+    // Live updates (poll ~5 s, like WhatsApp): new messages + ticks in the open chat, contact list, sidebar badge.
+    // The reply input and suggestion card are never touched, so typed text is kept.
+    (() => {
+        const thread = document.querySelector('[data-wa-thread]');
+        const list = document.querySelector('[data-wa-list]');
+        const getJson = url => fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+            .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+        const toNode = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+        const pollThread = () => {
+            const url = new URL(thread.dataset.waPoll, location.href);
+            url.searchParams.set('after', thread.dataset.waAfter);
+            url.searchParams.set('since', thread.dataset.waSince);
+            return getJson(url).then(d => {
+                const atBottom = thread.scrollHeight - thread.scrollTop - thread.clientHeight < 80;
+                d.changed.forEach(m => thread.querySelector(`[data-wa-msg="${m.id}"]`)?.replaceWith(toNode(m.html)));
+                d.messages.forEach(m => {
+                    if (thread.querySelector(`[data-wa-msg="${m.id}"]`)) return;
+                    const last = [...thread.querySelectorAll('[data-wa-msg]')].pop();
+                    if (!last || last.dataset.waMsgDay !== m.day) {
+                        const day = document.createElement('div'), label = document.createElement('span');
+                        day.className = 'text-center my-2';
+                        day.dataset.waDay = '';
+                        label.className = 'wa-day';
+                        label.textContent = m.day;
+                        day.append(label);
+                        thread.append(day);
+                    }
+                    thread.append(toNode(m.html));
+                    thread.dataset.waAfter = Math.max(+thread.dataset.waAfter, m.id);
+                });
+                thread.dataset.waSince = d.since;
+                if (d.messages.length && atBottom) thread.scrollTop = thread.scrollHeight;
+            });
+        };
+        const pollList = () => getJson(list.dataset.waPoll).then(d => {
+            list.innerHTML = d.list;
+            const link = document.querySelector('.menu-item[href$="/kotak-masuk-wa"]');
+            let badge = link?.querySelector('.badge');
+            if (d.unread && !badge && link) {
+                badge = document.createElement('span');
+                badge.className = 'badge rounded-pill bg-success ms-auto';
+                badge.dataset.waUnread = '';
+                link.append(badge);
+            }
+            if (badge) d.unread ? (badge.textContent = d.unread) : badge.remove();
+        });
+        let busy = false;
+        const tick = () => {
+            if (busy || document.hidden) return;
+            busy = true;
+            // Thread first: it marks the open chat read, so the list badge right after is correct.
+            Promise.resolve(thread && pollThread()).then(() => list && pollList()).catch(() => {}).finally(() => { busy = false; });
+        };
+        if (thread || list) setInterval(tick, 5000);
+    })();
 </script>
 @endpush

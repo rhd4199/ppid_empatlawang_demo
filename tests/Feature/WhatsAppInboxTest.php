@@ -94,4 +94,35 @@ class WhatsAppInboxTest extends TestCase
         $list = $this->get(route('admin.wa-inbox.index'))->assertOk()->getContent();
         $this->assertMatchesRegularExpression('/class="wa-count[^"]*"[^>]*>2</', $list);
     }
+
+    public function test_poll_endpoints_return_only_newer_messages_and_changed_ticks(): void
+    {
+        $c = $this->conversation('6281200000001', 'Budi', 'new', [['in', 'Pertama'], ['out', 'Balasan'], ['in', 'Kedua']]);
+        [, $reply, $second] = $c->messages()->orderBy('id')->get()->all();
+
+        $this->getJson(route('admin.wa-inbox.messages', [$c, 'after' => 0]))->assertUnauthorized();
+        $this->getJson(route('admin.wa-inbox.summary'))->assertUnauthorized();
+
+        $this->actingAs(User::factory()->create());
+        $since = now()->subSecond()->toDateTimeString();
+        $reply->update(['status' => 'read']);
+
+        $res = $this->getJson(route('admin.wa-inbox.messages', [$c, 'after' => $reply->id, 'since' => $since]))->assertOk();
+        $this->assertSame([$second->id], array_column($res->json('messages'), 'id'));
+        $this->assertSame('Hari ini', $res->json('messages.0.day'));
+        $this->assertStringContainsString('data-wa-msg="' . $second->id . '"', $res->json('messages.0.html'));
+        $this->assertSame([$reply->id], array_column($res->json('changed'), 'id')); // tick update
+        $this->assertStringContainsString('wa-tick-read', $res->json('changed.0.html'));
+        $this->assertSame('read', $c->fresh()->status); // open chat = read
+
+        $this->getJson(route('admin.wa-inbox.messages', [$c, 'after' => $second->id]))->assertOk()->assertJson(['messages' => [], 'changed' => []]);
+
+        // A new citizen message: list puts it on top with the Baru badge, sidebar count follows.
+        $this->conversation('6281200000002', 'Sari', 'new', [['in', 'Pesan baru masuk']]);
+        $sum = $this->getJson(route('admin.wa-inbox.summary', ['current' => $c->id]))->assertOk();
+        $this->assertSame(1, $sum->json('unread'));
+        $list = $sum->json('list');
+        $this->assertStringContainsString('>Baru</span>', $list);
+        $this->assertLessThan(strpos($list, 'Budi'), strpos($list, 'Sari'));
+    }
 }

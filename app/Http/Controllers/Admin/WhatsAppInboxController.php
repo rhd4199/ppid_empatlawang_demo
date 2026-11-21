@@ -35,6 +35,37 @@ class WhatsAppInboxController extends Controller
         ]);
     }
 
+    /** Poll: messages after ?after=<id> plus bubbles changed since ?since (status ticks), as rendered HTML. */
+    public function messages(Request $request, WaConversation $conversation)
+    {
+        $data = $request->validate(['after' => 'required|integer|min:0', 'since' => 'nullable|date']);
+        // Officer has the chat open: new citizen messages are read, like show().
+        if ($conversation->status === 'new') {
+            $conversation->update(['status' => 'read']);
+        }
+        $now = now();
+        $render = fn ($m) => ['id' => $m->id, 'day' => WaMessage::dayLabel($m->sent_at), 'html' => view('admin.whatsapp._message', ['m' => $m])->render()];
+        $messages = $conversation->messages()->where('id', '>', $data['after'])->orderBy('sent_at')->orderBy('id')->get();
+        $changed = empty($data['since']) ? collect() : $conversation->messages()
+            ->where('id', '<=', $data['after'])->where('direction', 'out')
+            ->where('updated_at', '>=', $data['since'])->get();
+
+        return response()->json([
+            'messages' => $messages->map($render)->values(),
+            'changed' => $changed->map($render)->values(),
+            'since' => $now->toDateTimeString(),
+        ]);
+    }
+
+    /** Poll: contact list HTML (same page/filters as the page) and the sidebar unread count. */
+    public function summary(Request $request)
+    {
+        return response()->json([
+            'list' => view('admin.whatsapp._list', ['conversations' => $this->conversations(), 'currentId' => $request->integer('current') ?: null])->render(),
+            'unread' => WaConversation::where('status', 'new')->count(),
+        ]);
+    }
+
     public function redraft(WaConversation $conversation)
     {
         $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
