@@ -85,6 +85,11 @@ class WhatsAppInboxController extends Controller
             ->addSelect(['last_body' => WaMessage::select('body')
                 ->whereColumn('wa_conversation_id', 'wa_conversations.id')
                 ->orderByDesc('sent_at')->orderByDesc('id')->limit(1)])
+            // Citizen messages since the last delivered reply (list badge, like WhatsApp's unread count).
+            ->addSelect(['unread_count' => WaMessage::selectRaw('count(*)')
+                ->whereColumn('wa_conversation_id', 'wa_conversations.id')
+                ->where('direction', 'in')
+                ->whereRaw("sent_at > coalesce((select max(o.sent_at) from wa_messages o where o.wa_conversation_id = wa_messages.wa_conversation_id and o.direction = 'out' and o.status <> 'failed'), ?)", ['1970-01-01 00:00:00'])])
             ->orderByDesc('last_message_at')
             ->paginate(30);
     }
