@@ -63,14 +63,14 @@ class WhatsAppInboxController extends Controller
     /** Sapa Madani's answer to the citizen's unanswered messages, earlier turns as history. */
     private function draft($messages): string
     {
-        $lastOut = $messages->where('direction', 'out')->where('status', 'sent')->keys()->last();
+        $lastOut = $messages->where('direction', 'out')->where('status', '!=', 'failed')->keys()->last();
         $pending = $lastOut === null ? $messages : $messages->slice($lastOut + 1);
         $question = $pending->where('direction', 'in')->pluck('body')->implode("\n");
         if ($question === '') {
             return '';
         }
         $history = $messages->take($lastOut === null ? 0 : $lastOut + 1)
-            ->where(fn ($m) => $m->direction === 'in' || $m->status === 'sent')
+            ->where(fn ($m) => $m->direction === 'in' || $m->status !== 'failed')
             ->take(-10)
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();

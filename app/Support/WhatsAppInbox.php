@@ -29,6 +29,12 @@ class WhatsAppInbox
                 'name' => $p['pushName'] ?? null, 'text' => $p['message'] ?? '', 'time' => $p['timestamp'] ?? null,
             ]] : [],
             'cloud' => self::parseCloud($p),
+            // Larika event {id, event, data: {phone, pushName, message, waMessageId, timestamp (ms), fromMe, isGroup}}
+            'larika' => ($p['event'] ?? '') === 'message.incoming' && empty($p['data']['fromMe']) && empty($p['data']['isGroup']) ? [[
+                'id' => $p['data']['waMessageId'] ?? null, 'phone' => $p['data']['phone'] ?? '',
+                'name' => $p['data']['pushName'] ?? null, 'text' => $p['data']['message'] ?? '',
+                'time' => is_numeric($p['data']['timestamp'] ?? null) ? intdiv((int) $p['data']['timestamp'], 1000) : null,
+            ]] : [],
             // WAHA: {event: "message", payload: {id, from: "62…@c.us", body, fromMe, _data.notifyName}}
             'waha' => ($p['event'] ?? '') === 'message' && empty($p['payload']['fromMe'])
                 && str_ends_with($p['payload']['from'] ?? '', '@c.us') ? [[

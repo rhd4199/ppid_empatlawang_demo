@@ -45,7 +45,7 @@ class WhatsAppBot
         }
 
         $history = $messages->slice(0, -1)->take(-10)
-            ->filter(fn ($m) => $m->direction === 'in' || $m->status === 'sent')
+            ->filter(fn ($m) => $m->direction === 'in' || $m->status !== 'failed')
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
         $reply = app(AssistantController::class)->answer(mb_substr($last->body, 0, 1000), $history);

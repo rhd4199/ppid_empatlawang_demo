@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\LarikaEvents;
 use App\Support\WhatsAppBot;
 use App\Support\WhatsAppGateway;
 use App\Support\WhatsAppInbox;
@@ -29,7 +30,10 @@ class WhatsAppWebhookController extends Controller
         abort_unless($this->validSecret($request->query('secret') ?? $request->header('X-Webhook-Secret')), 403);
 
         $provider = WhatsAppGateway::settings()['provider'];
-        $conversations = WhatsAppInbox::store(WhatsAppInbox::parse($provider, $request->all()));
+        // Larika: shared event handler (dedupe on event id, outgoing status updates), same as the poller.
+        $conversations = $provider === 'larika'
+            ? LarikaEvents::handle($request->all())
+            : WhatsAppInbox::store(WhatsAppInbox::parse($provider, $request->all()));
 
         // Bot reply (may wait on OpenAI + provider) after the response, so the provider's webhook call does not time out.
         // ponytail: no queue worker in this app; move to a queued job if replies get slow.
