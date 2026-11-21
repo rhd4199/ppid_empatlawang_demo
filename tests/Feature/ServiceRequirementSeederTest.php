@@ -30,6 +30,15 @@ class ServiceRequirementSeederTest extends TestCase
             $this->assertSame('2026-11-21', $item->checked_at->format('Y-m-d'));
         }
 
+        foreach (['nib-umk-perorangan', 'spp-irt-pirt', 'sertifikat-halal-self-declare', 'sertifikat-halal-reguler',
+            'izin-edar-bpom-md', 'pbg-pengganti-imb'] as $slug) {
+            $item = ServiceRequirement::where('slug', $slug)->sole();
+            $this->assertSame('perizinan_usaha', $item->category);
+            $this->assertNotEmpty($item->agency);
+            $this->assertNotEmpty($item->legal_basis);
+            $this->assertStringStartsWith('https://', $item->source_url);
+        }
+
         // Admin edits one row later; a seeded-but-unedited row gets stale text.
         $this->travel(1)->day();
         ServiceRequirement::where('slug', 'kia')->first()->update(['cost' => 'Diubah admin']);
