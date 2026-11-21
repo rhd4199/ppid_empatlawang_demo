@@ -64,6 +64,41 @@ class DisasterTest extends TestCase
         $this->assertSame('', Cache::get('disaster:fetched'));
     }
 
+    public function test_stats_sum_impact_and_count_per_type_and_region(): void
+    {
+        $this->travelTo('2026-11-21 10:00:00');
+        Http::fake();
+        $event = fn ($id, $date, $region, $type, $impact) => compact('id', 'date', 'region', 'type', 'impact') + ['summary' => '', 'status' => ''];
+        Cache::forever('disaster:history', [
+            'a' => $event('a', '2026-11-19', 'Seluma', 'Banjir', ['terdampak' => 330, 'rumah terendam' => 66]),
+            'b' => $event('b', '2026-11-12', 'Empat Lawang', 'Tanah longsor', ['meninggal' => 1, 'mengungsi' => 12, 'rumah rusak' => 3]),
+            'c' => $event('c', '2026-11-05', 'Seluma', 'Banjir', ['terdampak' => 100, 'rumah terendam' => 20]),
+            'd' => $event('d', '2026-11-04', 'Kota Bengkulu', 'Cuaca ekstrem', []), // outside REGIONS: counted in total/type only
+        ]);
+        Cache::put('disaster:fetched', '2026-11-21 09:30:00', 3600); // no BNPB call
+
+        $stats = $this->getJson('/bencana')->assertOk()->json('stats');
+
+        $this->assertSame(4, $stats['total']);
+        $this->assertEquals(['terdampak' => 430, 'rumah terendam' => 86, 'meninggal' => 1, 'mengungsi' => 12, 'rumah rusak' => 3], $stats['impact']);
+        $this->assertSame(['Banjir' => 2, 'Tanah longsor' => 1, 'Cuaca ekstrem' => 1], $stats['types']);
+        $this->assertSame(['Empat Lawang' => 1, 'Lahat' => 0, 'Musi Rawas' => 0, 'Kepahiang' => 0, 'Rejang Lebong' => 0, 'Seluma' => 2], $stats['regions']);
+        Http::assertNothingSent();
+    }
+
+    public function test_stats_for_zero_events_keep_all_regions(): void
+    {
+        Http::fake();
+        Cache::put('disaster:fetched', '2026-11-21 09:30:00', 3600);
+
+        $json = $this->getJson('/bencana')->assertOk()->json();
+
+        $this->assertSame([], $json['events']);
+        $this->assertSame(0, $json['stats']['total']);
+        $this->assertSame([], $json['stats']['impact']); // JSON {} → [] in PHP
+        $this->assertSame(array_fill_keys(\App\Support\BnpbDisaster::REGIONS, 0), $json['stats']['regions']);
+    }
+
     public function test_home_shows_the_disaster_card(): void
     {
         Http::fake(); // the home page itself must not call BNPB

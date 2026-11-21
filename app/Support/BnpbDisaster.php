@@ -47,6 +47,26 @@ class BnpbDisaster
         return array_values($history);
     }
 
+    /** Totals for the infographic: event count, summed impact, count per type (most first) and per region (all REGIONS, zeros kept). */
+    public static function stats(array $events): array
+    {
+        $impact = [];
+        $types = [];
+        $regions = array_fill_keys(self::REGIONS, 0);
+        foreach ($events as $e) {
+            foreach ($e['impact'] as $key => $value) {
+                $impact[$key] = ($impact[$key] ?? 0) + $value;
+            }
+            $types[$e['type']] = ($types[$e['type']] ?? 0) + 1;
+            if (isset($regions[$e['region']])) {
+                $regions[$e['region']]++;
+            }
+        }
+        arsort($types);
+
+        return ['total' => count($events), 'impact' => (object) $impact, 'types' => (object) $types, 'regions' => $regions];
+    }
+
     public static function fetchedAt(): ?string
     {
         return Cache::get('disaster:fetched') ?: null;

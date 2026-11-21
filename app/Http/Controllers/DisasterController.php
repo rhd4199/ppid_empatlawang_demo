@@ -15,6 +15,7 @@ class DisasterController extends Controller
             'regions' => BnpbDisaster::REGIONS,
             'days' => BnpbDisaster::HISTORY_DAYS,
             'events' => $events,
+            'stats' => BnpbDisaster::stats($events),
             'updated' => BnpbDisaster::fetchedAt(),
             'source' => 'BNPB (Badan Nasional Penanggulangan Bencana)',
         ])->header('Cache-Control', BnpbDisaster::fetchedAt() ? 'public, max-age=600' : 'no-store');

@@ -57,9 +57,25 @@
     .bnpb-sum small { display: block; font-size: .74rem; color: #64748b; line-height: 1.2; }
     .bnpb-sum.is-severe i { background: #b91c1c; color: #fff; }
     .bnpb-sum.is-severe b { color: #b91c1c; }
-    .bnpb-sum-types { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-    .bnpb-type { --c: #475569; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--c); color: var(--c); font-size: .8rem; font-weight: 600; }
-    .bnpb-type b { font-weight: 800; }
+    .bnpb-sum.is-main i { background: #b91c1c; color: #fff; }
+    .bnpb-sum.is-main b { font-size: 1.9rem; }
+    .bnpb-sum-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .bnpb-bars { padding: 12px 14px; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(15,23,42,.06); }
+    .bnpb-bars-title { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #64748b; }
+    .bnpb-bar { --c: #475569; display: grid; grid-template-columns: minmax(110px, 40%) 1fr 28px; align-items: center; gap: 8px; padding: 4px 0; font-size: .84rem; }
+    .bnpb-bar-label { display: flex; align-items: center; gap: 6px; min-width: 0; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bnpb-bar-label i { width: 16px; text-align: center; color: var(--c); }
+    .bnpb-bar-track { height: 10px; border-radius: 999px; background: #f1f5f9; overflow: hidden; }
+    .bnpb-bar-fill { display: block; height: 100%; border-radius: inherit; background: var(--c); }
+    .bnpb-bar b { text-align: right; color: var(--c); }
+    .bnpb-bar.is-zero b, .bnpb-bar.is-zero .bnpb-bar-label { color: #94a3b8; }
+    .bnpb-bar.is-local .bnpb-bar-label { font-weight: 800; color: #0f172a; }
+    .bnpb-bar.is-local.is-zero .bnpb-bar-label { color: #166534; }
+    .bnpb-summary.is-calm { background: #f0fdf4; }
+    .bnpb-summary.is-calm .bnpb-sum.is-main i { background: #16a34a; }
+    .bnpb-summary.is-calm .bnpb-sum.is-main b { color: #166534; }
+    .bnpb-calm { margin: 12px 0 0; font-size: .85rem; color: #166534; }
+    .bnpb-empty.is-error { background: #f8fafc; color: #475569; }
     .bnpb-meta { font-size: .8rem; color: #64748b; }
     .bnpb-empty { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 14px; background: #f0fdf4; color: #166534; }
     @media (max-width: 767.98px) {
@@ -68,6 +84,8 @@
         .bnpb-item { flex-direction: column; gap: 10px; padding: 12px; }
         .bnpb-icon { width: 40px; height: 40px; font-size: 1.05rem; }
         .bnpb-stats, .bnpb-sum-tiles { grid-template-columns: 1fr 1fr; }
+        .bnpb-sum-cols { grid-template-columns: 1fr; }
+        .bnpb-sum.is-main { grid-column: 1 / -1; }
         .bnpb-sum b { font-size: 1.25rem; }
     }
 </style>
@@ -151,47 +169,71 @@
         const n = data.events.length;
         card.querySelector('[data-scope]').textContent = (n ? n + ' kejadian · ' : '') + data.days + ' hari terakhir di ' + data.regions.join(', ');
         if (data.updated) card.querySelector('[data-updated]').textContent = ' · Diperbarui ' + data.updated.slice(0, 16) + ' WIB';
-        if (!n) {
-            const box = el('div', 'bnpb-empty');
-            box.append(ico('fa-circle-check fa-lg'), el('span', '', data.updated ? 'Tidak ada kejadian bencana yang tercatat BNPB di wilayah ini dalam ' + data.days + ' hari terakhir.' : 'Data BNPB sedang tidak dapat dimuat. Silakan coba lagi nanti.'));
+        if (!n && !data.updated) { // BNPB never reached: no numbers to show
+            const box = el('div', 'bnpb-empty is-error');
+            box.append(ico('fa-circle-exclamation fa-lg'), el('span', '', 'Data BNPB sedang tidak dapat dimuat. Silakan coba lagi nanti.'));
             list.append(box);
             return;
         }
-        list.append(summary(data.events, data.days));
+        list.append(infographic(data));
         data.events.slice(0, 6).forEach(e => list.append(event(e, e.region === data.regions[0])));
         if (n > 6) list.append(el('p', 'bnpb-meta mb-0', 'Menampilkan 6 kejadian terbaru dari ' + n + ' kejadian.'));
     }
 
-    // 30-day totals over ALL events (the list below shows only the newest 6)
-    function summary(events, days) {
-        const sum = keys => events.reduce((t, e) => t + keys.reduce((s, k) => s + (e.impact[k] || 0), 0), 0);
-        const tiles = [
-            ['fa-triangle-exclamation', events.length, 'kejadian dalam ' + days + ' hari'],
-            ['fa-users', sum(['terdampak', 'mengungsi']), 'warga terdampak/mengungsi'],
-            ['fa-house-chimney-crack', sum(['rumah rusak', 'rumah terendam']), 'rumah rusak/terendam'],
-        ];
-        const victims = sum(['meninggal', 'hilang']);
-        if (victims) tiles.push(['fa-heart-crack', victims, 'meninggal/hilang', true]);
+    // Infographic from data.stats (computed server-side over ALL events of the period; the list shows only the newest 6)
+    function infographic(data) {
+        const s = data.stats, imp = k => s.impact[k] || 0;
+        const box = el('div', 'bnpb-summary' + (s.total ? '' : ' is-calm'));
 
-        const box = el('div', 'bnpb-summary');
-        const row = el('div', 'bnpb-sum-tiles');
-        tiles.forEach(([icon, value, label, severe]) => {
-            const tile = el('div', 'bnpb-sum' + (severe ? ' is-severe' : ''));
-            const t = el('div'); t.append(el('b', '', value.toLocaleString('id-ID')), el('small', '', label));
-            tile.append(ico(icon), t);
-            row.append(tile);
+        const tiles = el('div', 'bnpb-sum-tiles');
+        const tile = (icon, value, label, cls = '') => {
+            const t = el('div', ('bnpb-sum ' + cls).trim()), txt = el('div');
+            txt.append(el('b', '', value.toLocaleString('id-ID')), el('small', '', label));
+            t.append(ico(icon), txt);
+            tiles.append(t);
+        };
+        tile(s.total ? 'fa-triangle-exclamation' : 'fa-shield-heart', s.total, 'kejadian dalam ' + data.days + ' hari', 'is-main');
+        [['fa-users', imp('terdampak'), 'jiwa terdampak'], ['fa-person-walking-luggage', imp('mengungsi'), 'mengungsi'],
+            ['fa-house-chimney-crack', imp('rumah rusak') + imp('rumah terendam'), 'rumah rusak/terendam'],
+            ['fa-heart-crack', imp('meninggal') + imp('hilang'), 'meninggal/hilang', 'is-severe']]
+            .forEach(([icon, v, label, cls]) => { if (v > 0) tile(icon, v, label, cls); });
+
+        const cols = el('div', 'bnpb-sum-cols');
+        // horizontal bars: [label node, count, colour, extra class]
+        const bars = (title, icon, rows) => {
+            const col = el('div', 'bnpb-bars');
+            const h = el('div', 'bnpb-bars-title'); h.append(ico(icon), title);
+            col.append(h);
+            const max = Math.max(1, ...rows.map(r => r[1]));
+            rows.forEach(([label, count, colour, cls]) => {
+                const row = el('div', ('bnpb-bar ' + (cls || '')).trim());
+                row.style.setProperty('--c', colour);
+                const track = el('span', 'bnpb-bar-track'), fill = el('span', 'bnpb-bar-fill');
+                fill.style.width = (count / max * 100) + '%';
+                track.append(fill);
+                row.append(label, track, el('b', '', String(count)));
+                col.append(row);
+            });
+            return col;
+        };
+        const types = Object.entries(s.types).map(([type, c]) => {
+            const [, icon, colour] = kind(type), label = el('span', 'bnpb-bar-label');
+            label.append(ico(icon), type);
+            return [label, c, colour];
         });
-        const types = el('div', 'bnpb-sum-types');
-        const count = {};
-        events.forEach(e => { count[e.type] = (count[e.type] || 0) + 1; });
-        Object.entries(count).sort((a, b) => b[1] - a[1]).forEach(([type, c]) => {
-            const [, icon, colour] = kind(type);
-            const chip = el('span', 'bnpb-type');
-            chip.style.setProperty('--c', colour);
-            chip.append(ico(icon), type + ' ', el('b', '', String(c)));
-            types.append(chip);
+        if (!types.length) {
+            const label = el('span', 'bnpb-bar-label'); label.append(ico('fa-circle-check'), 'Tidak ada kejadian');
+            types.push([label, 0, '#16a34a', 'is-zero']);
+        }
+        const regions = Object.entries(s.regions).map(([region, c]) => {
+            const local = region === data.regions[0], label = el('span', 'bnpb-bar-label');
+            label.append(ico(c ? 'fa-location-dot' : 'fa-circle-check'), region + (local ? ' ★' : ''));
+            return [label, c, c ? (local ? '#b91c1c' : '#f97316') : '#16a34a', (c ? '' : 'is-zero') + (local ? ' is-local' : '')];
         });
-        box.append(row, types);
+        cols.append(bars('Per jenis bencana', 'fa-layer-group', types), bars('Per kabupaten', 'fa-map-location-dot', regions));
+
+        box.append(tiles, cols);
+        if (!s.total) box.append(el('p', 'bnpb-calm', 'Tidak ada kejadian bencana yang tercatat BNPB di ' + data.regions.length + ' kabupaten ini dalam ' + data.days + ' hari terakhir. Tetap waspada dan ikuti peringatan dini BMKG.'));
         return box;
     }
 
