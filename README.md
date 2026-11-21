@@ -49,6 +49,7 @@ Tanpa kredensial S3, gambar upload tidak tampil (halaman tetap jalan).
 | `php artisan mail:test <email>` | Kirim email uji (cek konfigurasi SMTP) |
 | `php artisan config:clear` | Setelah ubah `.env` di server yang memakai `config:cache` |
 | `php artisan whatsapp:larika-poll` | Terima pesan WhatsApp Larika (proses terus-menerus, lihat "WhatsApp Larika") |
+| `php artisan whatsapp:larika-webhook [--test]` | Daftarkan webhook Larika + cetak `LARIKA_WEBHOOK_KEY` |
 
 ## Konfigurasi (.env)
 
@@ -94,14 +95,17 @@ systemd / PM2 / process manager panel hosting: jalankan perintah yang sama denga
 **Webhook cadangan** `POST /api/v1/whatsapp/larika`: Larika mengirim event ke sini bila poller mati/tidak dipakai
 (shared hosting tanpa proses terus-menerus: cukup webhook ini). Event yang datang lewat poller dan webhook
 diproses sekali (dedupe id event). Header `x-larika-webhook-key` harus sama dengan `LARIKA_WEBHOOK_KEY`
-(kosong/salah → 401). Daftarkan sekali dengan key nomor, lalu simpan `secret` dari jawabannya sebagai
-`LARIKA_WEBHOOK_KEY` di env server:
+(kosong/salah → 401). Tidak ada yang diisi di panel Larika; daftarkan dari server:
 
-```bash
-curl -X POST https://gateway.larika.id/v1/webhooks -H "Authorization: Bearer $LARIKA_KEY" \
-  -H "content-type: application/json" \
-  -d '{"url":"https://<domain-ppid>/api/v1/whatsapp/larika","events":["message.incoming","message.sent","message.status","message.failed","message.expired"]}'
-```
+1. Env server: `LARIKA_KEY` (API key nomor) dan `APP_URL` = alamat **https** situs (Larika menolak http).
+2. `php artisan whatsapp:larika-webhook` → mendaftarkan `APP_URL/api/v1/whatsapp/larika` untuk event
+   `message.incoming`, `message.sent`, `message.status`, `message.failed`, `message.expired`, lalu mencetak
+   `LARIKA_WEBHOOK_KEY=<secret>` (hanya di terminal, tidak dicatat di log).
+3. Salin baris itu ke env server, lalu `php artisan config:clear`.
+4. `php artisan whatsapp:larika-webhook --test` → Larika mengirim event `test` ke webhook; "Event tes diterima"
+   = selesai. "HTTP 401" = `LARIKA_WEBHOOK_KEY` belum sama dengan secret.
+
+Menjalankan ulang aman (URL sama hanya memperbarui daftar event, secret tetap). Maksimal 5 webhook per nomor.
 
 ### Email (SMTP)
 
