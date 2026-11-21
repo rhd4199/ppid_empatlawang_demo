@@ -39,6 +39,13 @@ class ServiceRequirementSeederTest extends TestCase
             $this->assertStringStartsWith('https://', $item->source_url);
         }
 
+        foreach (['sim-baru', 'sim-perpanjangan', 'sim-hilang-rusak', 'pajak-tahunan-stnk', 'stnk-5-tahunan',
+            'balik-nama-kendaraan', 'mutasi-kendaraan', 'bpkb-hilang'] as $slug) {
+            $item = ServiceRequirement::where('slug', $slug)->sole();
+            $this->assertSame('kendaraan', $item->category);
+            $this->assertStringContainsString('PP 76/2020', $item->cost . $item->legal_basis);
+        }
+
         // Admin edits one row later; a seeded-but-unedited row gets stale text.
         $this->travel(1)->day();
         ServiceRequirement::where('slug', 'kia')->first()->update(['cost' => 'Diubah admin']);
