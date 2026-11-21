@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
+use App\Support\RemoteImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -40,9 +41,7 @@ class NewsController extends Controller
         $data['published_at'] ??= now();
         $data['is_published'] = $request->boolean('is_published', true);
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('news', 'public');
-        }
+        $data['image'] = $this->storeImage($request);
 
         return response()->json(News::create($data), 201);
     }
@@ -55,9 +54,9 @@ class NewsController extends Controller
             $data['slug'] = Str::slug($data['title']).'-'.$news->id;
         }
 
-        if ($request->hasFile('image')) {
+        if ($path = $this->storeImage($request)) {
             $this->deleteImage($news);
-            $data['image'] = $request->file('image')->store('news', 'public');
+            $data['image'] = $path;
         }
 
         $news->update($data);
@@ -122,11 +121,22 @@ class NewsController extends Controller
         return collect($request->validate([
             'title' => "$req|string|max:255",
             'content' => "$req|string",
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'image_url' => 'nullable|url:http,https|max:2048',
             'author' => 'nullable|string|max:100',
             'is_published' => 'nullable|boolean',
             'published_at' => 'nullable|date',
-        ]))->except('image')->all();
+        ]))->except(['image', 'image_url'])->all();
+    }
+
+    /** Uploaded file wins over image_url; null when neither is sent. */
+    private function storeImage(Request $request): ?string
+    {
+        if ($request->hasFile('image')) {
+            return $request->file('image')->store('news', 'public');
+        }
+
+        return $request->filled('image_url') ? RemoteImage::store($request->input('image_url'), 'news') : null;
     }
 
     private function deleteImage(News $news): void

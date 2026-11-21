@@ -251,7 +251,8 @@ Same fields, all optional. Uploading a new `file` deletes the old one. Use `POST
 |---|---|
 | `title` | **required**, string ≤255 |
 | `content` | **required**, string (HTML allowed) |
-| `image` | optional image: jpg, jpeg, png — max 2 MB |
+| `image` | optional image file: jpg, jpeg, png, webp — max 5 MB |
+| `image_url` | optional public `http(s)` URL of a jpg/png/webp image (max 5 MB). The server downloads it (15 s timeout, ≤3 redirects) and stores it like an upload. Rejected with `422` on `image_url`: non-http(s) schemes, URLs with user:password, hosts resolving to localhost/private/link-local/reserved IPs (also after a redirect), non-image bodies, HTTP errors. If both `image` and `image_url` are sent, the file wins. |
 | `author` | optional string ≤100, default `Admin` |
 | `published_at` | optional date (`2026-09-25 09:00`), default now. Future date = scheduled (hidden on public site until then) |
 | `is_published` | optional boolean, default `true` |
@@ -261,11 +262,16 @@ Same fields, all optional. Uploading a new `file` deletes the old one. Use `POST
 ```bash
 curl -X POST https://.../api/v1/news \
   -H "Authorization: Bearer $API_TOKEN" -H "Accept: application/json" \
-  -F title="Rapat Koordinasi PPID" -F content="<p>Isi berita</p>" -F image=@foto.jpg
+  -F title="Rapat Koordinasi PPID" -F content="Isi berita" -F image=@foto.jpg
+
+# cover from a URL (JSON body)
+curl -X POST https://.../api/v1/news \n  -H "Authorization: Bearer $API_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \n  -d '{"title":"Rapat Koordinasi PPID","content":"<p>Isi berita</p>","image_url":"https://contoh.go.id/foto.jpg"}'
 ```
 
+Note: with `curl -F`, a value starting with `<` (e.g. `content="<p>…"`) is read as a file name — send HTML content as JSON or with `--form-string`.
+
 ### `PUT|PATCH /news/{id}` — update
-All fields optional. Changing `title` regenerates slug as `slug(title)-{id}`. New `image` replaces and deletes the old one.
+All fields optional. Changing `title` regenerates slug as `slug(title)-{id}`. New `image` or `image_url` replaces and deletes the old one.
 
 ### `DELETE /news/{id}` → `204`
 
