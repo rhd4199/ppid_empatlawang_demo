@@ -104,4 +104,28 @@ class WhatsAppReplyTest extends TestCase
         $this->incoming('Pertanyaan baru', 'in-2');
         $this->assertNull($c->fresh()->reply_draft);
     }
+
+    public function test_composer_sends_free_text_and_suggestion_card_only_with_draft(): void
+    {
+        Http::fake(['api.fonnte.com/*' => Http::response(['status' => true])]);
+        $c = $this->incoming('Halo, jam layanan kantor PPID?');
+
+        $html = $this->get(route('admin.wa-inbox.show', $c))->assertOk()->getContent();
+        $this->assertStringContainsString('data-wa-compose', $html);
+        $this->assertStringContainsString('Saran balasan Sapa Madani', $html);
+        $this->assertStringContainsString('Pakai/Ubah', $html);
+
+        // Free text typed in the bar, not the AI draft.
+        $this->post(route('admin.wa-inbox.send', $c), ['body' => 'Ketik bebas petugas'])->assertSessionHas('success');
+        $out = $c->messages()->where('direction', 'out')->sole();
+        $this->assertSame(['Ketik bebas petugas', null, 'sent'], [$out->body, $out->sender, $out->status]);
+
+        // No draft (empty or none): bar stays, suggestion card hidden.
+        foreach ([null, ''] as $draft) {
+            $c->update(['reply_draft' => $draft]);
+            $html = $this->get(route('admin.wa-inbox.show', $c))->assertOk()->assertSee('Petugas PPID')->getContent();
+            $this->assertStringContainsString('data-wa-compose', $html);
+            $this->assertStringNotContainsString('Saran balasan Sapa Madani', $html);
+        }
+    }
 }

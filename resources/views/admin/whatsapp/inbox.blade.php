@@ -39,6 +39,10 @@
     .wa-tick-read { color: #53bdeb; }
     .wa-tick-failed { color: #dc3545; }
     .wa-composer { background: #f0f2f5; }
+    .wa-suggest { border-left: 4px solid #25d366; }
+    .wa-suggest-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 30vh; overflow-y: auto; }
+    .wa-input { resize: none; max-height: 140px; padding: .55rem .9rem; }
+    .wa-send { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; background: #00a884; border-color: #00a884; }
     @media (max-width: 991.98px) { .wa-bubble { max-width: 85%; } }
 </style>
 @endpush
@@ -147,22 +151,32 @@
                         </div>
                     @endforeach
                 </div>
-                @if ($conversation->reply_draft !== null)
-                    {{-- AI draft: read-only until "Ubah"; only "Setujui & kirim" sends it to the citizen. --}}
-                    <div class="wa-composer px-3 py-2">
-                        <form id="redraftForm" action="{{ route('admin.wa-inbox.redraft', $conversation) }}" method="POST">@csrf</form>
-                        <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST">
+                <div class="wa-composer px-3 py-2">
+                    <form id="redraftForm" action="{{ route('admin.wa-inbox.redraft', $conversation) }}" method="POST">@csrf</form>
+                    @if (filled($conversation->reply_draft))
+                        {{-- AI suggestion: sent only by an officer ("Setujui & kirim"), or copied into the input to edit. --}}
+                        <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST" class="wa-suggest bg-white rounded-3 shadow-sm p-2 mb-2" data-wa-suggest>
                             @csrf
-                            <label for="waDraft" class="form-label small fw-bold mb-1"><i class="fas fa-robot text-primary me-1"></i>Draf balasan Sapa Madani (AI) — periksa sebelum dikirim</label>
-                            <textarea id="waDraft" name="body" rows="4" class="form-control small border-0 rounded-3 bg-light" readonly required>{{ old('body', $conversation->reply_draft) }}</textarea>
+                            <input type="hidden" name="body" value="{{ $conversation->reply_draft }}">
+                            <div class="small fw-bold mb-1"><i class="fas fa-robot text-primary me-1"></i>Saran balasan Sapa Madani (AI) — periksa sebelum dikirim</div>
+                            <div class="wa-suggest-text small" data-wa-suggest-text>{{ $conversation->reply_draft }}</div>
                             <div class="d-flex flex-wrap gap-2 justify-content-end mt-2">
-                                <button type="submit" form="redraftForm" class="btn btn-sm btn-light rounded-pill"><i class="fas fa-rotate me-1"></i> Buat ulang draf</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-wa-edit><i class="fas fa-pen me-1"></i> Ubah</button>
+                                <button type="submit" form="redraftForm" class="btn btn-sm btn-light rounded-pill"><i class="fas fa-rotate me-1"></i> Buat ulang</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-wa-use><i class="fas fa-pen me-1"></i> Pakai/Ubah</button>
                                 <button type="submit" class="btn btn-sm btn-success rounded-pill fw-bold"><i class="fas fa-paper-plane me-1"></i> Setujui &amp; kirim</button>
                             </div>
                         </form>
-                    </div>
-                @endif
+                    @endif
+                    {{-- Free-text reply bar: Enter sends, Shift+Enter adds a line. --}}
+                    <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST" class="d-flex align-items-end gap-2" data-wa-compose>
+                        @csrf
+                        @if (blank($conversation->reply_draft))
+                            <button type="submit" form="redraftForm" class="btn btn-link text-secondary px-1" title="Buat saran balasan AI" aria-label="Buat saran balasan AI"><i class="fas fa-robot"></i></button>
+                        @endif
+                        <textarea id="waInput" name="body" rows="1" maxlength="4000" required class="form-control border-0 rounded-4 wa-input" placeholder="Ketik pesan" aria-label="Ketik pesan">{{ old('body') }}</textarea>
+                        <button type="submit" class="btn btn-success rounded-circle wa-send flex-shrink-0" title="Kirim" aria-label="Kirim"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
             @else
                 <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted wa-thread">
                     <div class="text-center bg-white rounded-4 shadow-sm px-4 py-3"><i class="fab fa-whatsapp fa-3x mb-2 text-success"></i><div>Pilih percakapan untuk membaca pesan.</div></div>
@@ -177,11 +191,23 @@
 <script>
     // Newest message in view, like a chat app.
     document.querySelectorAll('.wa-thread').forEach(el => { el.scrollTop = el.scrollHeight; });
-    document.querySelector('[data-wa-edit]')?.addEventListener('click', () => {
-        const draft = document.getElementById('waDraft');
-        draft.readOnly = false;
-        draft.classList.remove('bg-light');
-        draft.focus();
+    const waInput = document.getElementById('waInput');
+    const waGrow = () => { waInput.style.height = 'auto'; waInput.style.height = waInput.scrollHeight + 'px'; };
+    waInput?.addEventListener('input', waGrow);
+    waInput?.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+            e.preventDefault();
+            if (waInput.value.trim() !== '') waInput.form.requestSubmit();
+        }
     });
+    document.querySelector('[data-wa-use]')?.addEventListener('click', () => {
+        waInput.value = document.querySelector('[data-wa-suggest] input[name=body]').value;
+        waGrow();
+        waInput.focus();
+    });
+    // One submit per form: no double message on a double click/Enter.
+    document.querySelectorAll('[data-wa-compose], [data-wa-suggest]').forEach(f => f.addEventListener('submit', () => {
+        f.querySelectorAll('button[type=submit]').forEach(b => { b.disabled = true; });
+    }));
 </script>
 @endpush
