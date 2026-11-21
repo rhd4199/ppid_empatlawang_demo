@@ -70,6 +70,64 @@ class WhatsAppGatewayTest extends TestCase
             ->assertSessionHas('error', 'Provider menolak: invalid token');
     }
 
+    private const LARIKA_KEY = 'lk_test_secret_key';
+
+    private function useLarika(): void
+    {
+        config(['services.larika.key' => self::LARIKA_KEY, 'services.larika.url' => 'https://gateway.larika.id']);
+        $this->saveSettings(['provider' => 'larika', 'token' => '']);
+    }
+
+    public function test_larika_queued_202_sends_bearer_and_ref(): void
+    {
+        Http::fake(['gateway.larika.id/*' => Http::response(['id' => 'cm1', 'status' => 'QUEUED', 'ref' => 'x'], 202)]);
+        $this->useLarika();
+
+        $this->assertSame(['ok' => true, 'error' => null], WhatsAppGateway::send('0812-3456-7890', 'Halo', ref: 'wa-out-7'));
+        Http::assertSent(fn (Request $r) => $r->url() === 'https://gateway.larika.id/v1/messages'
+            && $r->header('Authorization') === ['Bearer ' . self::LARIKA_KEY]
+            && $r['to'] === '6281234567890' && $r['text'] === 'Halo' && $r['ref'] === 'wa-out-7');
+
+        // Admin test button: ref "admin-test-<uuid>", key never in the page.
+        $this->post(route('admin.whatsapp.test'), ['test_phone' => '081234567890'])->assertSessionHas('success');
+        Http::assertSent(fn (Request $r) => str_starts_with((string) $r['ref'], 'admin-test-'));
+        $this->get(route('admin.whatsapp.index'))->assertOk()->assertSee('LARIKA_KEY')->assertDontSee(self::LARIKA_KEY);
+
+        // Inbox replies use the outgoing row id as ref.
+        $c = \App\Models\WaConversation::create(['phone' => '6281234567890']);
+        $this->assertTrue(WhatsAppGateway::sendLogged($c, 'Balasan')['ok']);
+        $row = $c->messages()->sole();
+        $this->assertSame('sent', $row->status);
+        Http::assertSent(fn (Request $r) => $r['ref'] === 'wa-out-' . $row->id);
+    }
+
+    public function test_larika_422_and_429_are_reported_without_retry(): void
+    {
+        Http::fakeSequence('gateway.larika.id/*')
+            ->push(['error' => 'invalid_number'], 422)
+            ->push(['error' => 'daily_cap_reached', 'nextSlotAt' => '2026-11-22T01:00:00.000Z'], 429, ['Retry-After' => '3600'])
+            ->push(['error' => 'daily_cap_reached'], 429, ['Retry-After' => '120']);
+        $this->useLarika();
+
+        $this->assertSame('Provider menolak: invalid_number', WhatsAppGateway::send('081234567890', 'a')['error']);
+        $cap = WhatsAppGateway::send('081234567890', 'b');
+        $this->assertFalse($cap['ok']);
+        $this->assertStringContainsString('22/11/2026 08:00 WIB', $cap['error']);
+        $this->assertStringContainsString('120 detik', WhatsAppGateway::send('081234567890', 'c')['error']);
+        Http::assertSentCount(3); // one call per send, no retry loop
+    }
+
+    public function test_larika_without_key(): void
+    {
+        Http::fake();
+        $this->useLarika();
+        config(['services.larika.key' => null]);
+
+        $this->post(route('admin.whatsapp.test'), ['test_phone' => '081234567890'])
+            ->assertSessionHas('error', 'LARIKA_KEY belum diisi di env server.');
+        Http::assertNothingSent();
+    }
+
     public function test_cloud_api_and_disabled_gateway(): void
     {
         Http::fake(['graph.facebook.com/*' => Http::response(['messages' => [['id' => 'x']]])]);

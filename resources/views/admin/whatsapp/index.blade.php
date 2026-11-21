@@ -56,6 +56,9 @@
                         {{-- The stored token is never printed back. --}}
                         <input type="password" name="token" class="form-control" autocomplete="new-password"
                                placeholder="{{ $wa['has_token'] ? '•••••••• (tersimpan — kosongkan bila tidak diganti)' : 'Belum diisi' }}">
+                        {{-- Larika key lives in the server env only; show whether it is set, never the value. --}}
+                        <small class="text-muted d-block">Larika WhatsApp API: kolom ini tidak dipakai — key dibaca dari env server <code>LARIKA_KEY</code>
+                            ({!! config('services.larika.key') ? '<span class="text-success">terisi</span>' : '<span class="text-danger">belum diisi</span>' !!}), URL <code>{{ config('services.larika.url') }}</code>.</small>
                         @if ($wa['has_token'])
                             <div class="form-check mt-1">
                                 <input class="form-check-input" type="checkbox" name="clear_token" value="1" id="clearToken">

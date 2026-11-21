@@ -30,6 +30,12 @@ return [
         'inject_token' => env('API_INJECT_TOKEN'), // limited: news & galleries create/update only
     ],
 
+    // Larika WhatsApp API (https://gateway.larika.id/docs.md). Key from env only: never stored in the DB or sent to the browser.
+    'larika' => [
+        'key' => env('LARIKA_KEY'),
+        'url' => env('LARIKA_URL', 'https://gateway.larika.id'),
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),

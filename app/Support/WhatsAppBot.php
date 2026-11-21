@@ -49,12 +49,7 @@ class WhatsAppBot
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
         $reply = app(AssistantController::class)->answer(mb_substr($last->body, 0, 1000), $history);
-        $result = WhatsAppGateway::send($conversation->phone, $reply);
-
-        $conversation->messages()->create([
-            'direction' => 'out', 'sender' => 'bot', 'body' => $reply, 'sent_at' => now(),
-            'status' => $result['ok'] ? 'sent' : 'failed', 'error' => $result['error'],
-        ]);
+        $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');
         // Answered by the bot → out of the queue; a failed send stays new so an officer sees it.
         $conversation->update($result['ok']
             ? ['status' => 'done', 'handoff_reason' => null, 'reply_draft' => null, 'last_message_at' => now()]

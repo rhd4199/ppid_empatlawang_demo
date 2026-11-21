@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Support\WhatsAppGateway;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class WhatsAppGatewayController extends Controller
@@ -44,12 +45,12 @@ class WhatsAppGatewayController extends Controller
         ]);
 
         $text = trim($data['test_message'] ?? '') ?: 'Pesan uji WhatsApp Gateway PPID Kabupaten Empat Lawang.';
-        $result = WhatsAppGateway::send($data['test_phone'], $text, force: true);
+        $result = WhatsAppGateway::send($data['test_phone'], $text, force: true, ref: 'admin-test-' . Str::uuid());
 
         return redirect()->route('admin.whatsapp.index')
             ->withInput($request->only('test_phone', 'test_message'))
             ->with($result['ok'] ? 'success' : 'error', $result['ok']
-                ? 'Pesan uji terkirim ke ' . WhatsAppGateway::normalize($data['test_phone']) . '.'
+                ? 'Pesan uji terkirim (atau masuk antrean) ke ' . WhatsAppGateway::normalize($data['test_phone']) . '.'
                 : $result['error']);
     }
 }

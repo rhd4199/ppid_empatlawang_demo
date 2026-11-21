@@ -3,8 +3,10 @@
 namespace App\Support;
 
 use App\Models\PpidSetting;
+use App\Models\WaConversation;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Throwable;
@@ -16,6 +18,7 @@ use Throwable;
 class WhatsAppGateway
 {
     public const PROVIDERS = [
+        'larika' => 'Larika WhatsApp API',
         'fonnte' => 'Fonnte',
         'wablas' => 'Wablas',
         'cloud' => 'WhatsApp Cloud API (Meta)',
@@ -89,17 +92,20 @@ class WhatsAppGateway
      *
      * @return array{ok: bool, error: ?string}
      */
-    public static function send(?string $phone, string $text, bool $force = false): array
+    public static function send(?string $phone, string $text, bool $force = false, ?string $ref = null): array
     {
         $s = self::settings();
         $to = self::normalize($phone);
-        $token = self::token();
-        $base = $s['api_url'] !== '' ? $s['api_url'] : (self::DEFAULT_URLS[$s['provider']] ?? '');
+        $larika = $s['provider'] === 'larika';
+        $token = $larika ? (string) config('services.larika.key') : self::token();
+        $base = $larika ? rtrim((string) config('services.larika.url'), '/')
+            : ($s['api_url'] !== '' ? $s['api_url'] : (self::DEFAULT_URLS[$s['provider']] ?? ''));
 
         $error = match (true) {
             !$s['enabled'] && !$force => 'WhatsApp Gateway tidak aktif.',
             !isset(self::PROVIDERS[$s['provider']]) => 'Provider tidak dikenal.',
             $to === '' => 'Nomor WhatsApp tujuan tidak valid.',
+            $larika && $token === '' => 'LARIKA_KEY belum diisi di env server.',
             $token === '' => 'Token/API key belum diisi.',
             $base === '' => 'URL API belum diisi.',
             $s['provider'] === 'cloud' && $s['sender'] === '' => 'Phone Number ID (pengirim) belum diisi.',
@@ -112,6 +118,10 @@ class WhatsAppGateway
         try {
             $http = Http::timeout(15)->acceptJson();
             $res = match ($s['provider']) {
+                // Same ref again returns the existing message instead of sending twice (safe retries / double clicks).
+                'larika' => $http->withToken($token)->post("$base/v1/messages", [
+                    'to' => $to, 'text' => $text, 'ref' => $ref ?? 'ppid-' . Str::uuid(),
+                ]),
                 'fonnte' => $http->withHeaders(['Authorization' => $token])->asForm()
                     ->post("$base/send", ['target' => $to, 'message' => $text, 'countryCode' => '62']),
                 'wablas' => $http->withHeaders(['Authorization' => $token])->asForm()
@@ -127,11 +137,50 @@ class WhatsAppGateway
             return ['ok' => false, 'error' => 'Gagal menghubungi provider: ' . $e->getMessage()];
         }
 
+        if ($larika) {
+            return self::larikaResult($res);
+        }
         // Fonnte/Wablas answer HTTP 200 with {"status": false, "reason"/"message": ...} on failure.
         if ($res->successful() && $res->json('status') !== false) {
             return ['ok' => true, 'error' => null];
         }
         $reason = $res->json('reason') ?? $res->json('error.message') ?? $res->json('message') ?? 'HTTP ' . $res->status();
+
+        return ['ok' => false, 'error' => 'Provider menolak: ' . (is_string($reason) ? $reason : json_encode($reason))];
+    }
+
+    /**
+     * Sends a reply in a conversation and stores it as an outgoing wa_messages row (sent / failed + error).
+     * The row is created first so its id is the provider ref ("wa-out-<id>").
+     *
+     * @return array{ok: bool, error: ?string}
+     */
+    public static function sendLogged(WaConversation $conversation, string $text, ?string $sender = null): array
+    {
+        $message = $conversation->messages()->create([
+            'direction' => 'out', 'sender' => $sender, 'body' => $text, 'sent_at' => now(), 'status' => 'pending',
+        ]);
+        $result = self::send($conversation->phone, $text, ref: 'wa-out-' . $message->id);
+        $message->update(['status' => $result['ok'] ? 'sent' : 'failed', 'error' => $result['error']]);
+
+        return $result;
+    }
+
+    /** 202 queued / 200 sent = ok; 429 daily cap = not queued, report when to retry (never retried here); else the API's error. */
+    private static function larikaResult(\Illuminate\Http\Client\Response $res): array
+    {
+        if (in_array($res->status(), [200, 202], true)) {
+            return ['ok' => true, 'error' => null];
+        }
+        if ($res->status() === 429) {
+            $when = $res->json('nextSlotAt');
+            $when = $when ? Carbon::parse($when)->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB'
+                : ($res->header('Retry-After') !== '' ? $res->header('Retry-After') . ' detik lagi' : null);
+
+            return ['ok' => false, 'error' => 'Batas kirim harian nomor WhatsApp tercapai (' . ($res->json('error') ?? 'daily_cap_reached') . ')'
+                . ($when ? ", coba lagi setelah {$when}." : '.')];
+        }
+        $reason = $res->json('error') ?? $res->json('message') ?? 'HTTP ' . $res->status();
 
         return ['ok' => false, 'error' => 'Provider menolak: ' . (is_string($reason) ? $reason : json_encode($reason))];
     }

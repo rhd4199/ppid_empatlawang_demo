@@ -47,11 +47,7 @@ class WhatsAppInboxController extends Controller
     {
         $text = trim($request->validate(['body' => 'required|string|max:4000'])['body']);
 
-        $result = WhatsAppGateway::send($conversation->phone, $text);
-        $conversation->messages()->create([
-            'direction' => 'out', 'body' => $text, 'sent_at' => now(),
-            'status' => $result['ok'] ? 'sent' : 'failed', 'error' => $result['error'],
-        ]);
+        $result = WhatsAppGateway::sendLogged($conversation, $text);
 
         if (! $result['ok']) {
             // Keep the officer's edited text so it can be retried.
