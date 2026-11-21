@@ -51,11 +51,20 @@ class DocumentFinder
         return (bool) preg_match('/\b(minta|mintak|minta2|meminta|mohon|data|dokumen|file|berkas|salinan|laporan|unduh|download|carikan|cari|butuh|perlu|ada|adakah|sk|perbup|perda|apbd|lkpj|lppd|renstra|rkpd|dpa)\b/u', $text);
     }
 
+    /** "laporan kinerja 2025, ada biaya?" also asks whether the copy costs money ("data biaya perjalanan dinas" does not). */
+    public static function asksFee(string $text): bool
+    {
+        return (bool) preg_match('/\b(ada|apakah|apa|berapa|kena|pakai|perlu|harus|dikenakan) (biaya|bayar|ongkos|tarif)\b|\b(biayanya|bayarnya|gratis|berbayar|dipungut)\b/u', $text);
+    }
+
+    private const FEE_WORDS = ['biaya', 'biayanya', 'bayar', 'bayarnya', 'gratis', 'berbayar', 'dipungut', 'ongkos', 'tarif', 'berapa', 'kena', 'dikenakan'];
+
     /** @return string[] lowercased keywords, at most 4 */
     public static function keywords(string $text): array
     {
         preg_match_all('/[\p{L}\p{N}]+/u', mb_strtolower($text), $m);
-        $words = array_filter($m[0], fn ($w) => mb_strlen($w) >= 2 && ! in_array($w, self::STOPWORDS, true));
+        $skip = self::asksFee(mb_strtolower($text)) ? [...self::STOPWORDS, ...self::FEE_WORDS] : self::STOPWORDS;
+        $words = array_filter($m[0], fn ($w) => mb_strlen($w) >= 2 && ! in_array($w, $skip, true));
         $words = array_values(array_map(fn ($w) => self::SYNONYMS[$w] ?? $w, $words));
         while ($words && in_array($words[0], self::ADDRESS, true)) {
             array_shift($words); // "min ppid, ada data apbd?" addresses PPID; "laporan ppid" / "SK PPID" keep it
@@ -93,7 +102,8 @@ class DocumentFinder
 
                     return $d;
                 });
-            $docs = $docs->where('score', $docs->max('score'))->take(5);
+            // score 0 = only the year matched ("Perpres 2018 … 2025" for "laporan kinerja 2025"): not a match
+            $docs = $docs->where('score', '>', 0)->where('score', $docs->max('score'))->take(5);
         }
 
         return $docs->map(fn ($d) => ['title' => $d->title, 'url' => route('informasi-publik.show', $d->id)])->values()->all();

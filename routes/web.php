@@ -132,6 +132,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // WhatsApp inbox (messages from the provider webhook)
     Route::get('/kotak-masuk-wa', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'index'])->name('wa-inbox.index');
     Route::get('/kotak-masuk-wa/{conversation}', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'show'])->name('wa-inbox.show');
+    Route::post('/kotak-masuk-wa/{conversation}/draf', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'redraft'])->name('wa-inbox.redraft');
+    Route::post('/kotak-masuk-wa/{conversation}/kirim', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'send'])->name('wa-inbox.send');
 
     // WhatsApp Gateway
     Route::get('/whatsapp-gateway', [App\Http\Controllers\Admin\WhatsAppGatewayController::class, 'index'])->name('whatsapp.index');

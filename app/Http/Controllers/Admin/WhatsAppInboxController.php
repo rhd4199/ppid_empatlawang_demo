@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\Controller;
 use App\Models\WaConversation;
 use App\Models\WaMessage;
+use App\Support\WhatsAppGateway;
+use Illuminate\Http\Request;
 
 class WhatsAppInboxController extends Controller
 {
@@ -18,12 +21,65 @@ class WhatsAppInboxController extends Controller
         if ($conversation->status === 'new') {
             $conversation->update(['status' => 'read']);
         }
+        $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
+
+        // Draft once per unanswered question (cleared when a new message arrives), so reloading does not call the AI again.
+        if ($conversation->reply_draft === null && $messages->last()?->direction === 'in') {
+            $conversation->update(['reply_draft' => $this->draft($messages)]);
+        }
 
         return view('admin.whatsapp.inbox', [
             'conversations' => $this->conversations(),
             'conversation' => $conversation,
-            'messages' => $conversation->messages()->orderBy('sent_at')->orderBy('id')->get(),
+            'messages' => $messages,
         ]);
+    }
+
+    public function redraft(WaConversation $conversation)
+    {
+        $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
+        $conversation->update(['reply_draft' => $messages->isEmpty() ? null : $this->draft($messages)]);
+
+        return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Draf balasan dibuat ulang.');
+    }
+
+    public function send(Request $request, WaConversation $conversation)
+    {
+        $text = trim($request->validate(['body' => 'required|string|max:4000'])['body']);
+
+        $result = WhatsAppGateway::send($conversation->phone, $text);
+        $conversation->messages()->create([
+            'direction' => 'out', 'body' => $text, 'sent_at' => now(),
+            'status' => $result['ok'] ? 'sent' : 'failed', 'error' => $result['error'],
+        ]);
+
+        if (! $result['ok']) {
+            // Keep the officer's edited text so it can be retried.
+            $conversation->update(['reply_draft' => $text]);
+
+            return redirect()->route('admin.wa-inbox.show', $conversation)->with('error', 'Balasan gagal dikirim: ' . $result['error']);
+        }
+        $conversation->update(['status' => 'done', 'reply_draft' => null, 'last_message_at' => now()]);
+
+        return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Balasan terkirim ke +' . $conversation->phone . '.');
+    }
+
+    /** Sapa Madani's answer to the citizen's unanswered messages, earlier turns as history. */
+    private function draft($messages): string
+    {
+        $lastOut = $messages->where('direction', 'out')->where('status', 'sent')->keys()->last();
+        $pending = $lastOut === null ? $messages : $messages->slice($lastOut + 1);
+        $question = $pending->where('direction', 'in')->pluck('body')->implode("\n");
+        if ($question === '') {
+            return '';
+        }
+        $history = $messages->take($lastOut === null ? 0 : $lastOut + 1)
+            ->where(fn ($m) => $m->direction === 'in' || $m->status === 'sent')
+            ->take(-10)
+            ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
+            ->values()->all();
+
+        return app(AssistantController::class)->answer(mb_substr($question, 0, 1000), $history);
     }
 
     private function conversations()

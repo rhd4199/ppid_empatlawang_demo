@@ -27,6 +27,13 @@
         <p class="text-muted small mb-0">Pesan warga yang masuk lewat WhatsApp Gateway.</p>
     </div>
 
+    @foreach (['success' => 'success', 'error' => 'danger'] as $key => $class)
+        @if (session($key))
+            <div class="alert alert-{{ $class }} border-0 shadow-sm py-2">{{ session($key) }}</div>
+        @endif
+    @endforeach
+    @error('body')<div class="alert alert-danger border-0 shadow-sm py-2">{{ $message }}</div>@enderror
+
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="row g-0 wa-inbox">
             {{-- Conversation list; on phones hidden while a conversation is open. --}}
@@ -81,12 +88,29 @@
                                     <div>{{ $m->body }}</div>
                                     <div class="text-end text-muted" style="font-size:.7rem">
                                         {{ $m->sent_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') }}
-                                        @if ($m->direction === 'out' && $m->status === 'failed')<span class="text-danger">· gagal</span>@endif
+                                        @if ($m->direction === 'out' && $m->status === 'failed')<span class="text-danger" title="{{ $m->error }}">· gagal terkirim</span>@endif
                                     </div>
+                                    @if ($m->status === 'failed' && $m->error)<div class="small text-danger">{{ $m->error }}</div>@endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
+                    @if ($conversation->reply_draft !== null)
+                        {{-- AI draft: read-only until "Ubah"; only "Setujui & kirim" sends it to the citizen. --}}
+                        <div class="border-top bg-white p-3">
+                            <form id="redraftForm" action="{{ route('admin.wa-inbox.redraft', $conversation) }}" method="POST">@csrf</form>
+                            <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST">
+                                @csrf
+                                <label for="waDraft" class="form-label small fw-bold mb-1"><i class="fas fa-robot text-primary me-1"></i>Draf balasan Sapa Madani (AI) — periksa sebelum dikirim</label>
+                                <textarea id="waDraft" name="body" rows="5" class="form-control small bg-light" readonly required>{{ old('body', $conversation->reply_draft) }}</textarea>
+                                <div class="d-flex flex-wrap gap-2 justify-content-end mt-2">
+                                    <button type="submit" form="redraftForm" class="btn btn-sm btn-light rounded-pill"><i class="fas fa-rotate me-1"></i> Buat ulang draf</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" data-wa-edit><i class="fas fa-pen me-1"></i> Ubah</button>
+                                    <button type="submit" class="btn btn-sm btn-success rounded-pill fw-bold"><i class="fab fa-whatsapp me-1"></i> Setujui &amp; kirim</button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
                 @else
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted wa-thread">
                         <div class="text-center"><i class="fab fa-whatsapp fa-3x mb-2 text-success"></i><div>Pilih percakapan untuk membaca pesan.</div></div>
@@ -102,5 +126,11 @@
 <script>
     // Newest message in view, like a chat app.
     document.querySelectorAll('.wa-thread').forEach(el => { el.scrollTop = el.scrollHeight; });
+    document.querySelector('[data-wa-edit]')?.addEventListener('click', () => {
+        const draft = document.getElementById('waDraft');
+        draft.readOnly = false;
+        draft.classList.remove('bg-light');
+        draft.focus();
+    });
 </script>
 @endpush

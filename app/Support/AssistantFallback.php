@@ -127,15 +127,16 @@ class AssistantFallback
                 : null;
         }
         $docs = DocumentFinder::search($keywords);
+        $fee = DocumentFinder::asksFee($text) ? "\n" . AssistantInfo::FEE : '';
         if (! $docs) {
-            return 'Dokumen tentang "' . implode(' ', $keywords) . '" belum tersedia di Daftar Informasi Publik. ' . DocumentFinder::requestProcedure();
+            return 'Dokumen tentang "' . implode(' ', $keywords) . '" belum tersedia di Daftar Informasi Publik. ' . DocumentFinder::requestProcedure() . $fee;
         }
 
         $lines = array_map(fn ($d, $i) => ($i + 1) . ". {$d['title']}\n   {$d['url']}", $docs, array_keys($docs));
         $list = "Berikut dokumen yang cocok di Daftar Informasi Publik:\n" . implode("\n", $lines);
 
-        return DocumentFinder::isSpecific($text)
+        return (DocumentFinder::isSpecific($text)
             ? "{$list}\nBila data yang Bapak/Ibu maksud lebih rinci dari dokumen di atas: " . DocumentFinder::requestProcedure()
-            : "{$list}\nBila yang dicari belum ada, Bapak/Ibu dapat mengajukan permohonan informasi (" . route('request.create') . ').';
+            : "{$list}\nBila yang dicari belum ada, Bapak/Ibu dapat mengajukan permohonan informasi (" . route('request.create') . ').') . $fee;
     }
 }

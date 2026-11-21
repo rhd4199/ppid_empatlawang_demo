@@ -103,10 +103,11 @@ class WhatsAppInbox
             } catch (UniqueConstraintViolationException) {
                 continue; // same id delivered twice at once by a provider retry
             }
-            // A new message reopens a finished conversation.
+            // A new message reopens a finished conversation; the old draft no longer answers it.
             $conversation->update([
                 'name' => $m['name'] ?? $conversation->name,
                 'status' => 'new',
+                'reply_draft' => null,
                 'last_message_at' => $at,
             ]);
             $stored++;

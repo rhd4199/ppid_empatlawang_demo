@@ -48,11 +48,22 @@ TXT;
             'history.*.role' => 'required|in:user,assistant',
             'history.*.content' => 'required|string|max:1000',
         ]);
-        $settings = assistant_settings();
-
-        if (! $settings['enabled']) {
+        if (! assistant_settings()['enabled']) {
             abort(404);
         }
+
+        return response()->json(['reply' => $this->answer($data['message'], $data['history'] ?? [])]);
+    }
+
+    /**
+     * Reply text for a citizen message; also drafts WhatsApp inbox replies (Admin\WhatsAppInboxController).
+     *
+     * @param  array<int, array{role: string, content: string}>  $history  earlier turns, oldest first
+     */
+    public function answer(string $message, array $history = []): string
+    {
+        $settings = assistant_settings();
+        $data = ['message' => $message, 'history' => $history];
 
         if (config('services.openai.key')) {
             return $this->reply(fn () => Http::withToken(config('services.openai.key'))->timeout(30)->acceptJson()
@@ -74,7 +85,7 @@ TXT;
 
         $lastReply = collect($data['history'] ?? [])->where('role', 'assistant')->last()['content'] ?? null;
 
-        return response()->json(['reply' => AssistantFallback::reply($data['message'], $lastReply)]);
+        return AssistantFallback::reply($data['message'], $lastReply);
     }
 
     /** Persona (admin override or default) plus official contact data, site links and matching documents, so the model never has to guess them. */
@@ -163,7 +174,7 @@ TXT;
         return $lines;
     }
 
-    private function reply(callable $call, string $source)
+    private function reply(callable $call, string $source): string
     {
         try {
             $reply = $call();
@@ -173,6 +184,6 @@ TXT;
             $reply = null;
         }
 
-        return response()->json(['reply' => is_string($reply) && trim($reply) !== '' ? trim($reply) : self::FAILED]);
+        return is_string($reply) && trim($reply) !== '' ? trim($reply) : self::FAILED;
     }
 }
