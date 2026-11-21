@@ -178,19 +178,19 @@
     phone.addEventListener?.('change', fit);
     const sync = () => { input.readOnly = busy; send.disabled = busy || !input.value.trim(); }; // readOnly keeps focus, unlike disabled
     // text nodes + <a> built with createElement, never innerHTML: replies come from an external API.
-    // Only http(s) URLs become links; other sites open in a new tab without referrer.
+    // Only http(s) URLs (or bare www.…, as https) become links; other sites open in a new tab without referrer.
     function fill(el, text) {
         el.textContent = '';
         let last = 0;
-        for (const m of text.matchAll(/https?:\/\/[^\s<>"'()]+/g)) {
+        for (const m of text.matchAll(/(?:https?:\/\/|\bwww\.)[^\s<>"'()]+/g)) {
             const url = m[0].replace(/[.,;:!?]+$/, ''); // sentence punctuation after the URL
             let href;
-            try { href = new URL(url); } catch (e) { continue; }
+            try { href = new URL(url.startsWith('www.') ? 'https://' + url : url); } catch (e) { continue; }
             el.append(text.slice(last, m.index));
             const a = document.createElement('a');
             a.href = href.href;
             // own-site links show only the path ("/informasi-publik/27"): the full preview/production host wastes 2–3 lines
-            a.textContent = href.origin === location.origin ? href.pathname + href.search : url;
+            a.textContent = href.origin === location.origin ? href.pathname + href.search + href.hash : url;
             if (href.origin !== location.origin) { a.target = '_blank'; a.rel = 'noopener noreferrer nofollow'; }
             el.append(a);
             last = m.index + url.length;
