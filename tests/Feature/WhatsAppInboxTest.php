@@ -45,6 +45,26 @@ class WhatsAppInboxTest extends TestCase
         $this->assertMatchesRegularExpression('/data-wa-unread>1</', $html); // sidebar badge
     }
 
+    public function test_pane_header_returns_only_the_right_pane(): void
+    {
+        $c = $this->conversation('6281200000001', 'Budi', 'new', [['in', 'Pesan untuk panel']]);
+        $other = $this->conversation('6281200000002', 'Sari Dewi', 'read', [['in', 'Halo']]);
+        $this->actingAs(User::factory()->create());
+
+        $pane = $this->get(route('admin.wa-inbox.show', $c), ['X-WA-Pane' => '1'])->assertOk()->getContent();
+        $this->assertStringContainsString('Pesan untuk panel', $pane);
+        $this->assertStringContainsString('data-wa-thread', $pane);
+        $this->assertStringContainsString(route('admin.wa-inbox.messages', $c), $pane); // poll follows the opened chat
+        $this->assertStringContainsString('data-wa-compose', $pane);
+        foreach (['<html', 'data-wa-list', 'Sari Dewi', 'waNewChat'] as $notInPane) {
+            $this->assertStringNotContainsString($notInPane, $pane); // no layout, list or modal
+        }
+        $this->assertSame('read', $c->fresh()->status);
+
+        // Without the header: the full page as before.
+        $this->get(route('admin.wa-inbox.show', $other))->assertOk()->assertSee('<html', false)->assertSee('data-wa-list', false)->assertSee('data-wa-pane', false);
+    }
+
     public function test_show_marks_read_and_renders_thread(): void
     {
         $c = $this->conversation('6281200000001', 'Budi', 'new', [['in', 'Pertanyaan <b>warga</b>'], ['out', 'Balasan petugas']]);

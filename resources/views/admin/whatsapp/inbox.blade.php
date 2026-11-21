@@ -50,11 +50,10 @@
 @endpush
 
 @section('content')
-@php $initial = fn ($c) => mb_strtoupper(mb_substr($c->displayName() ?: 'W', 0, 1)); @endphp
 <div class="wa-app">
     <div class="row g-0">
         {{-- Contacts; on phones hidden while a conversation is open. --}}
-        <div class="col-lg-4 border-end h-100 flex-column {{ $conversation ? 'd-none d-lg-flex' : 'd-flex' }}">
+        <div class="col-lg-4 border-end h-100 flex-column {{ $conversation ? 'd-none d-lg-flex' : 'd-flex' }}" data-wa-side>
             <div class="wa-pane-head d-flex align-items-center justify-content-between px-3">
                 <div class="fw-bold"><i class="fab fa-whatsapp text-success me-2"></i>Kotak masuk</div>
                 <div class="d-flex align-items-center gap-2">
@@ -90,106 +89,8 @@
         </div>
 
         {{-- Chat; on phones shown only when one is open. --}}
-        <div class="col-lg-8 h-100 flex-column {{ $conversation ? 'd-flex' : 'd-none d-lg-flex' }}">
-            @foreach (['success' => 'success', 'error' => 'danger'] as $key => $class)
-                @if (session($key))
-                    <div class="alert alert-{{ $class }} border-0 rounded-0 py-2 mb-0 small">{{ session($key) }}</div>
-                @endif
-            @endforeach
-            @error('body')<div class="alert alert-danger border-0 rounded-0 py-2 mb-0 small">{{ $message }}</div>@enderror
-
-            @if ($conversation)
-                <div class="wa-pane-head d-flex align-items-center gap-3 px-3">
-                    <a href="{{ route('admin.wa-inbox.index', $filters) }}" class="btn btn-sm btn-link text-secondary d-lg-none px-1" aria-label="Kembali"><i class="fas fa-arrow-left"></i></a>
-                    <div class="wa-avatar sm">{{ $initial($conversation) }}</div>
-                    <div style="min-width:0">
-                        <div class="fw-semibold text-truncate">{{ $conversation->displayName() ?: 'Warga' }}</div>
-                        <div class="small text-muted text-truncate">+{{ $conversation->phone }} · {{ App\Models\WaConversation::STATUSES[$conversation->status] ?? $conversation->status }}@if ($conversation->label) · {{ App\Models\WaConversation::LABELS[$conversation->label] ?? $conversation->label }}@endif</div>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle ms-auto" data-bs-toggle="collapse" data-bs-target="#waContact" aria-expanded="{{ $errors->hasAny(['contact_name', 'label', 'notes']) ? 'true' : 'false' }}" title="Info kontak" aria-label="Info kontak"><i class="fas fa-user-pen"></i></button>
-                    <a href="{{ wa_link($conversation->phone) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success rounded-circle" title="Buka di WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                </div>
-                {{-- Contact card (CRM): officer-set name, label, notes; WhatsApp profile name stays as a hint. --}}
-                <form id="waContact" action="{{ route('admin.wa-inbox.contact', [$conversation] + $filters) }}" method="POST"
-                      class="collapse border-bottom bg-light px-3 py-2 {{ $errors->hasAny(['contact_name', 'label', 'notes']) ? 'show' : '' }}" data-wa-contact>
-                    @csrf
-                    @method('PUT')
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <label class="form-label small mb-0" for="waContactName">Nama kontak</label>
-                            <input id="waContactName" name="contact_name" maxlength="100" class="form-control form-control-sm" value="{{ old('contact_name', $conversation->contact_name) }}" placeholder="{{ $conversation->name ? 'Nama WA: ' . $conversation->name : 'mis. Budi Santoso' }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small mb-0" for="waContactLabel">Label</label>
-                            <select id="waContactLabel" name="label" class="form-select form-select-sm">
-                                <option value="">— Tanpa label —</option>
-                                @foreach (App\Models\WaConversation::LABELS as $key => $text)
-                                    <option value="{{ $key }}" @selected(old('label', $conversation->label) === $key)>{{ $text }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small mb-0" for="waContactNotes">Catatan petugas</label>
-                            <textarea id="waContactNotes" name="notes" rows="2" maxlength="2000" class="form-control form-control-sm" placeholder="mis. minta salinan Laporan Kinerja 2025, sudah dikirim via email">{{ old('notes', $conversation->notes) }}</textarea>
-                        </div>
-                        @foreach (['contact_name', 'label', 'notes'] as $field)
-                            @error($field)<div class="col-12 small text-danger">{{ $message }}</div>@enderror
-                        @endforeach
-                        <div class="col-12 text-end"><button type="submit" class="btn btn-sm btn-success rounded-pill"><i class="fas fa-save me-1"></i> Simpan</button></div>
-                    </div>
-                </form>
-                <div class="wa-thread flex-grow-1 px-3 px-md-5 py-3" data-wa-thread data-wa-poll="{{ route('admin.wa-inbox.messages', $conversation) }}" data-wa-after="{{ $messages->max('id') ?? 0 }}" data-wa-since="{{ now()->toDateTimeString() }}">
-                    <div class="text-center mb-2"><span class="wa-day">Pertanyaan warga · diteruskan dari bot WhatsApp{{ $conversation->handoff_reason ? ' · ' . $conversation->handoff_reason : '' }}</span></div>
-                    @php $lastDay = null; @endphp
-                    @foreach ($messages as $m)
-                        @php $day = App\Models\WaMessage::dayLabel($m->sent_at); @endphp
-                        @if ($day !== $lastDay)
-                            <div class="text-center my-2" data-wa-day><span class="wa-day">{{ $day }}</span></div>
-                            @php $lastDay = $day; @endphp
-                        @endif
-                        @include('admin.whatsapp._message')
-                    @endforeach
-                </div>
-                {{-- Optimistic bubble for a reply being sent (same markup as _message, pending tick). --}}
-                <template data-wa-pending>
-                    <div class="d-flex mb-2" data-wa-msg="" data-wa-msg-day="Hari ini">
-                        <div class="wa-bubble wa-out">
-                            <div class="small fw-bold" style="color:#008069">Petugas PPID</div>
-                            <span class="wa-text"></span><span class="wa-meta"><span data-wa-time></span><i class="wa-tick wa-tick-pending {{ App\Models\WaMessage::TICKS['pending'][0] }}" title="Menunggu" aria-label="Menunggu"></i></span>
-                        </div>
-                    </div>
-                </template>
-                <div class="wa-composer px-3 py-2">
-                    <form id="redraftForm" action="{{ route('admin.wa-inbox.redraft', $conversation) }}" method="POST">@csrf</form>
-                    @if (filled($conversation->reply_draft))
-                        {{-- AI suggestion: sent only by an officer ("Setujui & kirim"), or copied into the input to edit. --}}
-                        <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST" class="wa-suggest bg-white rounded-3 shadow-sm p-2 mb-2" data-wa-suggest>
-                            @csrf
-                            <input type="hidden" name="body" value="{{ $conversation->reply_draft }}">
-                            <div class="small fw-bold mb-1"><i class="fas fa-robot text-primary me-1"></i>Saran balasan Sapa Madani (AI) — periksa sebelum dikirim</div>
-                            <div class="wa-suggest-text small" data-wa-suggest-text>{{ $conversation->reply_draft }}</div>
-                            <div class="d-flex flex-wrap gap-2 justify-content-end mt-2">
-                                <button type="submit" form="redraftForm" class="btn btn-sm btn-light rounded-pill"><i class="fas fa-rotate me-1"></i> Buat ulang</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-wa-use><i class="fas fa-pen me-1"></i> Pakai/Ubah</button>
-                                <button type="submit" class="btn btn-sm btn-success rounded-pill fw-bold"><i class="fas fa-paper-plane me-1"></i> Setujui &amp; kirim</button>
-                            </div>
-                        </form>
-                    @endif
-                    {{-- Free-text reply bar: Enter sends, Shift+Enter adds a line. --}}
-                    <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST" class="d-flex align-items-end gap-2" data-wa-compose>
-                        @csrf
-                        @if (blank($conversation->reply_draft))
-                            <button type="submit" form="redraftForm" class="btn btn-link text-secondary px-1" title="Buat saran balasan AI" aria-label="Buat saran balasan AI"><i class="fas fa-robot"></i></button>
-                        @endif
-                        <textarea id="waInput" name="body" rows="1" maxlength="4000" required class="form-control border-0 rounded-4 wa-input" placeholder="Ketik pesan" aria-label="Ketik pesan">{{ old('body') }}</textarea>
-                        <button type="submit" class="btn btn-success rounded-circle wa-send flex-shrink-0" title="Kirim" aria-label="Kirim"><i class="fas fa-paper-plane"></i></button>
-                    </form>
-                </div>
-            @else
-                <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted wa-thread">
-                    <div class="text-center bg-white rounded-4 shadow-sm px-4 py-3"><i class="fab fa-whatsapp fa-3x mb-2 text-success"></i><div>Pilih percakapan untuk membaca pesan.</div></div>
-                </div>
-            @endif
+        <div class="col-lg-8 h-100 flex-column {{ $conversation ? 'd-flex' : 'd-none d-lg-flex' }}" data-wa-pane>
+            @include('admin.whatsapp._thread')
         </div>
     </div>
 </div>
@@ -234,33 +135,21 @@
     // Validation failed: show the "Chat baru" form again with the error.
     const waNewChat = document.getElementById('waNewChat');
     if (waNewChat?.dataset.waNewOpen) bootstrap.Modal.getOrCreateInstance(waNewChat).show();
-    // Newest message in view, like a chat app.
-    document.querySelectorAll('.wa-thread').forEach(el => { el.scrollTop = el.scrollHeight; });
-    const waInput = document.getElementById('waInput');
-    const waGrow = () => { waInput.style.height = 'auto'; waInput.style.height = waInput.scrollHeight + 'px'; };
-    waInput?.addEventListener('input', waGrow);
-    waInput?.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
-            e.preventDefault();
-            if (waInput.value.trim() !== '') waInput.form.requestSubmit();
-        }
-    });
-    document.querySelector('[data-wa-use]')?.addEventListener('click', () => {
-        waInput.value = document.querySelector('[data-wa-suggest] input[name=body]').value;
-        waGrow();
-        waInput.focus();
-    });
-    // Live updates (poll ~5 s, like WhatsApp): new messages + ticks in the open chat, contact list, sidebar badge.
-    // The reply input and suggestion card are never touched, so typed text is kept.
+    // The right pane is swapped in-page when switching chats, so everything in it is looked up on use
+    // (delegated events), never kept from page load.
     (() => {
-        const thread = document.querySelector('[data-wa-thread]');
+        const pane = document.querySelector('[data-wa-pane]'), side = document.querySelector('[data-wa-side]');
         const list = document.querySelector('[data-wa-list]');
+        const thread = () => pane.querySelector('[data-wa-thread]');
+        const input = () => document.getElementById('waInput');
+        const grow = el => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; };
+        const toBottom = () => { const t = thread(); if (t) t.scrollTop = t.scrollHeight; };
         const getJson = url => fetch(url, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
             .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
         const toNode = html => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
         // Append a bubble, with a day separator when the day changes.
-        const appendMsg = (node, dayLabel) => {
-            const last = [...thread.querySelectorAll('[data-wa-msg]')].pop();
+        const appendMsg = (th, node, dayLabel) => {
+            const last = [...th.querySelectorAll('[data-wa-msg]')].pop();
             if (!last || last.dataset.waMsgDay !== dayLabel) {
                 const day = document.createElement('div'), label = document.createElement('span');
                 day.className = 'text-center my-2';
@@ -268,25 +157,110 @@
                 label.className = 'wa-day';
                 label.textContent = dayLabel;
                 day.append(label);
-                thread.append(day);
+                th.append(day);
             }
-            thread.append(node);
+            th.append(node);
         };
-        const pollThread = () => {
-            const url = new URL(thread.dataset.waPoll, location.href);
-            url.searchParams.set('after', thread.dataset.waAfter);
-            url.searchParams.set('since', thread.dataset.waSince);
+        toBottom(); // newest message in view, like a chat app
+
+        // Reply bar: Enter sends, Shift+Enter adds a line; "Pakai/Ubah" copies the AI draft into it.
+        pane.addEventListener('input', e => { if (e.target.id === 'waInput') grow(e.target); });
+        pane.addEventListener('keydown', e => {
+            if (e.target.id !== 'waInput' || e.key !== 'Enter' || e.shiftKey || e.isComposing) return;
+            e.preventDefault();
+            if (e.target.value.trim() !== '') e.target.form.requestSubmit();
+        });
+        pane.addEventListener('click', e => {
+            if (!e.target.closest('[data-wa-use]')) return;
+            const el = input();
+            el.value = pane.querySelector('[data-wa-suggest] input[name=body]').value;
+            grow(el);
+            el.focus();
+        });
+
+        // Send without reloading: a pending bubble shows at once; the stored one (sent/failed) replaces it.
+        // waAfter is left to the poll, so citizen messages that arrive meanwhile are not skipped.
+        pane.addEventListener('submit', e => {
+            const f = e.target.closest('[data-wa-compose], [data-wa-suggest]'), th = thread();
+            if (!f || !th) return;
+            e.preventDefault();
+            const data = new FormData(f), text = String(data.get('body') || '').trim(), el = input();
+            if (f.dataset.waBusy || !text) return; // Enter twice / double click: one message
+            f.dataset.waBusy = '1';
+            if (f.matches('[data-wa-compose]')) { el.value = ''; grow(el); }
+            const restore = () => { if (el.isConnected && !el.value) { el.value = text; grow(el); } };
+            const temp = pane.querySelector('[data-wa-pending]').content.firstElementChild.cloneNode(true);
+            temp.querySelector('.wa-text').textContent = text;
+            temp.querySelector('[data-wa-time]').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
+            appendMsg(th, temp, 'Hari ini');
+            th.scrollTop = th.scrollHeight;
+            fetch(f.action, { method: 'POST', body: data, credentials: 'same-origin', headers: { Accept: 'application/json', 'X-CSRF-TOKEN': data.get('_token') } })
+                .then(r => r.json().catch(() => ({})).then(d => { if (!r.ok) throw new Error(d.message || 'HTTP ' + r.status); return d; }))
+                .then(d => {
+                    th.querySelector(`[data-wa-msg="${d.id}"]`) ? temp.remove() : temp.replaceWith(toNode(d.html));
+                    if (!d.ok) return restore(); // failed bubble stays, text back for a retry
+                    if (f.matches('[data-wa-suggest]')) f.remove(); // draft sent and cleared
+                })
+                .catch(err => { temp.remove(); restore(); alert('Pesan gagal dikirim: ' + err.message); })
+                .finally(() => { delete f.dataset.waBusy; });
+        });
+
+        // Switch chats without a page load: fetch only the right pane (X-WA-Pane), keep the URL shareable.
+        const chatId = url => (String(url).match(/kotak-masuk-wa\/(\d+)/) || [])[1];
+        const markActive = url => {
+            const id = chatId(url);
+            list.querySelectorAll('.wa-item').forEach(a => a.classList.toggle('active', chatId(a.href) === id));
+            const poll = new URL(list.dataset.waPoll, location.href);
+            poll.searchParams.set('current', id);
+            list.dataset.waPoll = poll.pathname + poll.search;
+        };
+        let loading = 0;
+        const openChat = (url, push) => {
+            const seq = ++loading;
+            fetch(url, { headers: { 'X-WA-Pane': '1', Accept: 'text/html' }, credentials: 'same-origin' })
+                .then(r => { if (!r.ok || r.redirected) throw new Error(r.status); return r.text(); })
+                .then(html => {
+                    if (seq !== loading) return; // a later click won
+                    pane.innerHTML = html;
+                    // Phones: chat replaces the list, like opening the page directly.
+                    pane.classList.replace('d-none', 'd-flex');
+                    pane.classList.remove('d-lg-flex');
+                    side.classList.replace('d-flex', 'd-none');
+                    side.classList.add('d-lg-flex');
+                    if (push) history.pushState({ waPane: 1 }, '', url);
+                    markActive(url);
+                    toBottom();
+                    tick(true);
+                })
+                .catch(() => { location.href = url; }); // session expired / error: normal navigation
+        };
+        list?.addEventListener('click', e => {
+            const a = e.target.closest('a.wa-item');
+            if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
+            openChat(a.href, true);
+        });
+        window.addEventListener('popstate', () => {
+            chatId(location.pathname) ? openChat(location.href, false) : location.reload();
+        });
+
+        // Live updates (poll ~5 s, like WhatsApp): new messages + ticks in the open chat, contact list, sidebar badge.
+        // The reply input and suggestion card are never touched, so typed text is kept.
+        const pollThread = th => {
+            const url = new URL(th.dataset.waPoll, location.href);
+            url.searchParams.set('after', th.dataset.waAfter);
+            url.searchParams.set('since', th.dataset.waSince);
             return getJson(url).then(d => {
-                const atBottom = thread.scrollHeight - thread.scrollTop - thread.clientHeight < 80;
-                d.changed.forEach(m => thread.querySelector(`[data-wa-msg="${m.id}"]`)?.replaceWith(toNode(m.html)));
+                const atBottom = th.scrollHeight - th.scrollTop - th.clientHeight < 80;
+                d.changed.forEach(m => th.querySelector(`[data-wa-msg="${m.id}"]`)?.replaceWith(toNode(m.html)));
                 d.messages.forEach(m => {
                     // Already shown (a reply sent from this page): refresh it, its tick may have moved.
-                    const shown = thread.querySelector(`[data-wa-msg="${m.id}"]`);
-                    shown ? shown.replaceWith(toNode(m.html)) : appendMsg(toNode(m.html), m.day);
-                    thread.dataset.waAfter = Math.max(+thread.dataset.waAfter, m.id);
+                    const shown = th.querySelector(`[data-wa-msg="${m.id}"]`);
+                    shown ? shown.replaceWith(toNode(m.html)) : appendMsg(th, toNode(m.html), m.day);
+                    th.dataset.waAfter = Math.max(+th.dataset.waAfter, m.id);
                 });
-                thread.dataset.waSince = d.since;
-                if (d.messages.length && atBottom) thread.scrollTop = thread.scrollHeight;
+                th.dataset.waSince = d.since;
+                if (d.messages.length && atBottom) th.scrollTop = th.scrollHeight;
             });
         };
         const pollList = () => getJson(list.dataset.waPoll).then(d => {
@@ -301,39 +275,16 @@
             }
             if (badge) d.unread ? (badge.textContent = d.unread) : badge.remove();
         });
-        // Send without reloading: a pending bubble shows at once; the stored one (sent/failed) replaces it.
-        // waAfter is left to the poll, so citizen messages that arrive meanwhile are not skipped.
-        const pending = document.querySelector('[data-wa-pending]');
-        const restore = text => { if (waInput && !waInput.value) { waInput.value = text; waGrow(); } };
-        if (thread) document.querySelectorAll('[data-wa-compose], [data-wa-suggest]').forEach(f => f.addEventListener('submit', e => {
-            e.preventDefault();
-            const data = new FormData(f), text = String(data.get('body') || '').trim();
-            if (f.dataset.waBusy || !text) return; // Enter twice / double click: one message
-            f.dataset.waBusy = '1';
-            if (f.matches('[data-wa-compose]')) { waInput.value = ''; waGrow(); }
-            const temp = pending.content.firstElementChild.cloneNode(true);
-            temp.querySelector('.wa-text').textContent = text;
-            temp.querySelector('[data-wa-time]').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
-            appendMsg(temp, 'Hari ini');
-            thread.scrollTop = thread.scrollHeight;
-            fetch(f.action, { method: 'POST', body: data, credentials: 'same-origin', headers: { Accept: 'application/json', 'X-CSRF-TOKEN': data.get('_token') } })
-                .then(r => r.json().catch(() => ({})).then(d => { if (!r.ok) throw new Error(d.message || 'HTTP ' + r.status); return d; }))
-                .then(d => {
-                    thread.querySelector(`[data-wa-msg="${d.id}"]`) ? temp.remove() : temp.replaceWith(toNode(d.html));
-                    if (!d.ok) return restore(text); // failed bubble stays, text back for a retry
-                    if (f.matches('[data-wa-suggest]')) f.remove(); // draft sent and cleared
-                })
-                .catch(err => { temp.remove(); restore(text); alert('Pesan gagal dikirim: ' + err.message); })
-                .finally(() => { delete f.dataset.waBusy; });
-        }));
         let busy = false;
-        const tick = () => {
+        // listOnly: right after a switch the pane is fresh, only the list (read status, badge) needs refreshing.
+        const tick = listOnly => {
             if (busy || document.hidden) return;
             busy = true;
+            const th = listOnly === true ? null : thread();
             // Thread first: it marks the open chat read, so the list badge right after is correct.
-            Promise.resolve(thread && pollThread()).then(() => list && pollList()).catch(() => {}).finally(() => { busy = false; });
+            Promise.resolve(th && pollThread(th)).then(() => list && pollList()).catch(() => {}).finally(() => { busy = false; });
         };
-        if (thread || list) setInterval(tick, 5000);
+        setInterval(tick, 5000);
     })();
 </script>
 @endpush

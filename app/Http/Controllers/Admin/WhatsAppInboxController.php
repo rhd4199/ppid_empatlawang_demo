@@ -29,6 +29,11 @@ class WhatsAppInboxController extends Controller
             $conversation->update(['reply_draft' => $this->draft($messages)]);
         }
 
+        // Inbox script switching chats in-page: only the right pane, no layout or list.
+        if (request()->header('X-WA-Pane')) {
+            return view('admin.whatsapp._thread', ['conversation' => $conversation, 'messages' => $messages]);
+        }
+
         return view('admin.whatsapp.inbox', [
             'conversations' => $this->conversations(),
             'conversation' => $conversation,
