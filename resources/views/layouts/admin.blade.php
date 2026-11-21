@@ -268,6 +268,10 @@
             <a href="{{ route('admin.standard-service.index') }}" class="menu-item {{ request()->routeIs('admin.standard-service.*') ? 'active' : '' }}">
                 <i class="fas fa-hand-holding-heart"></i> Standar Layanan
             </a>
+
+            <a href="{{ route('admin.service-requirements.index') }}" class="menu-item {{ request()->routeIs('admin.service-requirements.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-list"></i> Persyaratan Layanan
+            </a>
             
             <a href="{{ route('admin.reports.index') }}" class="menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar"></i> Laporan

@@ -88,6 +88,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/standar-layanan/{id}/toggle-status', [App\Http\Controllers\Admin\StandardServiceController::class, 'toggleStatus'])->name('standard-service.toggle-status');
     Route::resource('standar-layanan', App\Http\Controllers\Admin\StandardServiceController::class)->names('standard-service');
 
+    // Persyaratan layanan instansi lain (Disdukcapil, Samsat, BPN, ...)
+    Route::post('/persyaratan-layanan/bulk-action', [App\Http\Controllers\Admin\ServiceRequirementController::class, 'bulkAction'])->name('service-requirements.bulk-action');
+    Route::post('/persyaratan-layanan/{id}/toggle-status', [App\Http\Controllers\Admin\ServiceRequirementController::class, 'toggleStatus'])->name('service-requirements.toggle-status');
+    Route::resource('persyaratan-layanan', App\Http\Controllers\Admin\ServiceRequirementController::class)
+        ->except(['show'])
+        ->parameters(['persyaratan-layanan' => 'id'])
+        ->names('service-requirements');
+
     Route::post('/laporan/bulk-action', [App\Http\Controllers\Admin\ReportController::class, 'bulkAction'])->name('reports.bulk-action');
     Route::post('/laporan/{id}/toggle-status', [App\Http\Controllers\Admin\ReportController::class, 'toggleStatus'])->name('reports.toggle-status');
     Route::resource('laporan', App\Http\Controllers\Admin\ReportController::class)->names('reports');
