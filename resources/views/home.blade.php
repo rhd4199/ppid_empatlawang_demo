@@ -408,6 +408,8 @@
         <small class="d-block mt-3 opacity-75">Sumber: <span data-source>BMKG (Badan Meteorologi, Klimatologi, dan Geofisika)</span> &middot; <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="text-white">bmkg.go.id</a></small>
     </div>
 
+    @include('partials.disaster')
+
     @if($emergencyInfo->isNotEmpty())
     <div class="row g-4">
         @foreach($emergencyInfo as $info)
