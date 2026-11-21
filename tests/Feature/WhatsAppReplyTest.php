@@ -37,7 +37,7 @@ class WhatsAppReplyTest extends TestCase
         Document::create(['title' => 'Peraturan Presiden Nomor 16 Tahun 2018', 'description' => 'diubah 2025', 'category' => 'informasi-publik-berkala', 'file_path' => 'docs/y.pdf', 'is_published' => true]);
         $c = $this->incoming('Selamat pagi, saya mau minta salinan Laporan Kinerja 2025, ada biaya?');
 
-        $this->get(route('admin.wa-inbox.show', $c))->assertOk()->assertSee('Setujui &amp; kirim', false)->assertSee('Ubah');
+        $this->postJson(route('admin.wa-inbox.redraft', $c))->assertOk()->assertJsonPath('html', fn ($h) => str_contains($h, 'Setujui &amp; kirim') && str_contains($h, 'Ubah'));
 
         $draft = $c->fresh()->reply_draft;
         $this->assertStringContainsString('GRATIS', $draft);
@@ -48,7 +48,7 @@ class WhatsAppReplyTest extends TestCase
     public function test_document_not_listed_still_mentions_free(): void
     {
         $c = $this->incoming('minta salinan Laporan Kinerja 2025, ada biaya?');
-        $this->get(route('admin.wa-inbox.show', $c))->assertOk();
+        $this->postJson(route('admin.wa-inbox.redraft', $c))->assertOk();
 
         $draft = $c->fresh()->reply_draft;
         $this->assertStringContainsString('GRATIS', $draft);
@@ -59,7 +59,7 @@ class WhatsAppReplyTest extends TestCase
     {
         Http::fake(['api.fonnte.com/*' => Http::response(['status' => true])]);
         $c = $this->incoming('Halo, jam layanan kantor PPID?');
-        $this->get(route('admin.wa-inbox.show', $c));
+        $this->postJson(route('admin.wa-inbox.redraft', $c))->assertOk();
         $this->assertNotEmpty($c->fresh()->reply_draft);
 
         $this->post(route('admin.wa-inbox.send', $c), ['body' => 'Jawaban hasil edit petugas'])
@@ -110,6 +110,7 @@ class WhatsAppReplyTest extends TestCase
         Http::fake(['api.fonnte.com/*' => Http::response(['status' => true])]);
         $c = $this->incoming('Halo, jam layanan kantor PPID?');
 
+        $this->postJson(route('admin.wa-inbox.redraft', $c))->assertOk();
         $html = $this->get(route('admin.wa-inbox.show', $c))->assertOk()->getContent();
         $this->assertStringContainsString('data-wa-compose', $html);
         $this->assertStringContainsString('Saran balasan Sapa Madani', $html);
@@ -157,5 +158,30 @@ class WhatsAppReplyTest extends TestCase
         $this->assertStringContainsString('Gagal terkirim', $res->json('html'));
         $this->assertSame('Balasan saya', $c->fresh()->reply_draft);
         $this->assertSame('failed', $c->messages()->where('direction', 'out')->sole()->status);
+    }
+
+    public function test_show_does_not_wait_for_ai_draft_loaded_by_json_redraft(): void
+    {
+        config(['services.openai.key' => 'test-key']); // a draft would call OpenAI
+        Http::fake(['api.openai.com/*' => Http::response(['choices' => [['message' => ['content' => 'Jam layanan Senin–Jumat 08.00–16.00 WIB.']]]])]);
+        $c = $this->incoming('Halo, jam layanan kantor PPID?');
+
+        foreach ([[], ['X-WA-Pane' => '1']] as $headers) {
+            $this->get(route('admin.wa-inbox.show', $c), $headers)->assertOk()
+                ->assertSee('Menyiapkan draf')->assertSee('data-wa-draft-load="' . route('admin.wa-inbox.redraft', $c) . '"', false)
+                ->assertDontSee('Setujui &amp; kirim', false);
+        }
+        Http::assertNothingSent();
+        $this->assertNull($c->fresh()->reply_draft);
+
+        $res = $this->postJson(route('admin.wa-inbox.redraft', $c))->assertOk()
+            ->assertJson(['draft' => 'Jam layanan Senin–Jumat 08.00–16.00 WIB.']);
+        $this->assertStringContainsString('Setujui &amp; kirim', $res->json('html'));
+        $this->assertStringNotContainsString('data-wa-draft-load', $res->json('html'));
+        $this->assertSame('Jam layanan Senin–Jumat 08.00–16.00 WIB.', $c->fresh()->reply_draft);
+
+        // Drafted: opening again shows it, no second AI call.
+        $this->get(route('admin.wa-inbox.show', $c))->assertSee('Jam layanan Senin–Jumat')->assertDontSee('data-wa-draft-load="', false); // "Menyiapkan draf" is also in the page script
+        Http::assertSentCount(1);
     }
 }

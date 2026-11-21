@@ -73,20 +73,7 @@
         </template>
         <div class="wa-composer px-3 py-2">
             <form id="redraftForm" action="{{ route('admin.wa-inbox.redraft', $conversation) }}" method="POST">@csrf</form>
-            @if (filled($conversation->reply_draft))
-                {{-- AI suggestion: sent only by an officer ("Setujui & kirim"), or copied into the input to edit. --}}
-                <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST" class="wa-suggest bg-white rounded-3 shadow-sm p-2 mb-2" data-wa-suggest>
-                    @csrf
-                    <input type="hidden" name="body" value="{{ $conversation->reply_draft }}">
-                    <div class="small fw-bold mb-1"><i class="fas fa-robot text-primary me-1"></i>Saran balasan Sapa Madani (AI) — periksa sebelum dikirim</div>
-                    <div class="wa-suggest-text small" data-wa-suggest-text>{{ $conversation->reply_draft }}</div>
-                    <div class="d-flex flex-wrap gap-2 justify-content-end mt-2">
-                        <button type="submit" form="redraftForm" class="btn btn-sm btn-light rounded-pill"><i class="fas fa-rotate me-1"></i> Buat ulang</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-wa-use><i class="fas fa-pen me-1"></i> Pakai/Ubah</button>
-                        <button type="submit" class="btn btn-sm btn-success rounded-pill fw-bold"><i class="fas fa-paper-plane me-1"></i> Setujui &amp; kirim</button>
-                    </div>
-                </form>
-            @endif
+            @include('admin.whatsapp._suggest', ['pending' => $conversation->reply_draft === null && $messages->last()?->direction === 'in'])
             {{-- Free-text reply bar: Enter sends, Shift+Enter adds a line. --}}
             <form action="{{ route('admin.wa-inbox.send', $conversation) }}" method="POST" class="d-flex align-items-end gap-2" data-wa-compose>
                 @csrf

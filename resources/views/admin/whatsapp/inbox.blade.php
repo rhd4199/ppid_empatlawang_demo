@@ -163,6 +163,38 @@
         };
         toBottom(); // newest message in view, like a chat app
 
+        // AI draft in the background (redraft as JSON), so opening a chat never waits for the AI.
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+        let drafting = null;
+        const loadDraft = (url, card) => {
+            if (drafting === url) return; // robot button / "Buat ulang" clicked again
+            drafting = url;
+            const compose = pane.querySelector('[data-wa-compose]'), text = card?.querySelector('[data-wa-suggest-text]');
+            const before = text && [text.className, text.innerHTML];
+            if (text) {
+                text.className = 'wa-suggest-text small text-muted';
+                text.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Menyiapkan draf…';
+                card.querySelectorAll('button').forEach(b => { b.disabled = true; });
+            }
+            fetch(url, { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json', 'X-CSRF-TOKEN': csrf } })
+                .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+                .then(d => {
+                    if (!compose?.isConnected) return; // another chat was opened meanwhile
+                    const node = d.html.trim() ? toNode(d.html) : null;
+                    if (card?.isConnected) node ? card.replaceWith(node) : card.remove();
+                    else if (node) compose.before(node);
+                })
+                .catch(() => {
+                    if (!card?.isConnected) return;
+                    card.querySelectorAll('button').forEach(b => { b.disabled = false; });
+                    if (card.dataset.waDraftLoad) text.textContent = 'Draf gagal dibuat. Klik ikon robot untuk mencoba lagi.';
+                    else [text.className, text.innerHTML] = before; // keep the previous draft
+                })
+                .finally(() => { drafting = null; });
+        };
+        const autoDraft = () => { const card = pane.querySelector('[data-wa-draft-load]'); if (card) loadDraft(card.dataset.waDraftLoad, card); };
+        autoDraft();
+
         // Reply bar: Enter sends, Shift+Enter adds a line; "Pakai/Ubah" copies the AI draft into it.
         pane.addEventListener('input', e => { if (e.target.id === 'waInput') grow(e.target); });
         pane.addEventListener('keydown', e => {
@@ -181,7 +213,11 @@
         // Send without reloading: a pending bubble shows at once; the stored one (sent/failed) replaces it.
         // waAfter is left to the poll, so citizen messages that arrive meanwhile are not skipped.
         pane.addEventListener('submit', e => {
-            const f = e.target.closest('[data-wa-compose], [data-wa-suggest]'), th = thread();
+            if (e.target.id === 'redraftForm') {
+                e.preventDefault();
+                return loadDraft(e.target.action, pane.querySelector('[data-wa-suggest]'));
+            }
+            const f =e.target.closest('[data-wa-compose], [data-wa-suggest]'), th = thread();
             if (!f || !th) return;
             e.preventDefault();
             const data = new FormData(f), text = String(data.get('body') || '').trim(), el = input();
@@ -230,6 +266,7 @@
                     if (push) history.pushState({ waPane: 1 }, '', url);
                     markActive(url);
                     toBottom();
+                    autoDraft();
                     tick(true);
                 })
                 .catch(() => { location.href = url; }); // session expired / error: normal navigation

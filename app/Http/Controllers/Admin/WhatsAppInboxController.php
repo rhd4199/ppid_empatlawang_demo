@@ -22,12 +22,8 @@ class WhatsAppInboxController extends Controller
         if ($conversation->status === 'new') {
             $conversation->update(['status' => 'read']);
         }
+        // No AI call here: an unanswered question shows "Menyiapkan draf…" and the inbox script fetches the draft (redraft).
         $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
-
-        // Draft once per unanswered question (cleared when a new message arrives), so reloading does not call the AI again.
-        if ($conversation->reply_draft === null && $messages->last()?->direction === 'in') {
-            $conversation->update(['reply_draft' => $this->draft($messages)]);
-        }
 
         // Inbox script switching chats in-page: only the right pane, no layout or list.
         if (request()->header('X-WA-Pane')) {
@@ -76,6 +72,14 @@ class WhatsAppInboxController extends Controller
     {
         $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
         $conversation->update(['reply_draft' => $messages->isEmpty() ? null : $this->draft($messages)]);
+
+        // Inbox script: the suggestion card ('' when there is nothing to answer).
+        if (request()->expectsJson()) {
+            return response()->json([
+                'draft' => $conversation->reply_draft,
+                'html' => view('admin.whatsapp._suggest', ['conversation' => $conversation, 'pending' => false])->render(),
+            ]);
+        }
 
         return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Draf balasan dibuat ulang.');
     }
