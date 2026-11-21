@@ -91,6 +91,19 @@ class WhatsAppInboxController extends Controller
         return redirect()->route('admin.wa-inbox.show', $conversation)->with('success', 'Balasan terkirim ke +' . $conversation->phone . '.');
     }
 
+    /** Contact card (CRM): officer-set name, label and notes. */
+    public function contact(Request $request, WaConversation $conversation)
+    {
+        $data = $request->validate([
+            'contact_name' => 'nullable|string|max:100',
+            'label' => 'nullable|in:' . implode(',', array_keys(WaConversation::LABELS)),
+            'notes' => 'nullable|string|max:2000',
+        ]);
+        $conversation->update($data);
+
+        return redirect()->route('admin.wa-inbox.show', [$conversation] + self::filters())->with('success', 'Info kontak disimpan.');
+    }
+
     /** Sapa Madani's answer to the citizen's unanswered messages, earlier turns as history. */
     private function draft($messages): string
     {
@@ -132,6 +145,8 @@ class WhatsAppInboxController extends Controller
                 $like = '%' . mb_strtolower($term) . '%';
                 $digits = preg_replace('/\D/', '', $term);
                 $q->where(fn ($q) => $q->whereRaw('LOWER(name) LIKE ?', [$like])
+                    ->orWhereRaw('LOWER(contact_name) LIKE ?', [$like])
+                    ->orWhereRaw('LOWER(notes) LIKE ?', [$like])
                     ->when(strlen($digits) >= 3, fn ($q) => $q->orWhere('phone', 'like', '%' . preg_replace('/^0/', '62', $digits) . '%'))
                     ->orWhereHas('messages', fn ($m) => $m->whereRaw('LOWER(body) LIKE ?', [$like])));
             })

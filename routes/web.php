@@ -135,6 +135,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/kotak-masuk-wa/{conversation}/pesan', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'messages'])->name('wa-inbox.messages');
     Route::get('/kotak-masuk-wa/{conversation}', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'show'])->name('wa-inbox.show');
     Route::post('/kotak-masuk-wa/{conversation}/draf', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'redraft'])->name('wa-inbox.redraft');
+    Route::put('/kotak-masuk-wa/{conversation}/kontak', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'contact'])->name('wa-inbox.contact');
     Route::post('/kotak-masuk-wa/{conversation}/kirim', [App\Http\Controllers\Admin\WhatsAppInboxController::class, 'send'])->name('wa-inbox.send');
 
     // WhatsApp Gateway: the old menu URL opens the chat; connection settings are a tab of it

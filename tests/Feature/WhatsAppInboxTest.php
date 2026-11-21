@@ -150,4 +150,29 @@ class WhatsAppInboxTest extends TestCase
         $this->assertStringContainsString('Sari Dewi', $list);
         $this->assertStringNotContainsString('Budi Santoso', $list);
     }
+
+    public function test_contact_card_saves_name_label_and_notes(): void
+    {
+        $c = $this->conversation('6281200000001', 'bdi', 'read', [['in', 'Halo']]);
+        $this->actingAs(User::factory()->create());
+
+        $this->put(route('admin.wa-inbox.contact', $c), ['contact_name' => 'Budi Santoso', 'label' => 'keberatan', 'notes' => 'Wartawan koran lokal'])
+            ->assertRedirect(route('admin.wa-inbox.show', $c))->assertSessionHas('success');
+        $this->assertSame(['Budi Santoso', 'keberatan', 'Wartawan koran lokal'], [$c->fresh()->contact_name, $c->fresh()->label, $c->fresh()->notes]);
+
+        $this->get(route('admin.wa-inbox.show', $c))->assertOk()
+            ->assertSee('Budi Santoso')->assertSee('Keberatan')->assertSee('Wartawan koran lokal')->assertSee('Nama WA: bdi');
+        $this->get(route('admin.wa-inbox.index', ['q' => 'santoso']))->assertSee('Budi Santoso'); // officer name searchable
+        $this->get(route('admin.wa-inbox.index', ['q' => 'wartawan']))->assertSee('Budi Santoso'); // notes too
+
+        // A new WhatsApp message keeps the officer's name (only the profile name changes).
+        $this->post(route('api.whatsapp.webhook', ['secret' => \App\Support\WhatsAppGateway::webhookSecret()]), ['sender' => '6281200000001', 'name' => 'Budi WA', 'message' => 'Halo lagi'])->assertOk();
+        $this->assertSame('Budi Santoso', $c->fresh()->displayName());
+
+        // Empty name falls back to the WhatsApp name; unknown label rejected.
+        $this->put(route('admin.wa-inbox.contact', $c), ['contact_name' => '', 'label' => ''])->assertRedirect();
+        $this->assertSame('Budi WA', $c->fresh()->displayName());
+        $this->assertNull($c->fresh()->label);
+        $this->put(route('admin.wa-inbox.contact', $c), ['label' => 'vip'])->assertSessionHasErrors('label');
+    }
 }

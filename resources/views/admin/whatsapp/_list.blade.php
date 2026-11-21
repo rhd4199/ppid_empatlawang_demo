@@ -13,14 +13,15 @@
 @forelse ($conversations as $c)
     @php $unread = $c->status === 'new' ? max(1, (int) $c->unread_count) : 0; @endphp
     <a href="{{ route('admin.wa-inbox.show', [$c] + App\Http\Controllers\Admin\WhatsAppInboxController::filters()) }}" class="wa-item d-flex gap-3 px-3 py-2 align-items-center {{ $currentId === $c->id ? 'active' : '' }} {{ $unread ? 'unread' : '' }}">
-        <div class="wa-avatar">{{ mb_strtoupper(mb_substr($c->name ?: 'W', 0, 1)) }}</div>
+        <div class="wa-avatar">{{ mb_strtoupper(mb_substr($c->displayName() ?: 'W', 0, 1)) }}</div>
         <div class="flex-grow-1" style="min-width:0">
             <div class="d-flex justify-content-between gap-2">
-                <div class="fw-semibold text-truncate">{{ $c->name ?: '+' . $c->phone }}</div>
+                <div class="fw-semibold text-truncate">{{ $c->displayName() ?: '+' . $c->phone }}</div>
                 <div class="wa-time flex-shrink-0">{{ $listTime($c->last_message_at) }}</div>
             </div>
             <div class="small text-muted text-truncate">
-                <span class="text-success">Warga · WhatsApp</span>@if ($c->name) · +{{ $c->phone }}@endif
+                <span class="text-success">Warga · WhatsApp</span>@if ($c->displayName()) · +{{ $c->phone }}@endif
+                @if ($c->label)<span class="badge rounded-pill bg-light text-secondary border ms-1">{{ App\Models\WaConversation::LABELS[$c->label] ?? $c->label }}</span>@endif
                 @if ($c->status === 'new')<span class="badge rounded-pill wa-tag ms-1">Baru</span>@endif
             </div>
             <div class="d-flex justify-content-between align-items-center gap-2">

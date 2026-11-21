@@ -50,7 +50,7 @@
 @endpush
 
 @section('content')
-@php $initial = fn ($c) => mb_strtoupper(mb_substr($c->name ?: 'W', 0, 1)); @endphp
+@php $initial = fn ($c) => mb_strtoupper(mb_substr($c->displayName() ?: 'W', 0, 1)); @endphp
 <div class="wa-app">
     <div class="row g-0">
         {{-- Contacts; on phones hidden while a conversation is open. --}}
@@ -71,7 +71,7 @@
                 @if (! empty($filters['status']))<input type="hidden" name="status" value="{{ $filters['status'] }}">@endif
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-0 rounded-start-pill"><i class="fas fa-magnifying-glass text-muted"></i></span>
-                    <input type="search" name="q" value="{{ $filters['q'] ?? '' }}" maxlength="100" class="form-control bg-light border-0 rounded-end-pill" placeholder="Cari nama, nomor atau pesan" aria-label="Cari percakapan">
+                    <input type="search" name="q" value="{{ $filters['q'] ?? '' }}" maxlength="100" class="form-control bg-light border-0 rounded-end-pill" placeholder="Cari nama, nomor, catatan atau pesan" aria-label="Cari percakapan">
                 </div>
                 <div class="d-flex flex-wrap gap-1 mt-2">
                     @foreach ($chips as $key => $label)
@@ -102,11 +102,41 @@
                     <a href="{{ route('admin.wa-inbox.index', $filters) }}" class="btn btn-sm btn-link text-secondary d-lg-none px-1" aria-label="Kembali"><i class="fas fa-arrow-left"></i></a>
                     <div class="wa-avatar sm">{{ $initial($conversation) }}</div>
                     <div style="min-width:0">
-                        <div class="fw-semibold text-truncate">{{ $conversation->name ?: 'Warga' }}</div>
-                        <div class="small text-muted text-truncate">+{{ $conversation->phone }} · {{ App\Models\WaConversation::STATUSES[$conversation->status] ?? $conversation->status }}</div>
+                        <div class="fw-semibold text-truncate">{{ $conversation->displayName() ?: 'Warga' }}</div>
+                        <div class="small text-muted text-truncate">+{{ $conversation->phone }} · {{ App\Models\WaConversation::STATUSES[$conversation->status] ?? $conversation->status }}@if ($conversation->label) · {{ App\Models\WaConversation::LABELS[$conversation->label] ?? $conversation->label }}@endif</div>
                     </div>
-                    <a href="{{ wa_link($conversation->phone) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success rounded-circle ms-auto" title="Buka di WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle ms-auto" data-bs-toggle="collapse" data-bs-target="#waContact" aria-expanded="{{ $errors->hasAny(['contact_name', 'label', 'notes']) ? 'true' : 'false' }}" title="Info kontak" aria-label="Info kontak"><i class="fas fa-user-pen"></i></button>
+                    <a href="{{ wa_link($conversation->phone) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success rounded-circle" title="Buka di WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
+                {{-- Contact card (CRM): officer-set name, label, notes; WhatsApp profile name stays as a hint. --}}
+                <form id="waContact" action="{{ route('admin.wa-inbox.contact', [$conversation] + $filters) }}" method="POST"
+                      class="collapse border-bottom bg-light px-3 py-2 {{ $errors->hasAny(['contact_name', 'label', 'notes']) ? 'show' : '' }}" data-wa-contact>
+                    @csrf
+                    @method('PUT')
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label small mb-0" for="waContactName">Nama kontak</label>
+                            <input id="waContactName" name="contact_name" maxlength="100" class="form-control form-control-sm" value="{{ old('contact_name', $conversation->contact_name) }}" placeholder="{{ $conversation->name ? 'Nama WA: ' . $conversation->name : 'mis. Budi Santoso' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small mb-0" for="waContactLabel">Label</label>
+                            <select id="waContactLabel" name="label" class="form-select form-select-sm">
+                                <option value="">— Tanpa label —</option>
+                                @foreach (App\Models\WaConversation::LABELS as $key => $text)
+                                    <option value="{{ $key }}" @selected(old('label', $conversation->label) === $key)>{{ $text }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small mb-0" for="waContactNotes">Catatan petugas</label>
+                            <textarea id="waContactNotes" name="notes" rows="2" maxlength="2000" class="form-control form-control-sm" placeholder="mis. minta salinan Laporan Kinerja 2025, sudah dikirim via email">{{ old('notes', $conversation->notes) }}</textarea>
+                        </div>
+                        @foreach (['contact_name', 'label', 'notes'] as $field)
+                            @error($field)<div class="col-12 small text-danger">{{ $message }}</div>@enderror
+                        @endforeach
+                        <div class="col-12 text-end"><button type="submit" class="btn btn-sm btn-success rounded-pill"><i class="fas fa-save me-1"></i> Simpan</button></div>
+                    </div>
+                </form>
                 <div class="wa-thread flex-grow-1 px-3 px-md-5 py-3" data-wa-thread data-wa-poll="{{ route('admin.wa-inbox.messages', $conversation) }}" data-wa-after="{{ $messages->max('id') ?? 0 }}" data-wa-since="{{ now()->toDateTimeString() }}">
                     <div class="text-center mb-2"><span class="wa-day">Pertanyaan warga · diteruskan dari bot WhatsApp{{ $conversation->handoff_reason ? ' · ' . $conversation->handoff_reason : '' }}</span></div>
                     @php $lastDay = null; @endphp
