@@ -69,6 +69,10 @@
                         <div class="position-relative">
                             <img src="{{ $gallery->cover_image_url }}" class="card-img-top" alt="{{ $gallery->title }}" style="height: 200px; object-fit: cover;">
                             
+                            @if($gallery->youtube_id)
+                                <span class="badge bg-danger position-absolute bottom-0 start-0 m-2"><i class="fab fa-youtube me-1"></i> Video</span>
+                            @endif
+
                             <!-- Checkbox Overlay -->
                             <div class="position-absolute top-0 start-0 p-2">
                                 <div class="form-check">
@@ -88,7 +92,7 @@
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title text-truncate" title="{{ $gallery->title }}">{{ $gallery->title }}</h5>
                             <p class="card-text small text-muted mb-2">
-                                <i class="fas fa-images me-1"></i> {{ $gallery->items_count }} Foto
+                                @if($gallery->youtube_id)<i class="fas fa-video me-1"></i> Video YouTube{{ $gallery->items_count ? ' · ' . $gallery->items_count . ' foto' : '' }}@else<i class="fas fa-images me-1"></i> {{ $gallery->items_count }} Foto @endif
                             </p>
                             <p class="card-text text-muted small flex-grow-1">
                                 {{ Str::limit($gallery->description, 100) }}

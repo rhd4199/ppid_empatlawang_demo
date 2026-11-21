@@ -31,9 +31,11 @@
                     @enderror
                 </div>
 
+                @include('admin.gallery._type', ['gallery' => null])
+
                 <div class="mb-3">
                     <label for="cover_image" class="form-label">Gambar Sampul</label>
-                    <input type="file" class="form-control @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" accept="image/*" required onchange="previewCover(this)">
+                    <input type="file" class="form-control @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" accept="image/*" required data-required-for-photo="1" onchange="previewCover(this)">
                     @error('cover_image')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -47,7 +49,7 @@
                     <label class="form-check-label" for="is_published">Langsung Publikasikan?</label>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Simpan & Lanjut Upload Foto</button>
+                <button type="submit" class="btn btn-primary">Simpan Album</button>
             </form>
         </div>
     </div>

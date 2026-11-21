@@ -8,6 +8,7 @@ use App\Models\GalleryItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class GalleryController extends Controller
 {
@@ -27,22 +28,28 @@ class GalleryController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            // video album: cover optional, the YouTube thumbnail is shown instead
+            'cover_image' => 'required_unless:type,video|nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'is_published' => 'nullable|boolean',
+            ...self::VIDEO_RULES,
         ]);
+        $type = $this->videoType($request);
 
-        $coverPath = $request->file('cover_image')->store('galleries/covers', 'public');
+        $coverPath = $request->hasFile('cover_image') ? $request->file('cover_image')->store('galleries/covers', 'public') : null;
 
         $gallery = Gallery::create([
             'title' => $request->title,
             'description' => $request->description,
-            'type' => 'photo',
+            'type' => $type,
+            'url' => $type === 'video' ? trim($request->url) : null,
             'cover_image' => $coverPath,
             // same rule as Informasi Publik: published unless explicitly unticked
             'is_published' => $request->has('is_published') ? $request->is_published : true,
         ]);
 
-        return redirect()->route('admin.galleries.edit', $gallery->id)->with('success', 'Album berhasil dibuat. Silakan tambahkan foto.');
+        return redirect()->route('admin.galleries.edit', $gallery->id)->with('success', $type === 'video'
+            ? 'Album video berhasil dibuat.'
+            : 'Album berhasil dibuat. Silakan tambahkan foto.');
     }
 
     public function edit($id)
@@ -63,9 +70,13 @@ class GalleryController extends Controller
             'description' => 'nullable|string',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'is_published' => 'nullable|boolean',
+            ...self::VIDEO_RULES,
         ]);
+        $type = $this->videoType($request);
 
         $data = [
+            'type' => $type,
+            'url' => $type === 'video' ? trim($request->url) : null,
             'title' => $request->title,
             'description' => $request->description,
             'is_published' => $request->has('is_published') ? $request->is_published : $gallery->is_published,
@@ -82,6 +93,22 @@ class GalleryController extends Controller
         $gallery->update($data);
 
         return redirect()->back()->with('success', 'Album berhasil diperbarui.');
+    }
+
+    private const VIDEO_RULES = [
+        'type' => 'nullable|in:photo,video',
+        'url' => 'nullable|required_if:type,video|string|max:500',
+    ];
+
+    /** Chosen type (default photo); a video needs a real YouTube video link (same check as the API). */
+    private function videoType(Request $request): string
+    {
+        $type = $request->input('type') === 'video' ? 'video' : 'photo';
+        if ($type === 'video' && ! Gallery::youtubeId($request->url)) {
+            throw ValidationException::withMessages(['url' => 'Masukkan link video YouTube, mis. https://youtu.be/XXXXXXXXXXX atau https://www.youtube.com/watch?v=XXXXXXXXXXX.']);
+        }
+
+        return $type;
     }
 
     public function destroy($id)

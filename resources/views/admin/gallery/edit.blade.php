@@ -56,6 +56,8 @@
                             @enderror
                         </div>
 
+                        @include('admin.gallery._type')
+
                         <div class="mb-3">
                             <label for="cover_image" class="form-label">Ganti Sampul (Opsional)</label>
                             <input type="file" class="form-control @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" accept="image/*" onchange="previewCover(this)">
@@ -64,7 +66,10 @@
                             @enderror
                             <div class="mt-2">
                                 <label class="small text-muted">Sampul Saat Ini:</label><br>
-                                <img src="{{ storage_url($gallery->cover_image) }}" alt="Current Cover" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                                @if($gallery->cover_image_url)
+                                    <img src="{{ $gallery->cover_image_url }}" alt="Current Cover" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                                    @if(! $gallery->cover_image && $gallery->youtube_id)<div class="small text-muted">(thumbnail YouTube otomatis)</div>@endif
+                                @endif
                                 <img id="cover_preview" src="#" alt="Cover Preview" style="display: none; max-height: 150px; max-width: 100%;" class="mt-2 rounded">
                             </div>
                         </div>
