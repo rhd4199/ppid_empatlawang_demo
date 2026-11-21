@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\ContactSetting;
 use Illuminate\Support\Arr;
 
 /**
@@ -97,7 +96,8 @@ class AssistantFallback
             // civil registration is Disdukcapil's service, not PPID's; no requirement list here (it must not be made up)
             '\b(ktp|e-?ktp|ktp-?el|kk|kartu keluarga|akta|akte|kia|kartu identitas anak|domisili|pindah datang|adminduk|kependudukan|dukcapil|disdukcapil)\b' => 'Pembuatan KTP-el, KK, akta, dan dokumen kependudukan lainnya dilayani oleh Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Empat Lawang, jadi persyaratan resminya paling tepat ditanyakan langsung ke Disdukcapil. Bila Bapak/Ibu ingin informasi persyaratannya secara tertulis, bisa juga diajukan lewat Permohonan Informasi (' . route('request.create') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',
-            '\b(kontak|telepon|telpon|alamat|email|e-mail|surel|jam|buka|tutup|kantor|lokasi|whatsapp|wa|hubungi)\b' => fn () => self::contact($text),
+            // pattern unused: AssistantInfo matches its own questions (contact, hours, fees, duration, officials) and returns null otherwise
+            '^' => fn () => AssistantInfo::reply($text), // distinct key: two '' keys would overwrite each other
             // pattern unused here: documents() checks request intent and keywords itself and returns null to fall through
             '' => fn () => self::documents($text),
             '\b(daftar informasi|dip|berkala|serta.?merta|setiap saat|dikecualikan|dokumen)\b' => 'Daftar informasi publik, baik yang berkala, serta-merta, maupun setiap saat, bisa dilihat dan diunduh di menu Daftar Informasi Publik (' . route('informasi-publik.index') . ').',
@@ -133,36 +133,5 @@ class AssistantFallback
         return DocumentFinder::isSpecific($text)
             ? "{$list}\nBila data yang Bapak/Ibu maksud lebih rinci dari dokumen di atas: " . DocumentFinder::requestProcedure()
             : "{$list}\nBila yang dicari belum ada, Bapak/Ibu dapat mengajukan permohonan informasi (" . route('request.create') . ').';
-    }
-
-    /** Answers with the ContactSetting data that was asked for (all of it for a plain "kontak"); links to /kontak only when it is missing. */
-    private static function contact(string $text): string
-    {
-        $c = ContactSetting::first();
-        $fields = [
-            'hours' => ['/\b(jam|buka|tutup|hari)\b/u', implode('; ', (array) $c?->working_hours), 'Jam layanan PPID: %s.'],
-            'address' => ['/\b(alamat|lokasi|kantor|datang|dimana|di mana)\b/u', trim((string) $c?->address), 'Kantor PPID beralamat di %s.'],
-            'phones' => ['/\b(telepon|telpon|nomor|hp|whatsapp|wa|hubungi)\b/u', implode(' atau ', (array) $c?->phones), 'PPID dapat dihubungi di nomor %s.'],
-            'emails' => ['/\b(email|e-mail|surel)\b/u', implode(' atau ', (array) $c?->emails), 'Email PPID: %s.'],
-        ];
-        $asked = array_filter($fields, fn ($f) => preg_match($f[0], $text)) ?: $fields;
-
-        $sentences = [];
-        foreach ($asked as [, $value, $format]) {
-            if ($value !== '') {
-                $sentences[] = sprintf($format, $value);
-            }
-        }
-        if (! $sentences) {
-            return 'Data kontak lengkap (alamat, telepon, email, dan jam layanan) ada di halaman Kontak (' . route('contact.index') . ').';
-        }
-        if (array_keys($asked) === ['hours'] && $fields['address'][1] !== '') {
-            $sentences[] = 'Kalau ingin datang langsung, alamatnya di ' . $fields['address'][1] . '.';
-        }
-        if (count($sentences) < count($asked)) {
-            $sentences[] = 'Info kontak lainnya ada di halaman Kontak (' . route('contact.index') . ').';
-        }
-
-        return implode(' ', $sentences);
     }
 }
