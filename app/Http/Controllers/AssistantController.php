@@ -35,7 +35,7 @@ Aturan:
 TXT;
 
     // Order: OPENAI_API_KEY set → OpenAI Chat Completions; else assistant_api_url (forwarded as {"message"}, must answer
-    // {"reply"}); else a fixed reply. Only OpenAI gets the history. Cost bounded by max_tokens, history size + route throttle.
+    // {"reply"}); else a fixed reply. Only OpenAI gets the history (the fixed reply only reads the last bot message). Cost bounded by max_tokens, history size + route throttle.
     public function chat(Request $request)
     {
         // history = the last turns kept by the chat panel (browser only, never stored server-side) so follow-ups make sense.
@@ -69,7 +69,9 @@ TXT;
                 ->post($settings['api_url'], ['message' => $data['message']])->throw()->json('reply'), 'API');
         }
 
-        return response()->json(['reply' => AssistantFallback::reply($data['message'])]);
+        $lastReply = collect($data['history'] ?? [])->where('role', 'assistant')->last()['content'] ?? null;
+
+        return response()->json(['reply' => AssistantFallback::reply($data['message'], $lastReply)]);
     }
 
     /** Persona (admin override or default) plus official contact data, site links and matching documents, so the model never has to guess them. */

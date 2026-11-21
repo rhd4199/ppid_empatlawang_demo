@@ -294,7 +294,7 @@ class AssistantTest extends TestCase
         $this->assertStringStartsWith("Wa'alaikumsalam", $reply('Assalamualaikum, cara minta informasi?'));
         $this->assertStringContainsString(route('request.create'), $reply('Assalamualaikum, cara minta informasi?'));
         $this->assertMatchesRegularExpression('/^(Sama-sama|Terima kasih kembali)/', $reply('terima kasih'));
-        $this->assertStringContainsString('lapor.go.id', $reply('apakah saya bisa melapor'));
+        $this->assertStringContainsString('lapor.go.id', $reply('apakah saya bisa melapor pungli'));
         $this->assertStringNotContainsString('lapor.go.id', $reply('saya minta laporan keuangan'));
         $this->assertStringContainsString('?', $reply('xyz'));
     }
@@ -315,6 +315,33 @@ class AssistantTest extends TestCase
             $this->assertStringContainsString(route('request.create'), $generic);
         }
         $this->assertStringNotContainsString('Data atau dokumen apa', $reply('mintak data apbd 2024'));
+    }
+
+    public function test_fallback_asks_which_complaint_then_guides_to_lapor(): void
+    {
+        $docs = $this->seedDocuments();
+        $chat = fn ($m, $history = []) => $this->postJson('/sapa-madani/chat', ['message' => $m, 'history' => $history])->assertOk()->json('reply');
+
+        foreach (['saya ingin melapor pak', 'mau mengadu', 'pengaduan'] as $message) {
+            $ask = $chat($message);
+            $this->assertStringContainsString('laporannya tentang apa?', $ask, $message);
+            $this->assertStringContainsString('pungutan liar', $ask);
+            $this->assertStringContainsString('Siapkan juga', $ask);
+            $this->assertStringNotContainsString('Permohonan Informasi', $ask);
+        }
+
+        $guide = $chat('saya ingin melapor penyalahgunaan wewenang');
+        $this->assertStringContainsString('lapor.go.id', $guide);
+        $this->assertStringNotContainsString('Permohonan Informasi', $guide);
+        $this->assertStringNotContainsString(route('request.create'), $guide);
+
+        // the answer to the ask-back is read as the complaint subject
+        $history = [['role' => 'user', 'content' => 'saya ingin melapor'], ['role' => 'assistant', 'content' => $chat('saya ingin melapor')]];
+        $this->assertStringContainsString('lapor.go.id', $chat('jalan rusak', $history));
+        $this->assertStringContainsString('lapor.go.id', $chat('1', $history));
+
+        // "laporan" is a document, not a complaint
+        $this->assertStringContainsString(route('informasi-publik.show', $docs['lk']->id), $chat('laporan pak'));
     }
 
     public function test_fallback_invites_the_question_when_user_only_wants_to_ask(): void

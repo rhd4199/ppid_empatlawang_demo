@@ -12,11 +12,21 @@ use Illuminate\Support\Arr;
  */
 class AssistantFallback
 {
-    public static function reply(string $message): string
+    private const REPORT_ASK = 'Boleh saya tahu laporannya tentang apa?';
+
+    /** $lastReply = previous bot message (from the panel history), only used to read an answer to the complaint ask-back. */
+    public static function reply(string $message, ?string $lastReply = null): string
     {
         $text = mb_strtolower(trim($message));
-        $topic = self::topic($text);
         $greeting = self::greeting($text);
+        if ($lastReply && str_contains($lastReply, self::REPORT_ASK) && ! $greeting) {
+            // "jalan rusak" or a list number answers "laporannya tentang apa?"
+            $text = 'lapor ' . ([1 => 'fasilitas rusak', 2 => 'pelayanan publik', 3 => 'pungli', 4 => 'lainnya'][(int) $text] ?? $text);
+        }
+        if ($report = self::report($text)) {
+            return ($greeting ? "{$greeting} " : '') . $report;
+        }
+        $topic = self::topic($text);
 
         if ($topic) {
             $opener = $greeting ?? Arr::random(['Baik, Bapak/Ibu.', 'Tentu, Bapak/Ibu.', 'Bisa, Bapak/Ibu.', 'Siap, Bapak/Ibu.']);
@@ -88,7 +98,6 @@ class AssistantFallback
             '\b(keberatan|sengketa|banding)\b' => 'Bila permohonan informasi ditolak, tidak ditanggapi, atau jawabannya belum sesuai, Bapak/Ibu dapat mengajukan keberatan lewat menu Pengajuan Keberatan (' . route('complaint.create') . '). Cukup isi identitas, nomor registrasi permohonan, dan alasannya, paling lambat 30 hari kerja. Atasan PPID akan menanggapi paling lambat 30 hari kerja.',
             // civil registration is Disdukcapil's service, not PPID's; no requirement list here (it must not be made up)
             '\b(ktp|e-?ktp|ktp-?el|kk|kartu keluarga|akta|akte|kia|kartu identitas anak|domisili|pindah datang|adminduk|kependudukan|dukcapil|disdukcapil)\b' => 'Pembuatan KTP-el, KK, akta, dan dokumen kependudukan lainnya dilayani oleh Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Empat Lawang, jadi persyaratan resminya paling tepat ditanyakan langsung ke Disdukcapil. Bila Bapak/Ibu ingin informasi persyaratannya secara tertulis, bisa juga diajukan lewat Permohonan Informasi (' . route('request.create') . ').',
-            '\b(lapor|melapor|mengadu|pengaduan|aduan|adukan)\b' => 'PPID melayani permintaan informasi publik. Bila Bapak/Ibu ingin meminta data atau dokumen, silakan lewat menu Permohonan Informasi (' . route('request.create') . '). Untuk pengaduan pelayanan publik, Bapak/Ibu bisa memakai SP4N-LAPOR! di lapor.go.id atau menghubungi kami lewat halaman Kontak (' . route('contact.index') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',
             '\b(kontak|telepon|telpon|alamat|email|e-mail|surel|jam|buka|tutup|kantor|lokasi|whatsapp|wa|hubungi)\b' => fn () => self::contact($text),
             // pattern unused here: documents() checks request intent and keywords itself and returns null to fall through
@@ -103,6 +112,32 @@ class AssistantFallback
         }
 
         return null;
+    }
+
+    /**
+     * Citizen complaints ("mau melapor", "pengaduan pungli"); "laporan keuangan" is a document and is not matched here.
+     * Bare intent → ask which kind; with a subject → how to report it via SP4N-LAPOR!. Never points to Permohonan Informasi.
+     */
+    private static function report(string $text): ?string
+    {
+        $verbs = ['lapor', 'melapor', 'melaporkan', 'laporkan', 'mengadu', 'mengadukan', 'adukan', 'aduan', 'pengaduan', 'komplain'];
+        if (! preg_match('/\b(' . implode('|', $verbs) . ')\b/u', $text)) {
+            return null;
+        }
+        $prepare = 'Siapkan juga: apa yang terjadi, lokasi dan waktunya, pihak yang terlibat (bila ada), serta foto atau dokumen pendukung.';
+        $subject = array_diff(DocumentFinder::keywords($text), $verbs, ['pak', 'bu', 'nih', 'bagaimana', 'caranya', 'gimana', 'kah', 'mana', 'kemana', 'ke']);
+        if (! $subject) {
+            return 'Bisa, Bapak/Ibu. ' . self::REPORT_ASK . "\n"
+                . "1. Jalan, jembatan, atau fasilitas umum rusak\n"
+                . "2. Pelayanan publik (lambat, dipersulit, tidak ramah)\n"
+                . "3. Penyalahgunaan wewenang atau pungutan liar (pungli)\n"
+                . "4. Lainnya\n"
+                . $prepare;
+        }
+
+        return 'Bisa, Bapak/Ibu. Laporan seperti ini disampaikan lewat SP4N-LAPOR!, kanal pengaduan resmi pemerintah: https://www.lapor.go.id atau aplikasi LAPOR! di ponsel. '
+            . 'Tuliskan kronologinya, lalu simpan nomor tiket untuk memantau tindak lanjutnya. Identitas pelapor dapat dirahasiakan atau laporan dikirim secara anonim. '
+            . $prepare . ' Bila perlu bantuan, Bapak/Ibu juga bisa menghubungi kami lewat halaman Kontak (' . route('contact.index') . ').';
     }
 
     /** Matching documents as a numbered list, or "not listed yet" + permohonan link; null when the message is not a document request. */
