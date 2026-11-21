@@ -49,13 +49,26 @@
     .bnpb-more { color: #0369a1; font-weight: 600; white-space: nowrap; }
     .bnpb-text summary::-webkit-details-marker { display: none; }
     .bnpb-text details[open] summary { display: none; }
+    .bnpb-summary { padding: 14px; border-radius: 16px; background: #fef2f2; }
+    .bnpb-sum-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .bnpb-sum { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(15,23,42,.06); }
+    .bnpb-sum i { width: 38px; height: 38px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #b91c1c; font-size: 1rem; }
+    .bnpb-sum b { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1.05; color: #0f172a; }
+    .bnpb-sum small { display: block; font-size: .74rem; color: #64748b; line-height: 1.2; }
+    .bnpb-sum.is-severe i { background: #b91c1c; color: #fff; }
+    .bnpb-sum.is-severe b { color: #b91c1c; }
+    .bnpb-sum-types { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .bnpb-type { --c: #475569; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--c); color: var(--c); font-size: .8rem; font-weight: 600; }
+    .bnpb-type b { font-weight: 800; }
+    .bnpb-meta { font-size: .8rem; color: #64748b; }
     .bnpb-empty { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 14px; background: #f0fdf4; color: #166534; }
     @media (max-width: 767.98px) {
         .bnpb-head, .bnpb-body { padding-left: 16px; padding-right: 16px; }
         .bnpb-foot { padding-left: 16px; padding-right: 16px; }
         .bnpb-item { flex-direction: column; gap: 10px; padding: 12px; }
         .bnpb-icon { width: 40px; height: 40px; font-size: 1.05rem; }
-        .bnpb-stats { grid-template-columns: 1fr 1fr; }
+        .bnpb-stats, .bnpb-sum-tiles { grid-template-columns: 1fr 1fr; }
+        .bnpb-sum b { font-size: 1.25rem; }
     }
 </style>
 
@@ -144,7 +157,42 @@
             list.append(box);
             return;
         }
+        list.append(summary(data.events, data.days));
         data.events.slice(0, 6).forEach(e => list.append(event(e, e.region === data.regions[0])));
+        if (n > 6) list.append(el('p', 'bnpb-meta mb-0', 'Menampilkan 6 kejadian terbaru dari ' + n + ' kejadian.'));
+    }
+
+    // 30-day totals over ALL events (the list below shows only the newest 6)
+    function summary(events, days) {
+        const sum = keys => events.reduce((t, e) => t + keys.reduce((s, k) => s + (e.impact[k] || 0), 0), 0);
+        const tiles = [
+            ['fa-triangle-exclamation', events.length, 'kejadian dalam ' + days + ' hari'],
+            ['fa-users', sum(['terdampak', 'mengungsi']), 'warga terdampak/mengungsi'],
+            ['fa-house-chimney-crack', sum(['rumah rusak', 'rumah terendam']), 'rumah rusak/terendam'],
+        ];
+        const victims = sum(['meninggal', 'hilang']);
+        if (victims) tiles.push(['fa-heart-crack', victims, 'meninggal/hilang', true]);
+
+        const box = el('div', 'bnpb-summary');
+        const row = el('div', 'bnpb-sum-tiles');
+        tiles.forEach(([icon, value, label, severe]) => {
+            const tile = el('div', 'bnpb-sum' + (severe ? ' is-severe' : ''));
+            const t = el('div'); t.append(el('b', '', value.toLocaleString('id-ID')), el('small', '', label));
+            tile.append(ico(icon), t);
+            row.append(tile);
+        });
+        const types = el('div', 'bnpb-sum-types');
+        const count = {};
+        events.forEach(e => { count[e.type] = (count[e.type] || 0) + 1; });
+        Object.entries(count).sort((a, b) => b[1] - a[1]).forEach(([type, c]) => {
+            const [, icon, colour] = kind(type);
+            const chip = el('span', 'bnpb-type');
+            chip.style.setProperty('--c', colour);
+            chip.append(ico(icon), type + ' ', el('b', '', String(c)));
+            types.append(chip);
+        });
+        box.append(row, types);
+        return box;
     }
 
     fetch(@json(route('disaster.show')), { headers: { 'Accept': 'application/json' } })
