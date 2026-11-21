@@ -171,6 +171,78 @@ class ApiTest extends TestCase
         $this->assertSame(1, \App\Models\Gallery::count());
     }
 
+    public function test_gallery_with_cover_and_photos_from_urls_in_one_call(): void
+    {
+        Http::fake([
+            '93.184.215.14/cover.png' => Http::response($this->png()),
+            '93.184.215.14/p1.png' => Http::response($this->png()),
+            '93.184.215.14/p2.webp' => Http::response($this->webp()),
+            '93.184.215.14/p3.png' => Http::response($this->png()),
+        ]);
+        $src = 'https://empatlawangkab.go.id/galeri/upacara';
+
+        $album = $this->postJson('/api/v1/galleries', [
+            'title' => 'Upacara HUT RI', 'source_url' => $src,
+            'cover_image_url' => 'https://93.184.215.14/cover.png',
+            'photos' => [
+                ['url' => 'https://93.184.215.14/p1.png', 'caption' => 'Pembukaan'],
+                ['url' => 'https://93.184.215.14/p2.webp'],
+            ],
+        ], $this->auth)->assertCreated()
+            ->assertJsonCount(2, 'items')
+            ->assertJsonPath('items.0.caption', 'Pembukaan')
+            ->assertJsonPath('items.1.order', 2)
+            ->json();
+
+        Storage::disk('public')->assertExists([$album['cover_image'], $album['items'][0]['image_path'], $album['items'][1]['image_path']]);
+        $this->assertStringStartsWith('galleries/covers/', $album['cover_image']);
+        $this->assertStringEndsWith('.webp', $album['items'][1]['image_path']);
+
+        $this->get('/galeri')->assertOk()->assertSee('Upacara HUT RI')->assertSee(storage_url($album['cover_image']), false);
+        $this->get('/galeri/' . $album['slug'])->assertOk()
+            ->assertSee(storage_url($album['items'][0]['image_path']), false)
+            ->assertSee(storage_url($album['items'][1]['image_path']), false);
+
+        // cron re-sends the album with one extra photo → same album, only the new photo is downloaded
+        $this->postJson('/api/v1/galleries', [
+            'title' => 'Upacara HUT RI', 'source_url' => $src,
+            'photos' => [['url' => 'https://93.184.215.14/p1.png'], ['url' => 'https://93.184.215.14/p3.png', 'caption' => 'Penutupan']],
+        ], $this->auth)->assertOk()->assertJsonPath('id', $album['id'])->assertJsonCount(3, 'items');
+        Http::assertSentCount(4);
+
+        // JSON photos on the photos endpoint too
+        Http::fake(['93.184.215.14/p4.png' => Http::response($this->png())]);
+        $this->postJson("/api/v1/galleries/{$album['id']}/photos", ['photos' => [['url' => 'https://93.184.215.14/p4.png']]], $this->auth)
+            ->assertCreated()->assertJsonPath('0.order', 4);
+    }
+
+    public function test_gallery_download_failure_rolls_back_album_and_files(): void
+    {
+        Http::fake([
+            '93.184.215.14/cover.png' => Http::response($this->png()),
+            '93.184.215.14/p1.png' => Http::response($this->png()),
+            '93.184.215.14/broken.png' => Http::response('nope', 404),
+        ]);
+
+        $this->postJson('/api/v1/galleries', [
+            'title' => 'Gagal',
+            'cover_image_url' => 'https://93.184.215.14/cover.png',
+            'photos' => [['url' => 'https://93.184.215.14/p1.png'], ['url' => 'https://93.184.215.14/broken.png']],
+        ], $this->auth)->assertUnprocessable()->assertJsonValidationErrors('photos.1.url');
+
+        $this->assertSame(0, \App\Models\Gallery::count());
+        $this->assertSame(0, \App\Models\GalleryItem::count());
+        $this->assertSame([], Storage::disk('public')->allFiles()); // cover + p1 deleted again
+
+        // SSRF and missing cover are rejected before anything is fetched
+        Http::fake();
+        $this->postJson('/api/v1/galleries', ['title' => 'X', 'cover_image_url' => 'http://127.0.0.1/a.png'], $this->auth)
+            ->assertUnprocessable()->assertJsonValidationErrors('cover_image_url');
+        $this->postJson('/api/v1/galleries', ['title' => 'X'], $this->auth)
+            ->assertUnprocessable()->assertJsonValidationErrors(['cover_image', 'cover_image_url']);
+        Http::assertNothingSent();
+    }
+
     public function test_web_route_names_untouched(): void
     {
         $this->assertSame(url('/berita'), route('news.index'));

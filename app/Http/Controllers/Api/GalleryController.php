@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
+use App\Support\RemoteImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -39,15 +40,33 @@ class GalleryController extends Controller
             'source_url' => 'nullable|string|max:500|unique:galleries,source_url',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'cover_image' => 'required_without:cover_image_url|nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'cover_image_url' => 'required_without:cover_image|nullable|url:http,https|max:2048',
             'is_published' => 'nullable|boolean',
+            ...self::PHOTO_URL_RULES,
         ]);
 
-        $data['type'] = 'photo';
-        $data['cover_image'] = $request->file('cover_image')->store('galleries/covers', 'public');
-        $data['is_published'] = $request->boolean('is_published', true);
+        // Files first (no DB yet): a failed download deletes what was already stored, nothing half-created stays behind.
+        $gallery = $this->withStoredFiles(function (array &$stored) use ($request, $data) {
+            $stored[] = $cover = $this->storeCover($request);
+            $photos = $this->downloadPhotos($data['photos'] ?? [], $stored);
 
-        return response()->json(Gallery::create($data), 201);
+            return DB::transaction(function () use ($data, $cover, $photos) {
+                $gallery = Gallery::create([
+                    'title' => $data['title'],
+                    'description' => $data['description'] ?? null,
+                    'source_url' => $data['source_url'] ?? null,
+                    'type' => 'photo',
+                    'cover_image' => $cover,
+                    'is_published' => (bool) ($data['is_published'] ?? true),
+                ]);
+                $this->addItems($gallery, $photos);
+
+                return $gallery;
+            });
+        });
+
+        return response()->json($gallery->load(['items' => fn ($q) => $q->orderBy('order')]), 201);
     }
 
     public function update(Request $request, Gallery $gallery)
@@ -57,20 +76,31 @@ class GalleryController extends Controller
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'cover_image_url' => 'nullable|url:http,https|max:2048',
             'is_published' => 'nullable|boolean',
+            ...self::PHOTO_URL_RULES,
         ]);
+        $photos = $this->newPhotos($gallery, $data['photos'] ?? []);
+        $fields = collect($data)->except(['cover_image', 'cover_image_url', 'photos'])->all();
+        $oldCover = $gallery->cover_image;
 
-        unset($data['cover_image']);
-        if ($request->hasFile('cover_image')) {
-            if ($gallery->cover_image) {
-                Storage::disk('public')->delete($gallery->cover_image);
+        $replaced = $this->withStoredFiles(function (array &$stored) use ($request, $gallery, $photos, $fields) {
+            if ($cover = $this->storeCover($request)) {
+                $stored[] = $fields['cover_image'] = $cover;
             }
-            $data['cover_image'] = $request->file('cover_image')->store('galleries/covers', 'public');
+            $downloaded = $this->downloadPhotos($photos, $stored);
+            DB::transaction(function () use ($gallery, $fields, $downloaded) {
+                $gallery->update($fields);
+                $this->addItems($gallery, $downloaded);
+            });
+
+            return isset($fields['cover_image']);
+        });
+        if ($replaced && $oldCover) {
+            Storage::disk('public')->delete($oldCover);
         }
 
-        $gallery->update($data);
-
-        return $gallery;
+        return $gallery->load(['items' => fn ($q) => $q->orderBy('order')]);
     }
 
     public function destroy(Gallery $gallery)
@@ -108,6 +138,18 @@ class GalleryController extends Controller
 
     public function uploadPhotos(Request $request, Gallery $gallery)
     {
+        // JSON { "photos": [{ "url": ..., "caption": ... }] } → download; multipart photos[] files → as before
+        if (! $request->hasFile('photos')) {
+            $data = $request->validate(['photos' => 'required|array'] + self::PHOTO_URL_RULES);
+            $items = $this->withStoredFiles(function (array &$stored) use ($gallery, $data) {
+                $downloaded = $this->downloadPhotos($this->newPhotos($gallery, $data['photos']), $stored);
+
+                return DB::transaction(fn () => $this->addItems($gallery, $downloaded));
+            });
+
+            return response()->json($items, 201);
+        }
+
         $request->validate([
             'photos' => 'required|array',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240',
@@ -148,6 +190,67 @@ class GalleryController extends Controller
         $item->delete();
 
         return response()->noContent();
+    }
+
+    private const PHOTO_URL_RULES = [
+        'photos' => 'nullable|array|max:50',
+        'photos.*.url' => 'required|url:http,https|max:2048',
+        'photos.*.caption' => 'nullable|string|max:255',
+    ];
+
+    /** Runs $work(&$stored); on any exception the files listed in $stored are deleted before rethrowing. */
+    private function withStoredFiles(callable $work)
+    {
+        $stored = [];
+        try {
+            return $work($stored);
+        } catch (\Throwable $e) {
+            Storage::disk('public')->delete(array_filter($stored));
+            throw $e;
+        }
+    }
+
+    /** Uploaded file wins over cover_image_url; null when neither is sent. */
+    private function storeCover(Request $request): ?string
+    {
+        if ($request->hasFile('cover_image')) {
+            return $request->file('cover_image')->store('galleries/covers', 'public');
+        }
+
+        return $request->filled('cover_image_url')
+            ? RemoteImage::store($request->input('cover_image_url'), 'galleries/covers', 'cover_image_url')
+            : null;
+    }
+
+    /** Photos whose URL the album does not have yet (a re-sent album must not double its photos). */
+    private function newPhotos(Gallery $gallery, array $photos): array
+    {
+        $known = $gallery->items()->whereNotNull('source_url')->pluck('source_url')->all();
+
+        return collect($photos)->unique('url')->reject(fn ($p) => in_array($p['url'], $known, true))->values()->all();
+    }
+
+    /** @return array<int, array{image_path: string, caption: ?string, source_url: string}> */
+    private function downloadPhotos(array $photos, array &$stored): array
+    {
+        $out = [];
+        foreach (array_values($photos) as $i => $photo) {
+            $stored[] = $path = RemoteImage::store($photo['url'], 'galleries/items', "photos.$i.url");
+            $out[] = ['image_path' => $path, 'caption' => $photo['caption'] ?? null, 'source_url' => $photo['url']];
+        }
+
+        return $out;
+    }
+
+    private function addItems(Gallery $gallery, array $photos): array
+    {
+        $order = $gallery->items()->max('order') ?? 0;
+        $items = [];
+        foreach ($photos as $photo) {
+            $items[] = $gallery->items()->create($photo + ['order' => ++$order]);
+        }
+
+        return $items;
     }
 
     private function purge(Gallery $gallery): void

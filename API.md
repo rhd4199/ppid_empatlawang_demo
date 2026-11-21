@@ -321,20 +321,32 @@ Query: `is_published`, `page`, `per_page`. Each item includes `items_count`.
 
 ### `GET /galleries/{id}` — show with photos
 
-### `POST /galleries` — create album (multipart)
+### `POST /galleries` — create album (multipart with files, or JSON with URLs)
 
 | Field | Rules |
 |---|---|
 | `title` | **required**, string ≤255 |
-| `cover_image` | **required** image: jpeg, png, jpg, gif, webp — max 10 MB |
+| `cover_image` | image file: jpeg, png, jpg, gif, webp — max 10 MB. **Required unless** `cover_image_url` is sent |
+| `cover_image_url` | public `http(s)` URL of a jpg/png/webp (max 5 MB); downloaded by the server. Required unless `cover_image` is sent; the file wins if both are sent |
+| `photos` | optional array (max 50) of `{ "url": "https://…", "caption": "…" }`: photos downloaded (jpg/png/webp, max 5 MB each) and added in this order |
 | `description` | optional string |
-| `source_url` | optional string ≤500, unique: origin URL/ID. `POST` with an existing `source_url` updates that album (`200`, all fields optional, `cover_image` may be omitted and the old cover is kept). Photos added via `/galleries/{id}/photos` are **not** de-duplicated. |
+| `source_url` | optional string ≤500, unique: origin URL/ID. `POST` with an existing `source_url` updates that album (`200`, all fields optional, `cover_image` may be omitted and the old cover is kept). Photo URLs the album already has are skipped, so a re-sent album only gains its new photos. |
 | `is_published` | optional boolean, default `true` |
 
 `slug` is generated once from the title and never changes (shared links stay valid).
 
+Downloads use the same checks as news `image_url` (http/https only, no local/private/reserved IPs, type read from the bytes). All downloads happen before the album is saved: if any URL fails the response is `422` on that field (e.g. `photos.1.url`), **no album is created** and the files already downloaded are deleted.
+
+→ `201` gallery object with `items`.
+
+```bash
+curl -X POST https://.../api/v1/galleries \n  -H "Authorization: Bearer $API_TOKEN" -H "Accept: application/json" -H "Content-Type: application/json" \n  -d '{"title":"Upacara HUT RI","source_url":"https://contoh.go.id/galeri/upacara",
+       "cover_image_url":"https://contoh.go.id/cover.jpg",
+       "photos":[{"url":"https://contoh.go.id/1.jpg","caption":"Pembukaan"},{"url":"https://contoh.go.id/2.jpg"}]}'
+```
+
 ### `PUT|PATCH /galleries/{id}` — update
-`title`, `description`, `cover_image`, `is_published` — all optional.
+`title`, `description`, `cover_image` or `cover_image_url` (replaces and deletes the old cover), `photos` (URL list, appended; URLs already in the album skipped), `is_published` — all optional. Returns the gallery with `items`.
 
 ### `DELETE /galleries/{id}` → `204` (cover + all photos deleted)
 
@@ -342,12 +354,14 @@ Query: `is_published`, `page`, `per_page`. Each item includes `items_count`.
 
 ### `POST /galleries/bulk` — see [Bulk actions](#bulk-actions)
 
-### `POST /galleries/{id}/photos` — add photos (multipart)
+### `POST /galleries/{id}/photos` — add photos (multipart files, or JSON URLs)
 
 | Field | Rules |
 |---|---|
 | `photos[]` | **required**, one or more images: jpeg, png, jpg, gif, webp — max 10 MB each |
 | `captions[]` | optional, caption per photo (same index as `photos[]`) |
+
+Or JSON `{ "photos": [{ "url": "https://…", "caption": "…" }] }` — downloaded like above (URLs already in the album skipped; one failed URL → `422`, nothing added).
 
 New photos are appended after the current last `order`.
 
