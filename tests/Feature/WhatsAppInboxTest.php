@@ -63,4 +63,35 @@ class WhatsAppInboxTest extends TestCase
         $this->get(route('admin.wa-inbox.show', $c))->assertOk();
         $this->assertSame('done', $c->fresh()->status);
     }
+
+    public function test_whatsapp_style_ticks_day_separators_and_unread_count(): void
+    {
+        $this->travelTo(now('Asia/Jakarta')->setTime(10, 0)->utc());
+        $c = WaConversation::create(['phone' => '6281200000001', 'name' => 'Budi', 'status' => 'read', 'last_message_at' => now()]);
+        $add = fn ($dir, $body, $status, $at) => $c->messages()->create(['direction' => $dir, 'body' => $body, 'status' => $status, 'sent_at' => $at]);
+        $add('in', 'Pesan lama', 'received', now()->subDays(3));
+        $add('out', 'Dibaca', 'read', now()->subDays(3)->addMinute());
+        $add('in', 'Kemarin warga', 'received', now()->subDay());
+        $add('out', 'Diterima', 'delivered', now()->subDay()->addMinute());
+        $add('out', 'Terkirim', 'sent', now()->subMinutes(30));
+        $add('out', 'Gagal', 'failed', now()->subMinutes(20));
+        $add('in', 'Satu', 'received', now()->subMinutes(10));
+        $add('in', 'Dua', 'received', now()->subMinutes(5));
+        $this->actingAs(User::factory()->create());
+
+        $html = $this->get(route('admin.wa-inbox.show', $c))->assertOk()
+            ->assertSee('Hari ini')->assertSee('Kemarin')
+            ->assertSee(now()->subDays(3)->timezone('Asia/Jakarta')->locale('id')->translatedFormat('j F Y'))
+            ->getContent();
+        $this->assertSame(3, substr_count($html, 'data-wa-day'));
+        foreach (['wa-tick-read', 'wa-tick-delivered', 'wa-tick-sent', 'wa-tick-failed'] as $tick) {
+            $this->assertStringContainsString($tick, $html);
+        }
+        $this->assertSame(8, substr_count($html, 'class="wa-bubble'));
+
+        // New conversation: badge counts citizen messages after the last successful reply (failed one ignored).
+        $c->update(['status' => 'new']);
+        $list = $this->get(route('admin.wa-inbox.index'))->assertOk()->getContent();
+        $this->assertMatchesRegularExpression('/class="wa-count[^"]*"[^>]*>2</', $list);
+    }
 }

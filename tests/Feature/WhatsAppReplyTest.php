@@ -90,7 +90,7 @@ class WhatsAppReplyTest extends TestCase
         $out = $c->messages()->where('direction', 'out')->sole();
         $this->assertSame(['failed', 'Provider menolak: device disconnected'], [$out->status, $out->error]);
 
-        $this->get(route('admin.wa-inbox.show', $c))->assertOk()->assertSee('gagal terkirim')->assertSee('device disconnected')->assertSee('Balasan saya');
+        $this->get(route('admin.wa-inbox.show', $c))->assertOk()->assertSee('Gagal terkirim')->assertSee('device disconnected')->assertSee('Balasan saya');
     }
 
     public function test_redraft_and_new_message_reset_draft(): void
