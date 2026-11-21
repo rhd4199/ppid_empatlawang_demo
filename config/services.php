@@ -18,6 +18,12 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
+    // Main admin seeded by UserSeeder (env works with config:cache only through config)
+    'admin' => [
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
+
     // Static bearer token for /api/* (see API.md)
     'api' => [
         'token' => env('API_TOKEN'),
