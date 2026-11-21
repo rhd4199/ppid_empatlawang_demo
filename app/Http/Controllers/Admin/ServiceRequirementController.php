@@ -21,15 +21,9 @@ class ServiceRequirementController extends Controller
             $sortDirection = 'desc';
         }
 
-        $query = ServiceRequirement::query();
+        $query = ServiceRequirement::search($request->query('q'));
         if ($category = $request->query('category')) {
             $query->where('category', $category);
-        }
-        if ($q = trim((string) $request->query('q'))) {
-            $like = '%' . mb_strtolower($q) . '%';
-            $query->where(fn ($w) => $w->whereRaw('LOWER(title) LIKE ?', [$like])
-                ->orWhereRaw('LOWER(agency) LIKE ?', [$like])
-                ->orWhereRaw('LOWER(keywords) LIKE ?', [$like]));
         }
 
         $items = $query->orderBy($sortField, $sortDirection)->paginate(25)->withQueryString();

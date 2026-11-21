@@ -50,6 +50,22 @@ class ServiceRequirement extends Model
         });
     }
 
+    /** Every word must appear in the title, keywords/synonyms or agency ("ktp hilang" finds "KTP-el Hilang"). */
+    public function scopeSearch($query, ?string $text)
+    {
+        // LIKE wildcards are dropped (no portable ESCAPE between sqlite and Postgres)
+        $clean = str_replace(['%', '_', '\\'], ' ', mb_strtolower((string) $text));
+        $words = array_slice(preg_split('/\s+/', $clean, -1, PREG_SPLIT_NO_EMPTY), 0, 8);
+        foreach ($words as $word) {
+            $like = '%' . $word . '%';
+            $query->where(fn ($w) => $w->whereRaw('LOWER(title) LIKE ?', [$like])
+                ->orWhereRaw('LOWER(keywords) LIKE ?', [$like])
+                ->orWhereRaw('LOWER(agency) LIKE ?', [$like]));
+        }
+
+        return $query;
+    }
+
     public function getCategoryLabelAttribute(): string
     {
         return self::CATEGORIES[$this->category] ?? $this->category;

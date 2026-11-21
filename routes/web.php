@@ -28,6 +28,8 @@ Route::resource('informasi-publik', InfoPublicController::class)->only(['index',
     ->where(['informasi_publik' => '[0-9]+']);
 Route::get('/informasi-publik/{id}/unduh', [InfoPublicController::class, 'download'])->whereNumber('id')->name('informasi-publik.download');
 Route::resource('standar-layanan', StandardServiceController::class)->only(['index'])->names('standard-service');
+Route::get('/persyaratan', [App\Http\Controllers\ServiceRequirementController::class, 'index'])->name('service-requirements.index');
+Route::get('/persyaratan/{slug}', [App\Http\Controllers\ServiceRequirementController::class, 'show'])->name('service-requirements.show');
 Route::resource('laporan', ReportController::class)->only(['index'])->names('reports');
 Route::resource('berita', NewsController::class)
     ->only(['index', 'show'])

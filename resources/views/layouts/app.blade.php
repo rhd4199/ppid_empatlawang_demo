@@ -483,8 +483,10 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('standard-service.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Standar Layanan</a>
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('standard-service.*', 'service-requirements.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Standar Layanan</a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item fw-semibold" href="{{ route('service-requirements.index') }}"><i class="fas fa-clipboard-list me-1 text-primary"></i> Persyaratan Layanan (KTP, SIM, Tanah, Izin)</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#alur">Alur Layanan Informasi Publik</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#tata-cara">Tata Cara Permohonan Informasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('standard-service.index') }}#permohonan">Form Permohonan Informasi Publik</a></li>
