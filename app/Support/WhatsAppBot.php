@@ -44,6 +44,7 @@ class WhatsAppBot
     /** Called after a citizen message is stored; replies or marks the conversation for an officer. */
     public static function handle(WaConversation $conversation): void
     {
+        $conversation->refresh(); // a stale model (status "done" in memory) would skip saving "done" again
         $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
         $last = $messages->last();
         if (! $last || $last->direction !== 'in') {
@@ -57,14 +58,18 @@ class WhatsAppBot
         }
         // Owner's choice: the AI answers every message. Topics an officer must still follow up (aduan, keberatan,
         // dokumen, unclear) keep their reason and stay "new" after the AI reply.
-        $reason = self::handoffReason($last->body);
+        // Our last message asked something ("maksudnya layanan X?", "mau tahu langkahnya?"): "ya" / a number answers it.
+        $lastOut = (string) $messages->where('direction', 'out')->last()?->body;
+        $confirming = str_contains($lastOut, RequirementFinder::CONFIRM) || str_contains($lastOut, RequirementFinder::STEPS_ASK);
+        $reason = $confirming ? null : self::handoffReason($last->body);
 
         $history = $messages->slice(0, -1)->take(-10)
             ->filter(fn ($m) => $m->direction === 'in' || $m->status !== 'failed')
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
         // Menu number ("2"): the AI gets the menu topic as the question.
-        $choice = self::menuChoice(mb_strtolower(trim($last->body)));
+        // Answering our "maksudnya layanan X?" (ya / a number) is not a menu choice.
+        $choice = $confirming ? null : self::menuChoice(mb_strtolower(trim($last->body)));
         $question = $choice !== null ? self::MENU[$choice] : mb_substr($last->body, 0, 1000);
         $reply = app(AssistantController::class)->answer($question, $history, 'wa');
         $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');

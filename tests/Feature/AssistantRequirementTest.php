@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\ServiceRequirement;
+use App\Support\RequirementFinder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -79,6 +80,39 @@ class AssistantRequirementTest extends TestCase
         $this->assertStringContainsString('Uji Berkala Kendaraan', $this->ask('syarat uji kir'));
         // Palembang dialect + "bikin" = the new KTP, not Ganti Alamat KTP-el.
         $this->assertStringContainsString('Persyaratan KTP-el Baru', $this->ask('Cara bikin KTP cak mano'));
+    }
+
+    public function test_unsure_or_ambiguous_match_is_confirmed_first(): void
+    {
+        $history = fn (string $q, string $a) => [['role' => 'user', 'content' => $q], ['role' => 'assistant', 'content' => $a]];
+
+        // Hit only through keywords ("izin makanan rumahan" → PIRT): ask, "ya" answers.
+        $ask = $this->ask('cara bikin izin makanan rumahan');
+        $this->assertStringStartsWith(RequirementFinder::CONFIRM, $ask);
+        $this->assertStringContainsString('1. SPP-IRT / PIRT', $ask);
+        $this->assertStringNotContainsString('NIB.', $ask);
+        $yes = $this->postJson('/sapa-madani/chat', ['message' => 'iya', 'history' => $history('cara bikin izin makanan rumahan', $ask)])->json('reply');
+        $this->assertStringContainsString('Persyaratan SPP-IRT / PIRT', $yes);
+        $this->assertStringContainsString('NIB.', $yes);
+
+        // Several services fit equally: numbered choice.
+        $ask = $this->ask('syarat ktp');
+        $this->assertStringContainsString('Balas angkanya', $ask);
+        preg_match('/^(\d)\. KTP-el Hilang/m', $ask, $m);
+        $pick = $this->postJson('/sapa-madani/chat', ['message' => $m[1], 'history' => $history('syarat ktp', $ask)])->json('reply');
+        $this->assertStringContainsString('Persyaratan KTP-el Hilang', $pick);
+
+        // Clear questions are answered at once, ending with a follow-up question.
+        $this->assertStringEndsWith('Apakah Bapak/Ibu juga perlu persyaratan layanan lain?', $this->ask('syarat ktp hilang'));
+
+        // With steps: "mau tahu langkahnya?" → "ya" gives the steps.
+        ServiceRequirement::where('slug', 'kia')->update(['steps' => '<ol><li>Datang ke Disdukcapil.</li><li>Ambil KIA.</li></ol>']);
+        $kia = $this->ask('syarat kia');
+        $this->assertStringEndsWith(RequirementFinder::STEPS_ASK . ' Kartu Identitas Anak (KIA)?', $kia);
+        $steps = $this->postJson('/sapa-madani/chat', ['message' => 'ya', 'history' => $history('syarat kia', $kia)])->json('reply');
+        $this->assertStringContainsString("Langkah pengurusan Kartu Identitas Anak (KIA):
+1. Datang ke Disdukcapil.
+2. Ambil KIA.", $steps);
     }
 
     public function test_ppid_questions_are_not_hijacked(): void

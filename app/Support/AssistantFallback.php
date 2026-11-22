@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
  */
 class AssistantFallback
 {
-    /** $lastReply = previous bot message (from the panel history), only used to read an answer to the complaint ask-back. */
+    /** $lastReply = previous bot message (from the history), read for answers to the complaint ask-back and the requirement "did you mean". */
     public static function reply(string $message, ?string $lastReply = null): string
     {
         $text = mb_strtolower(trim($message));
@@ -23,14 +23,17 @@ class AssistantFallback
         if ($report = AssistantComplaint::reply($text)) {
             return ($greeting ? "{$greeting} " : '') . $report;
         }
-        $topic = self::topic($text);
+        $topic = self::topic($text, $lastReply);
 
         if ($topic) {
             $opener = $greeting ?? Arr::random(['Baik, Bapak/Ibu.', 'Tentu, Bapak/Ibu.', 'Bisa, Bapak/Ibu.', 'Siap, Bapak/Ibu.']);
+            if (str_starts_with($topic, RequirementFinder::CONFIRM) || str_ends_with($topic, '?')) {
+                return (str_starts_with($topic, RequirementFinder::CONFIRM) ? ($greeting ? "{$greeting} " : '') : "{$opener} ") . $topic; // ends with its own follow-up question
+            }
 
             return "{$opener} {$topic} " . Arr::random([
                 'Ada lagi yang bisa saya bantu?',
-                'Kalau masih ada yang kurang jelas, silakan tanyakan saja.',
+                'Apakah ada bagian yang masih kurang jelas, Bapak/Ibu?',
                 'Semoga membantu. Ada hal lain yang ingin ditanyakan?',
             ]);
         }
@@ -89,12 +92,12 @@ class AssistantFallback
         return "Selamat {$time}, Bapak/Ibu.";
     }
 
-    private static function topic(string $text): ?string
+    private static function topic(string $text, ?string $lastReply = null): ?string
     {
         $topics = [
             '\b(keberatan|sengketa|banding)\b' => 'Bila permohonan informasi ditolak, tidak ditanggapi, atau jawabannya belum sesuai, Bapak/Ibu dapat mengajukan keberatan lewat menu Pengajuan Keberatan (' . route('complaint.create') . '). Cukup isi identitas, nomor registrasi permohonan, dan alasannya, paling lambat 30 hari kerja. Atasan PPID akan menanggapi paling lambat 30 hari kerja.',
             // researched requirements of other agencies' services (/persyaratan); pattern unused, find() returns null on no match
-            '^(?#req)' => fn () => RequirementFinder::reply($text),
+            '^(?#req)' => fn () => RequirementFinder::reply($text, $lastReply),
             // civil registration without a match in /persyaratan: point to Disdukcapil (requirements must not be made up)
             '\b(ktp|e-?ktp|ktp-?el|kk|kartu keluarga|akta|akte|kia|kartu identitas anak|domisili|pindah datang|adminduk|kependudukan|dukcapil|disdukcapil)\b' => 'Pembuatan KTP-el, KK, akta, dan dokumen kependudukan lainnya dilayani oleh Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Empat Lawang, jadi persyaratan resminya paling tepat ditanyakan langsung ke Disdukcapil. Bila Bapak/Ibu ingin informasi persyaratannya secara tertulis, bisa juga diajukan lewat Permohonan Informasi (' . route('request.create') . ').',
             '\b(status|cek|lacak|nomor registrasi)\b' => 'Status permohonan bisa dicek sendiri di menu Cek Status Permohonan (' . route('request.status') . ') dengan nomor registrasi yang Bapak/Ibu terima saat mengajukan.',

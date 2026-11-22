@@ -12,6 +12,12 @@ use App\Models\ServiceRequirement;
  */
 class RequirementFinder
 {
+    /** Opening of the "did you mean" question; reply() reads the answer to it from the previous bot message. */
+    public const CONFIRM = 'Apakah yang Bapak/Ibu maksud persyaratan';
+
+    /** Follow-up question after a requirement answer; "ya" to it gets the steps (reply()). */
+    public const STEPS_ASK = 'Apakah Bapak/Ibu ingin tahu langkah-langkah pengurusan';
+
     private const STOPWORDS = ['syarat', 'syaratnya', 'persyaratan', 'persyaratannya', 'cara', 'caranya', 'bagaimana', 'gimana', 'gmn',
         'bikin', 'buat', 'membuat', 'pembuatan', 'urus', 'mengurus', 'ngurus', 'pengurusan', 'proses', 'prosedur', 'mengajukan', 'ajukan',
         'apa', 'apa2', 'saja', 'aja', 'ya', 'yg', 'yang', 'untuk', 'utk', 'buat', 'di', 'ke', 'dari', 'dan', 'atau', 'dengan', 'mau',
@@ -93,14 +99,46 @@ class RequirementFinder
     }
 
     /** Fallback-mode answer: main requirements of the best match + link, other matches as links. */
-    public static function reply(string $text): ?string
+    public static function reply(string $text, ?string $lastReply = null): ?string
     {
+        $yes = (bool) preg_match('/^\W*(ya+|iya+|y|yes|betul|benar|bener|boleh|mau|oke?|ok|iyo|nah)\b/u', $text);
+        // "ya" to "… langkah-langkah pengurusan <judul>?": the steps of that service.
+        if ($yes && $lastReply && preg_match('/' . preg_quote(self::STEPS_ASK, '/') . ' (.+)\?/u', $lastReply, $s)
+            && ($item = ServiceRequirement::where('is_published', true)->where('title', $s[1])->first())) {
+            return self::steps($item);
+        }
+        // Answer to our "Apakah yang Bapak/Ibu maksud persyaratan …?": "ya" = first option, a number = that option.
+        if ($lastReply && str_contains($lastReply, self::CONFIRM) && preg_match_all('/^(\d)\. (.+)$/mu', $lastReply, $m)) {
+            $pick = $yes ? 0
+                : (preg_match('/^\W*(\d)\W*$/u', $text, $n) ? (int) $n[1] - 1 : null);
+            $item = $pick !== null && isset($m[2][$pick])
+                ? ServiceRequirement::where('is_published', true)->where('title', trim($m[2][$pick]))->first() : null;
+            if ($item) {
+                return self::describe($item, collect());
+            }
+        }
         $found = self::find($text);
         // Without an explicit "syarat/cara urus" every keyword must match, so "alamat kantor ppid" is not "Ganti Alamat KTP".
         if ($found->isEmpty() || (! self::wants($text) && $found->first()->score < count(self::keywords($text)))) {
             return null;
         }
-        $item = $found->first();
+        // Matched only through keywords, not the service name ("bikin kue" → PIRT): confirm before answering.
+        // Or several services fit equally ("syarat ktp": baru / hilang / ganti alamat): let the citizen choose.
+        [$a, $b] = [$found->get(0), $found->get(1)];
+        $tie = $b && [$a->score, $a->titleScore, $a->isNew] === [$b->score, $b->titleScore, $b->isNew];
+        if ($a->titleScore < $a->score || $tie) {
+            $options = $found->values()->map(fn ($r, $i) => ($i + 1) . ". {$r->title}")->implode("\n");
+
+            return self::CONFIRM . ($found->count() > 1 ? " salah satu layanan berikut?\n{$options}\nBalas angkanya untuk melihat persyaratannya."
+                : " berikut?\n{$options}\nBalas \"ya\" untuk melihat persyaratannya, atau ceritakan lebih rinci yang Bapak/Ibu butuhkan.");
+        }
+
+        return self::describe($found->first(), $found->slice(1));
+    }
+
+    /** Fallback answer for one service, other matches as links. */
+    private static function describe(ServiceRequirement $item, $others): string
+    {
         $items = self::items($item->requirements);
         $lines = ["Persyaratan {$item->title} (dilayani {$item->agency}):"];
         foreach (array_slice($items, 0, 5) as $i => $line) {
@@ -113,12 +151,31 @@ class RequirementFinder
             $lines[] = 'Biaya: ' . $item->cost;
         }
         $lines[] = 'Rincian lengkap (langkah, lama proses, dasar hukum): ' . route('service-requirements.show', $item->slug);
-        foreach ($found->slice(1) as $other) {
+        foreach ($others as $other) {
             $lines[] = "Mungkin juga yang dimaksud: {$other->title} — " . route('service-requirements.show', $other->slug);
         }
         $lines[] = "Ini informasi umum; persyaratan bisa berubah, jadi mohon pastikan kembali ke {$item->agency} sebelum datang.";
+        // Always end with a follow-up question (owner's wish).
+        $lines[] = $item->steps ? self::STEPS_ASK . " {$item->title}?" : 'Apakah Bapak/Ibu juga perlu persyaratan layanan lain?';
 
         return implode("\n", $lines);
+    }
+
+    /** Steps of one service (answer to the STEPS_ASK follow-up). */
+    private static function steps(ServiceRequirement $item): string
+    {
+        $lines = ["Langkah pengurusan {$item->title}:"];
+        foreach (array_slice(self::items($item->steps), 0, 8) as $i => $line) {
+            $lines[] = ($i + 1) . '. ' . $line;
+        }
+        if ($item->duration) {
+            $lines[] = 'Lama proses: ' . $item->duration;
+        }
+        $lines[] = 'Rincian lengkap (langkah, lama proses, dasar hukum): ' . route('service-requirements.show', $item->slug);
+        $lines[] = 'Apakah ada bagian yang masih kurang jelas, atau Bapak/Ibu perlu persyaratan layanan lain?';
+
+        return implode("
+", $lines);
     }
 
     /** No match for an explicit requirement question: point to the list and the serving agency. */

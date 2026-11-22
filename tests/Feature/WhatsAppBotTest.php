@@ -109,4 +109,20 @@ class WhatsAppBotTest extends TestCase
         $this->assertNull(WhatsAppBot::handoffReason(' 4. '));
         $this->assertSame('Bot tidak yakin dengan maksud pertanyaan', WhatsAppBot::handoffReason('7'));
     }
+
+    public function test_number_answering_a_confirmation_is_not_a_menu_choice(): void
+    {
+        foreach ([['KTP-el Baru (Pertama Kali)', 'ktp-el-baru'], ['KTP-el Hilang, Rusak atau Perubahan Data', 'ktp-el-hilang']] as [$title, $slug]) {
+            \App\Models\ServiceRequirement::create(['title' => $title, 'slug' => $slug, 'category' => 'kependudukan', 'agency' => 'Disdukcapil',
+                'requirements' => "<ol><li>Syarat {$slug}.</li></ol>", 'is_published' => true]);
+        }
+        $this->configure();
+        $this->incoming('syarat ktp', 'm1');
+        $c = $this->incoming('2', 'm2');
+
+        $last = $c->messages()->where('direction', 'out')->orderByDesc('id')->first();
+        $this->assertStringContainsString('Syarat ktp-el-hilang', $last->body); // option 2, not menu "cara mengajukan permohonan"
+        $c->refresh();
+        $this->assertSame(['done', null], [$c->status, $c->handoff_reason]);
+    }
 }

@@ -24,6 +24,9 @@ class WhatsAppFormat
             // fixed requirement answer (RequirementFinder::reply)
             '/^(.*?)\s*Persyaratan (.+?) \(dilayani (.+?)\):$/mu' => "$1\n\n📋 *Persyaratan $2*\n_Dilayani $3_\n",
             '/^Biaya: /mu' => "\n💰 *Biaya:* ",
+            '/^(.*?)\s*Langkah pengurusan (.+):$/mu' => "$1\n\n🧭 *Langkah pengurusan $2*\n",
+            '/^Lama proses: /mu' => "\n⏱️ *Lama proses:* ",
+            '/^(Apakah .+\?)$/mu' => "\n$1", // follow-up question as its own paragraph
             '/^Rincian lengkap \(langkah, lama proses, dasar hukum\): /mu' => "🔗 *Rincian lengkap:* ",
             '/^Mungkin juga yang dimaksud: (.+?) — (\S+)$/mu' => '• Mungkin juga: *$1*  $2',
             '/^(Ini informasi umum; .+?sebelum datang\.) */mu' => "\n_$1_\n\n",

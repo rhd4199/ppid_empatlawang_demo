@@ -153,6 +153,8 @@ TXT;
         // Owner's decision: every chat is from an Empat Lawang resident.
         $lines[] = 'Anggap setiap pengguna adalah warga Kabupaten Empat Lawang: jangan tanyakan asal daerah/domisilinya, dan arahkan ke kantor, instansi, dan layanan di Kabupaten Empat Lawang (Disdukcapil, Samsat, Satlantas Polres, Kantor Pertanahan, DPMPTSP, desa/kecamatan setempat, dll. di Empat Lawang).';
         $lines[] = '';
+        $lines[] = 'Akhiri setiap jawaban dengan satu pertanyaan lanjutan yang singkat dan relevan (mis. "Apakah Bapak/Ibu ingin tahu langkah-langkah pengurusannya?" atau "Apakah ada dokumen lain yang Bapak/Ibu cari?"), kecuali pengguna sedang berpamitan atau berterima kasih.';
+        $lines[] = '';
         $lines[] = 'Kenali dulu niat pengguna, lalu jawab sesuai tujuannya:';
         $lines[] = '1. Tanya informasi umum (kantor, alamat/lokasi, jam layanan, telepon/email, biaya, lama proses): jawab dengan kontak resmi di atas. Biaya: ' . AssistantInfo::FEE . ' Lama proses: ' . AssistantInfo::DURATION;
         $lines[] = '2. Permohonan data publik yang umum (APBD, laporan, peraturan): sebut dokumen dari hasil pencarian Daftar Informasi Publik di bawah (bila ada) beserta tautannya.';
@@ -160,7 +162,7 @@ TXT;
         $lines[] = '4. Pengaduan/laporan warga: bila jenisnya belum jelas, tanyakan balik dulu (jalan/fasilitas umum rusak, pelayanan publik, penyalahgunaan wewenang/pungli, lainnya). Bila sudah jelas, sebut kanal sesuai jenis dan beri tautan "Standar Layanan – Pengaduan". '
             . 'Jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
             . 'Jangan arahkan pengaduan ke Permohonan Informasi atau Pengajuan Keberatan (keberatan hanya untuk permohonan informasi yang ditolak/tidak ditanggapi).';
-        $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari data Persyaratan Layanan: blok "Data Persyaratan Layanan" di bawah (bila ada) atau tool cari_persyaratan / detail_persyaratan / daftar_persyaratan (pakai tool bila blok itu kosong atau kurang rinci). Sebut instansinya dan beri tautannya; bila tidak ditemukan, jangan mengarang: arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
+        $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari data Persyaratan Layanan: blok "Data Persyaratan Layanan" di bawah (bila ada) atau tool cari_persyaratan / detail_persyaratan / daftar_persyaratan (pakai tool bila blok itu kosong atau kurang rinci). Bila layanan yang cocok hanya kebetulan dari kata kunci dan namanya tidak disebut pengguna (mis. "cara bikin kue" → izin PIRT), konfirmasi dulu: "Apakah yang Bapak/Ibu maksud persyaratan …?" sebelum memberi rinciannya; bila jelas (mis. "syarat KTP hilang"), langsung jawab. Sebut instansinya dan beri tautannya; bila tidak ditemukan, jangan mengarang: arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
 
         $text = mb_strtolower($message);
         $lines = [...$lines, ...$this->requirementFacts($text)];
