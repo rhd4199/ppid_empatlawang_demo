@@ -14,6 +14,16 @@
         </a>
     </div>
 
+    {{-- Refresh only when an officer triggers it: BGN Radar MBG needs a browser, so the file comes from the Larika agent (skill bgn-sppg-scrape). --}}
+    <form action="{{ route('admin.sppg.import') }}" method="POST" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center gap-2 px-3 py-2 border-bottom bg-light">
+        @csrf
+        <span class="small fw-bold"><i class="fas fa-rotate me-1"></i>Perbarui dari BGN:</span>
+        <input type="file" name="file" accept=".json,application/json" required class="form-control form-control-sm" style="max-width: 280px;">
+        <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Impor</button>
+        <span class="small text-muted">File <code>sppg-units.json</code> dari agent Larika (minta: "perbarui data SPPG"). SPPG yang sudah diedit petugas tidak ditimpa.</span>
+        @error('file')<div class="w-100 small text-danger">{{ $message }}</div>@enderror
+    </form>
+
     <div class="card-body p-0">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show m-4 shadow-sm border-0 border-start border-5 border-success" role="alert">

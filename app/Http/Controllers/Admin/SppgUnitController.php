@@ -26,6 +26,22 @@ class SppgUnitController extends Controller
         ]);
     }
 
+    /** Admin-triggered refresh: upload sppg-units.json made by skill bgn-sppg-scrape (BGN needs a browser, the server cannot fetch it). */
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|file|max:5120']);
+        $rows = json_decode((string) file_get_contents($request->file('file')->getRealPath()), true);
+        $valid = is_array($rows) && array_is_list($rows) && $rows !== [] && collect($rows)->every(fn ($r) => is_array($r)
+            && filled($r['bgn_id'] ?? null) && is_string($r['name'] ?? null) && is_string($r['kecamatan'] ?? null)
+            && is_array($r['institutions'] ?? []) && mb_strlen($r['name']) <= 255);
+        if (! $valid) {
+            return back()->withErrors(['file' => 'File bukan data SPPG yang valid (JSON daftar SPPG dari BGN: bgn_id, name, kecamatan, institutions).']);
+        }
+        $n = SppgUnit::import($rows);
+
+        return back()->with('success', "Data BGN diimpor: {$n['created']} SPPG baru, {$n['updated']} diperbarui, {$n['kept']} tetap (sudah diedit petugas).");
+    }
+
     public function create()
     {
         return view('admin.sppg.create', ['item' => new SppgUnit(['is_published' => true, 'status' => 'operasional'])]);

@@ -31,6 +31,46 @@ class SppgUnit extends Model
         'longitude' => 'float',
     ];
 
+    /**
+     * Rows from skill bgn-sppg-scrape (sppg-units.json), used by SppgUnitSeeder and the admin "Impor data BGN" upload.
+     * Keyed by BGN id. Refreshes rows the admin never edited (updated_at == created_at); edited rows are kept.
+     * Kitchens outside the regency that serve a school here are stored hidden.
+     *
+     * @return array{created: int, updated: int, kept: int}
+     */
+    public static function import(array $rows): array
+    {
+        $count = ['created' => 0, 'updated' => 0, 'kept' => 0];
+        foreach ($rows as $row) {
+            $data = [
+                'code' => $row['code'] ?? null,
+                'name' => $row['name'],
+                'kecamatan' => $row['kecamatan'],
+                'village' => $row['village'] ?? null,
+                'address' => $row['address'] ?? null,
+                'status' => $row['status'] ?? 'operasional',
+                'institutions' => $row['institutions'] ?? [],
+                'source_url' => $row['source_url'] ?? null,
+                'checked_at' => $row['checked_at'] ?? now()->toDateString(),
+                'is_published' => (bool) ($row['in_regency'] ?? true),
+                'notes' => ($row['in_regency'] ?? true) ? null : 'Dapur berlokasi di luar Kabupaten Empat Lawang; melayani instansi di Empat Lawang.',
+            ];
+            $unit = self::where('bgn_id', $row['bgn_id'])->first();
+            if (! $unit) {
+                self::create($data + ['bgn_id' => $row['bgn_id']]);
+                $count['created']++;
+            } elseif ($unit->updated_at->equalTo($unit->created_at)) {
+                $unit->timestamps = false; // keep the "never edited" marker
+                $unit->fill($data)->save();
+                $count['updated']++;
+            } else {
+                $count['kept']++;
+            }
+        }
+
+        return $count;
+    }
+
     protected static function booted(): void
     {
         static::saving(fn (SppgUnit $unit) => $unit->institutions_count = count($unit->institutions ?? []));

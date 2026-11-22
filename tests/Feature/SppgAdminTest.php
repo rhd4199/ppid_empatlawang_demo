@@ -80,4 +80,30 @@ class SppgAdminTest extends TestCase
             ->assertSessionHasErrors(['name', 'kecamatan', 'status', 'bgn_id', 'latitude', 'longitude', 'source_url', 'checked_at']);
         $this->assertSame(1, SppgUnit::count());
     }
+
+    public function test_admin_imports_bgn_file_without_overwriting_edits(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $row = fn (int $id, string $name, bool $in = true) => ['bgn_id' => $id, 'code' => "16.11.01.{$id}", 'name' => $name, 'kecamatan' => 'Muara Pinang',
+            'village' => 'Desa A', 'address' => 'Jl. A', 'status' => 'operasional', 'in_regency' => $in, 'institutions' => [['nama' => 'SD 1', 'desa' => 'A']],
+            'source_url' => 'https://www.bgn.go.id/radar-mbg/', 'checked_at' => '2026-11-23'];
+        $upload = fn (array $rows) => \Illuminate\Http\UploadedFile::fake()->createWithContent('sppg-units.json', json_encode($rows));
+
+        $this->from(route('admin.sppg.index'))->post(route('admin.sppg.import'), ['file' => $upload([$row(1, 'SPPG Satu'), $row(2, 'SPPG Luar', false)])])
+            ->assertRedirect(route('admin.sppg.index'))->assertSessionHas('success', 'Data BGN diimpor: 2 SPPG baru, 0 diperbarui, 0 tetap (sudah diedit petugas).');
+        $this->assertFalse(SppgUnit::where('bgn_id', 2)->value('is_published')); // outside the regency: hidden
+
+        $this->travel(1)->minute();
+        SppgUnit::where('bgn_id', 1)->first()->update(['name' => 'Diedit Petugas']);
+        $this->post(route('admin.sppg.import'), ['file' => $upload([$row(1, 'SPPG Satu Baru'), $row(2, 'SPPG Luar Baru', false), $row(3, 'SPPG Tiga')])])
+            ->assertSessionHas('success', 'Data BGN diimpor: 1 SPPG baru, 1 diperbarui, 1 tetap (sudah diedit petugas).');
+        $this->assertSame('Diedit Petugas', SppgUnit::where('bgn_id', 1)->value('name'));
+        $this->assertSame('SPPG Luar Baru', SppgUnit::where('bgn_id', 2)->value('name'));
+
+        foreach (['{"x":1}', '[]', 'bukan json', json_encode([['bgn_id' => 9]])] as $bad) {
+            $this->post(route('admin.sppg.import'), ['file' => \Illuminate\Http\UploadedFile::fake()->createWithContent('x.json', $bad)])->assertSessionHasErrors('file');
+        }
+        $this->assertSame(3, SppgUnit::count());
+        $this->get(route('admin.sppg.index'))->assertOk()->assertSee('Perbarui dari BGN');
+    }
 }
