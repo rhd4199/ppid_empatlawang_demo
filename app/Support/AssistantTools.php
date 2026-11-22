@@ -59,6 +59,10 @@ class AssistantTools
             $fn('info_bencana', 'Kejadian bencana 30 hari terakhir di Empat Lawang dan kabupaten sekitarnya (data BNPB): jenis, tanggal, dampak, kondisi.'),
             $fn('data_sppg', 'SPPG (dapur program Makan Bergizi Gratis/MBG, Badan Gizi Nasional) di Empat Lawang: jumlah per status & kecamatan, nama, desa, alamat, jumlah instansi dilayani, dan SPPG mana yang melayani sebuah sekolah.',
                 ['kecamatan' => ['type' => 'string', 'description' => 'Opsional, mis. "Ulu Musi"'], 'kata_kunci' => ['type' => 'string', 'description' => 'Opsional: nama SPPG, desa, atau sekolah, mis. "SD Negeri 7 Muara Pinang"']]),
+            $fn('cari_tempat', 'Tempat umum di Kabupaten Empat Lawang dari peta (OpenStreetMap) + tautan pencarian Google Maps: penginapan/hotel, rumah makan, masjid, SPBU, rumah sakit/klinik, apotek, bank/ATM, pasar, wisata, sekolah, kantor. Data peta bisa belum lengkap: selalu sertakan tautan google_maps agar warga bisa mencari sendiri.',
+                ['jenis' => ['type' => 'string', 'description' => 'mis. "penginapan", "rumah makan", "wisata", "spbu"'], 'lokasi' => ['type' => 'string', 'description' => 'Opsional: kecamatan/desa, mis. "Tebing Tinggi"']], ['jenis']),
+            $fn('berita_google', 'Berita terbaru tentang Kabupaten Empat Lawang dari Google News (judul, nama media, tanggal). Pakai untuk kejadian/isu terkini di luar situs PPID.',
+                ['kata_kunci' => ['type' => 'string', 'description' => 'Opsional, mis. "banjir", "kapolres"; otomatis dibatasi Empat Lawang']]),
             ...($web ? [$fn('cari_web', 'Cari di web publik (situs resmi pemerintah, media berita) bila data PPID di tool lain tidak punya jawabannya, mis. pejabat Forkopimda, kegiatan/berita di luar situs, regulasi umum. Hasilnya bukan data resmi PPID: sebut sumbernya dan bahwa informasi bisa belum terbaru.',
                 ['pertanyaan' => ['type' => 'string', 'description' => 'Pertanyaan/kata kunci pencarian, singkat dan spesifik']], ['pertanyaan'])] : []),
         ];
@@ -120,6 +124,8 @@ class AssistantTools
             'info_bencana' => ['kejadian' => array_map(fn ($e) => ['tanggal' => $e['date'], 'wilayah' => $e['region'], 'jenis' => $e['type'], 'dampak' => $e['impact'], 'kondisi' => mb_strimwidth((string) $e['status'], 0, 200, '…')],
                 array_slice(BnpbDisaster::recent(), 0, 8)) ?: 'Tidak ada kejadian bencana tercatat 30 hari terakhir.', 'sumber' => 'BNPB'],
             'data_sppg' => SppgUnit::forAssistant($args['kecamatan'] ?? null, $args['kata_kunci'] ?? null),
+            'cari_tempat' => PlaceFinder::find((string) ($args['jenis'] ?? ''), (string) ($args['lokasi'] ?? '')) + ['sumber' => 'OpenStreetMap (bisa belum lengkap)'],
+            'berita_google' => ['berita' => GoogleNews::search((string) ($args['kata_kunci'] ?? '')) ?: 'Tidak ada berita yang ditemukan.', 'sumber' => 'Google News; sebut nama medianya saja'],
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
             default => ['error' => "Tool {$name} tidak ada."],
         };
