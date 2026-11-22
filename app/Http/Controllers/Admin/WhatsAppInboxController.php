@@ -162,7 +162,8 @@ class WhatsAppInboxController extends Controller
         $lastOut = $messages->where('direction', 'out')->where('status', '!=', 'failed')->keys()->last();
         $pending = $lastOut === null ? $messages : $messages->slice($lastOut + 1);
         $question = $pending->where('direction', 'in')->pluck('body')->implode("\n");
-        if ($question === '') {
+        // No AI and keyword answers off: nothing to suggest, the officer writes the reply.
+        if ($question === '' || (! AssistantController::aiAvailable() && ! config('services.assistant.keyword_fallback'))) {
             return '';
         }
         $history = $messages->take($lastOut === null ? 0 : $lastOut + 1)

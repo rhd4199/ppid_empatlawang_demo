@@ -51,6 +51,11 @@ class WhatsAppBot
             return;
         }
         $wa = WhatsAppGateway::settings();
+        if ($wa['enabled'] && $wa['auto_reply'] && ! AssistantController::aiAvailable() && ! config('services.assistant.keyword_fallback')) {
+            $conversation->update(['handoff_reason' => 'AI belum aktif (OPENAI_API_KEY kosong), dibalas petugas']);
+
+            return; // no template answers: stays "new" for an officer
+        }
         if (! $wa['enabled'] || ! $wa['auto_reply']) {
             $conversation->update(['handoff_reason' => null]);
 

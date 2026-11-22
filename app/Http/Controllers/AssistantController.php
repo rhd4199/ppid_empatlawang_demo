@@ -18,6 +18,15 @@ class AssistantController extends Controller
 {
     private const FAILED = 'Maaf, Sapa Madani sedang tidak dapat menjawab. Silakan coba lagi nanti.';
 
+    /** Web chat reply while no AI is connected and keyword answers are off. */
+    public const NO_AI = 'Mohon maaf, Sapa Madani (asisten AI) sedang tidak aktif. Silakan hubungi petugas PPID lewat WhatsApp atau halaman Kontak, atau ajukan lewat menu Permohonan Informasi.';
+
+    /** An AI (OpenAI or the external assistant URL) answers; false = only the keyword fallback, if switched on. */
+    public static function aiAvailable(): bool
+    {
+        return (bool) config('services.openai.key') || assistant_settings()['api_url'] !== '';
+    }
+
     // Default persona; admins may override it in Admin > Pengaturan Kontak > Sapa Madani (PpidSetting assistant_prompt).
     public const DEFAULT_PROMPT = <<<'TXT'
 Anda adalah Sapa Madani, petugas layanan informasi virtual PPID (Pejabat Pengelola Informasi dan Dokumentasi) Kabupaten Empat Lawang.
@@ -89,6 +98,9 @@ TXT;
                 ->post($settings['api_url'], ['message' => $message])->throw()->json('reply'), 'API');
         }
 
+        if (! config('services.assistant.keyword_fallback')) {
+            return self::NO_AI;
+        }
         $lastReply = collect($history)->where('role', 'assistant')->last()['content'] ?? null;
 
         return AssistantFallback::reply($message, $lastReply);

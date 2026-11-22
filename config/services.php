@@ -38,6 +38,12 @@ return [
         'webhook_key' => env('LARIKA_WEBHOOK_KEY'),
     ],
 
+    // Fixed keyword answers (AssistantFallback) when no AI is connected. Off by default (owner, 2026-11-23): templates
+    // answered questions they did not understand; without AI the bot stays silent and officers answer.
+    'assistant' => [
+        'keyword_fallback' => (bool) env('ASSISTANT_KEYWORD_FALLBACK', false),
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
