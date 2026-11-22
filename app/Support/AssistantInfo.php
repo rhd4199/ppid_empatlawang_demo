@@ -87,7 +87,9 @@ class AssistantInfo
             return 'Data pejabat ada di halaman Profil Pejabat (' . route('officials.index') . ').';
         }
 
-        return "Pejabat Kabupaten Empat Lawang:\n" . $officials->map(fn ($o) => "- {$o->position}: {$o->name}")->implode("\n") . "\n" . trim($more);
+        // First 6 (leaders); the rest on the page, so a WhatsApp reply does not list dozens of names.
+        return "Pejabat Kabupaten Empat Lawang:\n" . $officials->take(6)->map(fn ($o) => "- {$o->position}: {$o->name}")->implode("\n")
+            . ($officials->count() > 6 ? "\nDaftar lengkap pejabat Pemkab, Forkopimda, DPRD dan camat ada di halaman Profil Pejabat." : '') . "\n" . trim($more);
     }
 
     /** Answers with the ContactSetting data that was asked for (all of it for a plain "kontak"); links to /kontak only when it is missing. */

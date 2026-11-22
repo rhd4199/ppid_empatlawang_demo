@@ -65,5 +65,20 @@ class OfficialSeeder extends Seeder
                 $data + ['is_published' => true]
             );
         }
+
+        $this->seedMore();
+    }
+    /**
+     * Heads of agencies, Forkopimda, DPRD and camat (assets/officials-more.php). firstOrCreate, so a re-seed never
+     * overwrites what an officer edited in admin. Names with only one source (or in conflict) are created hidden.
+     */
+    private function seedMore(): void
+    {
+        $order = [];
+        foreach (require __DIR__ . '/assets/officials-more.php' as [$position, $name, $group, $since, $status, $published]) {
+            $order[$group] = ($order[$group] ?? ($group === 'pemkab' ? 9 : 0)) + 1;
+            $bio = $since ? 'Menjabat sejak ' . \Illuminate\Support\Carbon::parse($since)->locale('id')->translatedFormat('j F Y') . ($status === 'plt' ? ' (Plt).' : '.') : null;
+            Official::firstOrCreate(['position' => $position], ['name' => $name, 'group' => $group, 'bio' => $bio, 'order' => $order[$group], 'is_published' => $published]);
+        }
     }
 }

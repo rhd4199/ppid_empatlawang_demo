@@ -23,9 +23,10 @@ class OfficialIndexTest extends TestCase
         Storage::fake('public');
         $this->seed(\Database\Seeders\OfficialSeeder::class);
         Storage::disk('public')->assertExists('officials/bupati.jpg');
+        $count = Official::count();
         $this->seed(\Database\Seeders\OfficialSeeder::class);
-        $this->assertSame(5, Official::count()); // re-seed updates, no duplicates
-        Official::create(['name' => 'Kadis A', 'position' => 'Kepala Dinas', 'order' => 10, 'is_published' => true,
+        $this->assertSame($count, Official::count()); // re-seed updates, no duplicates
+        Official::create(['name' => 'Kadis A', 'position' => 'Kepala Dinas', 'order' => 1000, 'is_published' => true,
             'bio' => str_repeat('Riwayat panjang. ', 20)]);
         Official::create(['name' => 'Hidden', 'position' => 'X', 'order' => 11, 'is_published' => false]);
 
@@ -61,5 +62,23 @@ class OfficialIndexTest extends TestCase
         $this->assertSame('dprd', $kadis->fresh()->group);
         $this->actingAs($admin)->put(route('admin.officials.update', $kadis), ['name' => 'Kadis D', 'position' => 'X', 'group' => 'hacker'])->assertSessionHasErrors('group');
         $this->actingAs($admin)->get(route('admin.officials.index'))->assertOk()->assertSee('DPRD Kabupaten')->assertSeeInOrder(['Kapolres Empat Lawang', 'Ketua DPRD', 'Camat Tebing Tinggi']);
+    }
+
+    public function test_more_officials_seeded_published_only_when_two_sources_and_reseed_keeps_admin_edits(): void
+    {
+        Storage::fake('public');
+        $this->seed(\Database\Seeders\OfficialSeeder::class);
+        $total = Official::count();
+        $this->assertGreaterThan(30, $total);
+        $this->assertSame('dprd', Official::where('position', 'Ketua DPRD Kabupaten Empat Lawang')->value('group'));
+        // one source / conflict / successor not yet in office: hidden until an officer checks
+        $this->assertFalse((bool) Official::where('name', 'AKBP Daniel Ganjar Kristanto')->value('is_published'));
+        $this->assertFalse((bool) Official::where('position', 'Camat Muara Pinang')->value('is_published'));
+        $this->assertTrue((bool) Official::where('position', 'Ketua DPRD Kabupaten Empat Lawang')->value('is_published'));
+
+        Official::where('position', 'Ketua DPRD Kabupaten Empat Lawang')->update(['name' => 'Diedit Admin']);
+        $this->seed(\Database\Seeders\OfficialSeeder::class);
+        $this->assertSame($total, Official::count());
+        $this->assertSame('Diedit Admin', Official::where('position', 'Ketua DPRD Kabupaten Empat Lawang')->value('name'));
     }
 }
