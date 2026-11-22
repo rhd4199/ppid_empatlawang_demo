@@ -171,7 +171,7 @@ class WhatsAppInboxController extends Controller
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
 
-        return app(AssistantController::class)->answer(mb_substr($question, 0, 1000), $history);
+        return app(AssistantController::class)->answer(mb_substr($question, 0, 1000), $history, 'wa');
     }
 
     private function conversations()

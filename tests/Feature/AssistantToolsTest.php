@@ -1,0 +1,87 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Http\Controllers\AssistantController;
+use App\Models\ServiceRequirement;
+use App\Support\AssistantTools;
+use App\Support\WhatsAppFormat;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
+
+class AssistantToolsTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        ServiceRequirement::create(['title' => 'KTP-el Baru (Pertama Kali)', 'slug' => 'ktp-el-baru', 'category' => 'kependudukan',
+            'agency' => 'Disdukcapil Kabupaten Empat Lawang', 'keywords' => 'ktp baru', 'requirements' => '<ol><li>Berusia 17 tahun.</li><li>Fotokopi KK.</li></ol>',
+            'cost' => 'Gratis', 'is_published' => true]);
+        ServiceRequirement::create(['title' => 'Draft Rahasia', 'slug' => 'draft', 'category' => 'kependudukan', 'agency' => 'X',
+            'requirements' => '<p>x</p>', 'is_published' => false]);
+    }
+
+    public function test_tools_list_search_and_detail_published_rows_only(): void
+    {
+        $list = AssistantTools::run('daftar_persyaratan', []);
+        $this->assertSame([['judul' => 'KTP-el Baru (Pertama Kali)', 'slug' => 'ktp-el-baru']], $list['Kependudukan']->all());
+        $this->assertSame(route('service-requirements.index'), $list['halaman']);
+
+        $this->assertSame('ktp-el-baru', AssistantTools::run('cari_persyaratan', ['kata_kunci' => 'ktp baru'])['hasil'][0]['slug']);
+        $detail = AssistantTools::run('detail_persyaratan', ['slug' => 'ktp-el-baru']);
+        $this->assertSame(['Berusia 17 tahun.', 'Fotokopi KK.'], $detail['persyaratan']);
+        $this->assertSame(route('service-requirements.show', 'ktp-el-baru'), $detail['tautan']);
+        $this->assertArrayHasKey('error', AssistantTools::run('detail_persyaratan', ['slug' => 'draft']));
+    }
+
+    public function test_openai_runs_tool_calls_then_answers_in_whatsapp_format(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::sequence()
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => null, 'tool_calls' => [
+                ['id' => 'call_1', 'type' => 'function', 'function' => ['name' => 'detail_persyaratan', 'arguments' => '{"slug":"ktp-el-baru"}']],
+            ]]]]])
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => "## Syarat KTP\n**Penting:** bawa KK\n- Fotokopi KK\n[Rincian](https://x.test/p)"]]]])]);
+
+        $reply = app(AssistantController::class)->answer('syarat bikin ktp', [], 'wa');
+
+        $this->assertSame("*Syarat KTP*\n*Penting:* bawa KK\n• Fotokopi KK\nRincian: https://x.test/p", $reply);
+        $sent = Http::recorded()->map(fn ($pair) => $pair[0]);
+        $this->assertCount(2, $sent);
+        $this->assertSame('detail_persyaratan', $sent[0]['tools'][2]['function']['name']);
+        $this->assertStringContainsString('format WhatsApp', $sent[0]['messages'][0]['content']);
+        $tool = collect($sent[1]['messages'])->firstWhere('role', 'tool');
+        $this->assertSame('call_1', $tool['tool_call_id']);
+        $this->assertStringContainsString('Fotokopi KK', $tool['content']);
+    }
+
+    public function test_tool_rounds_are_capped(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        $call = ['choices' => [['message' => ['role' => 'assistant', 'content' => null, 'tool_calls' => [
+            ['id' => 'c', 'type' => 'function', 'function' => ['name' => 'daftar_persyaratan', 'arguments' => '{}']],
+        ]]]]];
+        Http::fake(['api.openai.com/*' => Http::sequence()->push($call)->push($call)->push($call)
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Jawaban akhir']]]])]);
+
+        $this->assertSame('Jawaban akhir', app(AssistantController::class)->answer('layanan apa saja?'));
+        Http::assertSentCount(AssistantTools::MAX_ROUNDS + 1);
+        $this->assertArrayNotHasKey('tools', Http::recorded()->last()[0]->data()); // last call must answer
+        Http::assertSent(fn (Request $r) => ! str_contains($r['messages'][0]['content'], 'format WhatsApp')); // web channel
+    }
+
+    public function test_fallback_requirement_answer_is_dressed_for_whatsapp(): void
+    {
+        $reply = WhatsAppFormat::text("Baik, Bapak/Ibu. Persyaratan KTP-el Baru (dilayani Disdukcapil):\n1. Fotokopi KK.\nBiaya: Gratis\n"
+            . "Rincian lengkap (langkah, lama proses, dasar hukum): https://x.test/a\nMungkin juga yang dimaksud: KIA — https://x.test/b\n"
+            . 'Ini informasi umum; persyaratan bisa berubah, jadi mohon pastikan kembali ke Disdukcapil sebelum datang. Ada lagi?');
+
+        $this->assertSame("Baik, Bapak/Ibu.\n\n📋 *Persyaratan KTP-el Baru*\n_Dilayani Disdukcapil_\n\n1. Fotokopi KK.\n\n💰 *Biaya:* Gratis\n"
+            . "🔗 *Rincian lengkap:* https://x.test/a\n• Mungkin juga: *KIA*  https://x.test/b\n\n"
+            . "_Ini informasi umum; persyaratan bisa berubah, jadi mohon pastikan kembali ke Disdukcapil sebelum datang._\n\nAda lagi?", $reply);
+    }
+}

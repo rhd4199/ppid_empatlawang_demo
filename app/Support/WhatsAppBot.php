@@ -66,7 +66,7 @@ class WhatsAppBot
         // Menu number ("2"): the AI gets the menu topic as the question.
         $choice = self::menuChoice(mb_strtolower(trim($last->body)));
         $question = $choice !== null ? self::MENU[$choice] : mb_substr($last->body, 0, 1000);
-        $reply = app(AssistantController::class)->answer($question, $history);
+        $reply = app(AssistantController::class)->answer($question, $history, 'wa');
         $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');
         // A failed send stays new so an officer sees it.
         $conversation->update(match (true) {

@@ -8,6 +8,8 @@ use App\Support\AssistantFallback;
 use App\Support\AssistantInfo;
 use App\Support\DocumentFinder;
 use App\Support\RequirementFinder;
+use App\Support\AssistantTools;
+use App\Support\WhatsAppFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -59,33 +61,61 @@ TXT;
      * Reply text for a citizen message; also drafts WhatsApp inbox replies (Admin\WhatsAppInboxController).
      *
      * @param  array<int, array{role: string, content: string}>  $history  earlier turns, oldest first
+     * @param  string  $channel  'wa' = WhatsApp: the AI writes WhatsApp formatting and the reply is converted to it
      */
-    public function answer(string $message, array $history = []): string
+    public function answer(string $message, array $history = [], string $channel = 'web'): string
+    {
+        $wa = $channel === 'wa';
+
+        return $wa ? WhatsAppFormat::text($this->rawAnswer($message, $history, $wa)) : $this->rawAnswer($message, $history, false);
+    }
+
+    private function rawAnswer(string $message, array $history, bool $wa): string
     {
         $settings = assistant_settings();
-        $data = ['message' => $message, 'history' => $history];
 
         if (config('services.openai.key')) {
-            return $this->reply(fn () => Http::withToken(config('services.openai.key'))->timeout(30)->acceptJson()
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => config('services.openai.model'),
-                    'max_tokens' => (int) config('services.openai.max_tokens'),
-                    'messages' => [
-                        ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'], $data['message'])],
-                        ...array_map(fn ($m) => ['role' => $m['role'], 'content' => $m['content']], $data['history'] ?? []),
-                        ['role' => 'user', 'content' => $data['message']],
-                    ],
-                ])->throw()->json('choices.0.message.content'), 'OpenAI');
+            $messages = [
+                ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'], $message) . ($wa ? "\n\n" . WhatsAppFormat::PROMPT : '')],
+                ...array_map(fn ($m) => ['role' => $m['role'], 'content' => $m['content']], $history),
+                ['role' => 'user', 'content' => $message],
+            ];
+
+            return $this->reply(fn () => $this->openAi($messages), 'OpenAI');
         }
 
         if ($settings['api_url'] !== '') {
             return $this->reply(fn () => Http::timeout(20)->acceptJson()
-                ->post($settings['api_url'], ['message' => $data['message']])->throw()->json('reply'), 'API');
+                ->post($settings['api_url'], ['message' => $message])->throw()->json('reply'), 'API');
         }
 
-        $lastReply = collect($data['history'] ?? [])->where('role', 'assistant')->last()['content'] ?? null;
+        $lastReply = collect($history)->where('role', 'assistant')->last()['content'] ?? null;
 
-        return AssistantFallback::reply($data['message'], $lastReply);
+        return AssistantFallback::reply($message, $lastReply);
+    }
+
+    /** Chat completion with the Persyaratan Layanan tools: run the model's tool calls, then ask again (max MAX_ROUNDS). */
+    private function openAi(array $messages): ?string
+    {
+        for ($round = 0; ; $round++) {
+            $tools = $round < AssistantTools::MAX_ROUNDS; // last round: no tools, so the model must answer
+            $choice = Http::withToken(config('services.openai.key'))->timeout(30)->acceptJson()
+                ->post('https://api.openai.com/v1/chat/completions', array_filter([
+                    'model' => config('services.openai.model'),
+                    'max_tokens' => (int) config('services.openai.max_tokens'),
+                    'messages' => $messages,
+                    'tools' => $tools ? AssistantTools::definitions() : null,
+                ]))->throw()->json('choices.0.message');
+            if (empty($choice['tool_calls']) || ! $tools) {
+                return $choice['content'] ?? null;
+            }
+            $messages[] = $choice;
+            foreach ($choice['tool_calls'] as $call) {
+                $args = json_decode($call['function']['arguments'] ?? '{}', true);
+                $messages[] = ['role' => 'tool', 'tool_call_id' => $call['id'],
+                    'content' => json_encode(AssistantTools::run($call['function']['name'] ?? '', is_array($args) ? $args : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
+            }
+        }
     }
 
     /** Persona (admin override or default) plus official contact data, site links and matching documents, so the model never has to guess them. */
@@ -130,7 +160,7 @@ TXT;
         $lines[] = '4. Pengaduan/laporan warga: bila jenisnya belum jelas, tanyakan balik dulu (jalan/fasilitas umum rusak, pelayanan publik, penyalahgunaan wewenang/pungli, lainnya). Bila sudah jelas, sebut kanal sesuai jenis dan beri tautan "Standar Layanan – Pengaduan". '
             . 'Jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
             . 'Jangan arahkan pengaduan ke Permohonan Informasi atau Pengajuan Keberatan (keberatan hanya untuk permohonan informasi yang ditolak/tidak ditanggapi).';
-        $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari blok "Data Persyaratan Layanan" di bawah (bila ada) beserta tautannya; bila tidak ada, arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
+        $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari data Persyaratan Layanan: blok "Data Persyaratan Layanan" di bawah (bila ada) atau tool cari_persyaratan / detail_persyaratan / daftar_persyaratan (pakai tool bila blok itu kosong atau kurang rinci). Sebut instansinya dan beri tautannya; bila tidak ditemukan, jangan mengarang: arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
 
         $text = mb_strtolower($message);
         $lines = [...$lines, ...$this->requirementFacts($text)];

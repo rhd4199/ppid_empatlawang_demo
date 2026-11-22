@@ -21,7 +21,7 @@ class RequirementFinder
         'mengenai', 'soal', 'halo', 'hai', 'selamat', 'pagi', 'siang', 'sore', 'malam', 'terima', 'kasih', 'ini', 'itu', 'kantor', 'el',
         'empat', 'lawang', 'kabupaten', 'kab', 'gratis', 'bayar', 'baru',
         // Palembang/Besemah chat: "cak mano" = bagaimana
-        'cak', 'mano', 'camano', 'cakmano', 'gek', 'nian', 'kito', 'aku', 'nak', 'dimano', 'apo'];
+        'caro', 'cak', 'mano', 'camano', 'cakmano', 'gek', 'nian', 'kito', 'aku', 'nak', 'dimano', 'apo'];
 
     /** Words people type vs. words in titles/keywords. */
     private const SYNONYMS = ['ektp' => 'ktp', 'akte' => 'akta', 'sertipikat' => 'sertifikat', 'serifikat' => 'sertifikat',
@@ -31,7 +31,7 @@ class RequirementFinder
     /** Explicit "how do I get service X" intent; used to answer "not in our list" instead of a PPID topic. */
     public static function wants(string $text): bool
     {
-        return (bool) preg_match('/\b(syarat|persyaratan|prosedur|cara (bikin|buat|membuat|urus|mengurus|ngurus|perpanjang|ganti|balik)|bikin|urus|mengurus|ngurus|perpanjang|balik nama|mutasi)(nya)?\b/u', $text)
+        return (bool) preg_match('/\b(syarat|persyaratan|prosedur|(cara|caro) (bikin|buat|membuat|urus|mengurus|ngurus|perpanjang|ganti|balik)|bikin|urus|mengurus|ngurus|perpanjang|balik nama|mutasi)(nya)?\b/u', $text)
             && ! preg_match('/\b(permohonan informasi|informasi publik|keberatan|sengketa|ppid)\b/u', $text);
     }
 
