@@ -29,7 +29,7 @@ class RequirementFinder
     /** Explicit "how do I get service X" intent; used to answer "not in our list" instead of a PPID topic. */
     public static function wants(string $text): bool
     {
-        return (bool) preg_match('/\b(syarat|persyaratan|prosedur|cara (bikin|buat|membuat|urus|mengurus|ngurus|perpanjang|ganti|balik)|bikin|urus|mengurus|ngurus|perpanjang|balik nama|mutasi)\b/u', $text)
+        return (bool) preg_match('/\b(syarat|persyaratan|prosedur|cara (bikin|buat|membuat|urus|mengurus|ngurus|perpanjang|ganti|balik)|bikin|urus|mengurus|ngurus|perpanjang|balik nama|mutasi)(nya)?\b/u', $text)
             && ! preg_match('/\b(permohonan informasi|informasi publik|keberatan|sengketa|ppid)\b/u', $text);
     }
 
@@ -37,7 +37,9 @@ class RequirementFinder
     public static function keywords(string $text): array
     {
         preg_match_all('/[\p{L}\p{N}]+/u', mb_strtolower($text), $m);
-        $words = array_filter($m[0], fn ($w) => mb_strlen($w) >= 2 && ! in_array($w, self::STOPWORDS, true));
+        // Chat suffixes: "ktpku" = ktp, "mengurusnya" = mengurus. ponytail: may cut a rare word ending in -ku/-mu/-nya.
+        $stems = array_map(fn ($w) => preg_match('/^(\p{L}{3,}?)(ku|mu|nya)$/u', $w, $s) ? $s[1] : $w, $m[0]);
+        $words = array_filter($stems, fn ($w) => mb_strlen($w) >= 2 && ! in_array($w, self::STOPWORDS, true));
 
         return array_slice(array_values(array_unique(array_map(fn ($w) => self::SYNONYMS[$w] ?? $w, $words))), 0, 5);
     }
@@ -63,6 +65,10 @@ class RequirementFinder
 
             return $row;
         });
+        // Without "syarat/cara urus" the service itself must be named: "tes" alone is not "SIM Baru" (keywords: tes psikologi).
+        if (! self::wants($text)) {
+            $rows = $rows->where('titleScore', '>', 0);
+        }
         $best = $rows->max('score');
         if (! $best || $best < count($keywords) / 2) {
             return collect();

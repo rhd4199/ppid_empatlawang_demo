@@ -92,4 +92,21 @@ class WhatsAppBotTest extends TestCase
         $this->assertSame('Permintaan dokumen / permohonan informasi', WhatsAppBot::handoffReason('minta data APBD 2025'));
         $this->assertSame('Bot tidak yakin dengan maksud pertanyaan', WhatsAppBot::handoffReason('anak saya sakit tolong dibantu'));
     }
+
+    public function test_menu_numbers_answered_by_bot_and_zero_goes_to_officer(): void
+    {
+        $this->configure();
+        $c = $this->incoming('2', 'm1');
+        Http::assertSent(fn (Request $r) => str_contains($r['message'], route('request.create')) && str_contains($r['message'], 'Ketik angka lain'));
+        $this->assertSame('done', $c->status);
+
+        $this->incoming('0', 'm2');
+        $c->refresh();
+        $this->assertSame(['new', 'Warga minta bicara dengan petugas'], [$c->status, $c->handoff_reason]);
+        $this->assertSame(1, $c->messages()->where('direction', 'out')->count()); // no bot reply to 0
+
+        $this->assertNull(WhatsAppBot::handoffReason('tes'));
+        $this->assertNull(WhatsAppBot::handoffReason(' 4. '));
+        $this->assertSame('Bot tidak yakin dengan maksud pertanyaan', WhatsAppBot::handoffReason('7'));
+    }
 }

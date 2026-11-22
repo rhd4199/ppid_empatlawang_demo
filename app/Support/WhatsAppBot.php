@@ -12,12 +12,24 @@ use App\Models\WaConversation;
  */
 class WhatsAppBot
 {
+    /** Numbered menu sent to citizens (1–5 answered by the bot from fixed topics, 0 = officer). */
+    public const MENU = [
+        '1' => 'jam layanan',
+        '2' => 'cara mengajukan permohonan informasi',
+        '3' => 'daftar informasi publik',
+        '4' => 'cek status permohonan',
+        '5' => 'cara mengajukan keberatan',
+    ];
+
     /** Why an officer must answer, or null when the bot may answer on its own. */
     public static function handoffReason(string $message): ?string
     {
         $text = mb_strtolower(trim($message));
+        $choice = self::menuChoice($text);
 
         return match (true) {
+            $choice === '0' => 'Warga minta bicara dengan petugas',
+            $choice !== null => null,
             AssistantComplaint::reply($text) !== null || (bool) preg_match('/\b(lapor|melapor|laporkan|aduan|adukan|mengadu|pengaduan|keluhan|komplain)\b/u', $text) => 'Aduan / laporan warga',
             (bool) preg_match('/\b(keberatan|sengketa|banding)\b/u', $text) => 'Keberatan / sengketa informasi',
             // "ada biaya?" also matches wants(), but leaves no subject keyword
@@ -48,7 +60,11 @@ class WhatsAppBot
             ->filter(fn ($m) => $m->direction === 'in' || $m->status !== 'failed')
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
-        $reply = app(AssistantController::class)->answer(mb_substr($last->body, 0, 1000), $history);
+        // Menu number: fixed answer (never the AI), so "2" is not read as a question.
+        $choice = self::menuChoice(mb_strtolower(trim($last->body)));
+        $reply = $choice !== null
+            ? AssistantFallback::reply(self::MENU[$choice], null) . "\n\nKetik angka lain untuk menu berikutnya, atau 0 untuk bicara dengan petugas."
+            : app(AssistantController::class)->answer(mb_substr($last->body, 0, 1000), $history);
         $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');
         // Answered by the bot → out of the queue; a failed send stays new so an officer sees it.
         $conversation->update($result['ok']
@@ -56,11 +72,17 @@ class WhatsAppBot
             : ['handoff_reason' => 'Balasan otomatis gagal terkirim']);
     }
 
-    /** Only a greeting / thanks / ok, nothing to look up. */
+    /** "2", "2.", " 2 " → '2'; '0'..'5' only. */
+    private static function menuChoice(string $text): ?string
+    {
+        return preg_match('/^\W*([0-5])\W*$/u', $text, $m) && ($m[1] === '0' || isset(self::MENU[$m[1]])) ? $m[1] : null;
+    }
+
+    /** Only a greeting / thanks / ok / test, nothing to look up. */
     private static function smallTalk(string $text): bool
     {
         $words = '(assalamu.?alaikum( wr\.? ?wb\.?)?|halo+|hallo+|hai+|hi+|hey+|selamat (pagi|siang|sore|malam)|pagi|siang|sore|malam|permisi|'
-            . 'terima ?kasih( banyak)?|makasih|trims|thanks?|ok(e|ey|ay)?|baik|siap|sip|min|kak|pak|bu|bapak|ibu|admin|ppid)';
+            . 'terima ?kasih( banyak)?|makasih|trims|thanks?|ok(e|ey|ay)?|tes+|test(ing)?|coba|baik|siap|sip|min|kak|pak|bu|bapak|ibu|admin|ppid)';
 
         return (bool) preg_match("/^(\W*{$words}\W*)+$/u", $text);
     }

@@ -24,6 +24,7 @@ class AssistantRequirementTest extends TestCase
             ['SPP-IRT / PIRT (Izin Produksi Pangan Industri Rumah Tangga)', 'spp-irt-pirt', 'perizinan_usaha', 'DPMPTSP dan Dinas Kesehatan', 'pirt, p-irt, spp-irt, izin makanan rumahan', ['NIB.', 'Rancangan label.']],
             ['Balik Nama Kendaraan Bekas (Motor/Mobil)', 'balik-nama-kendaraan', 'kendaraan', 'Samsat Kabupaten Empat Lawang', 'balik nama, bbn, bbnkb, motor bekas, mobil bekas', ['KTP-el pemilik baru.', 'BPKB asli dan STNK asli.', 'Kuitansi jual beli.', 'Cek fisik.', 'Surat kuasa.', 'Pengantar mutasi.']],
             ['Balik Nama Sertifikat Tanah karena Jual Beli', 'balik-nama-sertifikat-jual-beli', 'pertanahan', 'Kantor Pertanahan', 'balik nama sertifikat, ajb, ppat', ['Akta Jual Beli dari PPAT.']],
+            ['Uji Berkala Kendaraan (KIR)', 'uji-kir', 'kendaraan', 'Dinas Perhubungan', 'kir, uji kir, tes emisi, tes rem', ['Buku uji lama.']],
             ['Draft SIM Rahasia', 'draft-sim', 'kendaraan', 'Satpas', 'sim', ['Rahasia.'], false],
         ];
         foreach ($rows as $r) {
@@ -64,6 +65,17 @@ class AssistantRequirementTest extends TestCase
         $this->assertStringContainsString('belum ada di daftar kami', $reply);
         $this->assertStringContainsString(route('service-requirements.index'), $reply);
         $this->assertStringNotContainsString('Rahasia', $reply);
+    }
+
+    public function test_chat_suffixes_and_test_messages(): void
+    {
+        // "ktpku" = ktp, "mengurusnya" = mengurus
+        $this->assertStringContainsString('KTP-el Hilang', $this->ask('Halo ktpku hilang bagaimana cara mengurusnya'));
+        // A bare "tes" is a greeting, not "Uji KIR" (whose keywords mention tes emisi).
+        foreach (['Tes', 'tes', 'test'] as $text) {
+            $this->assertStringNotContainsString('KIR', $this->ask($text));
+        }
+        $this->assertStringContainsString('Uji Berkala Kendaraan', $this->ask('syarat uji kir'));
     }
 
     public function test_ppid_questions_are_not_hijacked(): void

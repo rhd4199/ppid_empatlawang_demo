@@ -80,7 +80,7 @@ class AssistantFallback
             return "Wa'alaikumsalam warahmatullahi wabarakatuh, Bapak/Ibu.";
         }
         // informal openers too: "hola", "hey", "met pagi", a bare "P" or "malam" (chat ping)
-        if (! preg_match('/^(halo+|hallo+|hola+|hai+|hi+|hei+|hey+|hy+|helo+|hello+|(selamat|slmt|met) (pagi|siang|sore|malam)|salam|permisi|punten)\b|^(p+|pagi|siang|sore|malam)\W*$/u', $text)) {
+        if (! preg_match('/^(halo+|hallo+|hola+|hai+|hi+|hei+|hey+|hy+|helo+|hello+|(selamat|slmt|met) (pagi|siang|sore|malam)|salam|permisi|punten)\b|^(p+|pagi|siang|sore|malam|tes+|test(ing)?|coba)\W*$/u', $text)) {
             return null;
         }
         $hour = now('Asia/Jakarta')->hour;
