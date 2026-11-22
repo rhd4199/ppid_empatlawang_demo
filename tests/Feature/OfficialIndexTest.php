@@ -41,4 +41,25 @@ class OfficialIndexTest extends TestCase
             ->assertDontSee('Hidden')
             ->assertDontSee('Data pejabat belum tersedia.');
     }
+
+    public function test_other_groups_get_their_own_sections_and_admin_can_set_group(): void
+    {
+        Official::create(['name' => 'Camat B', 'position' => 'Camat Tebing Tinggi', 'group' => 'kecamatan', 'order' => 1, 'is_published' => true]);
+        Official::create(['name' => 'AKBP C', 'position' => 'Kapolres Empat Lawang', 'group' => 'forkopimda', 'order' => 1, 'is_published' => true]);
+        Official::create(['name' => 'Kadis D', 'position' => 'Kepala Dinas X', 'order' => 10, 'is_published' => true]);
+
+        $this->get('/profil-pejabat')->assertOk()
+            ->assertSeeInOrder(['Pejabat Struktural', 'Kadis D', 'Forkopimda', 'AKBP C', 'Camat', 'Camat B'], false);
+
+        // order 1 outside Pemkab is not a Pimpinan Daerah leader card
+        $this->assertStringNotContainsString('AKBP C', explode('Pejabat Struktural', $this->get('/profil-pejabat')->getContent())[0]);
+
+        $admin = \App\Models\User::factory()->create();
+        $kadis = Official::where('name', 'Kadis D')->sole();
+        $this->actingAs($admin)->put(route('admin.officials.update', $kadis), ['name' => 'Kadis D', 'position' => 'Ketua DPRD', 'group' => 'dprd', 'order' => 1])
+            ->assertRedirect(route('admin.officials.index'));
+        $this->assertSame('dprd', $kadis->fresh()->group);
+        $this->actingAs($admin)->put(route('admin.officials.update', $kadis), ['name' => 'Kadis D', 'position' => 'X', 'group' => 'hacker'])->assertSessionHasErrors('group');
+        $this->actingAs($admin)->get(route('admin.officials.index'))->assertOk()->assertSee('DPRD Kabupaten')->assertSeeInOrder(['Kapolres Empat Lawang', 'Ketua DPRD', 'Camat Tebing Tinggi']);
+    }
 }

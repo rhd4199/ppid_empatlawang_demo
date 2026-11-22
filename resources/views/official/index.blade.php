@@ -66,6 +66,19 @@
         </section>
     @endif
 
+    @foreach ($sections as $key => $section)
+        <section class="official-section mt-5" aria-labelledby="officials-{{ $key }}">
+            <h2 id="officials-{{ $key }}" class="official-heading h4 fw-bold text-center mb-4"><i class="fas {{ ['forkopimda' => 'fa-shield-halved', 'dprd' => 'fa-building-columns', 'kecamatan' => 'fa-map-location-dot'][$key] ?? 'fa-users' }}"></i> {{ $section['label'] }}</h2>
+            <div class="row g-3">
+                @foreach ($section['officials'] as $official)
+                    <div class="col-12 col-md-6 col-lg-4">
+                        @include('official._card', ['lead' => false])
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endforeach
+
     <div class="mt-5 text-center">
         <a href="{{ route('profiles.index') }}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold">
             <i class="fas fa-arrow-left me-2"></i>Kembali ke Profil

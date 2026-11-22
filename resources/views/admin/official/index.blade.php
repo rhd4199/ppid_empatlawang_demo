@@ -44,7 +44,7 @@
                                 @endif
                             </td>
                             <td class="px-4 fw-bold">{{ $official->name }}</td>
-                            <td class="px-4">{{ $official->position }}</td>
+                            <td class="px-4">{{ $official->position }}<div class="small text-muted">{{ App\Models\Official::GROUPS[$official->group] ?? $official->group }}</div></td>
                             <td class="px-4">{{ $official->order }}</td>
                             <td class="px-4">
                                 <form action="{{ route('admin.officials.toggle-status', $official->id) }}" method="POST">
@@ -95,6 +95,14 @@
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Bio Singkat</label>
                                                 <textarea name="bio" class="form-control" rows="3">{{ $official->bio }}</textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Grup</label>
+                                                <select name="group" class="form-select">
+                                                    @foreach (App\Models\Official::GROUPS as $key => $label)
+                                                        <option value="{{ $key }}" @selected($official->group === $key)>{{ $label }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Urutan Tampil</label>
@@ -157,6 +165,14 @@
                         <label class="form-label fw-bold">Bio Singkat</label>
                         <textarea name="bio" class="form-control" rows="3"></textarea>
                     </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Grup</label>
+                            <select name="group" class="form-select">
+                                @foreach (App\Models\Official::GROUPS as $key => $label)
+                                    <option value="{{ $key }}" @selected('pemkab' === $key)>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Urutan Tampil</label>
                         <input type="number" name="order" class="form-control" value="0" min="0">

@@ -11,7 +11,7 @@ class OfficialController extends Controller
 {
     public function index()
     {
-        $officials = Official::orderBy('order')->orderBy('name')->get();
+        $officials = Official::inGroupOrder()->orderBy('order')->orderBy('name')->get();
 
         return view('admin.official.index', compact('officials'));
     }
@@ -24,6 +24,7 @@ class OfficialController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'bio' => 'nullable|string',
             'order' => 'nullable|integer|min:0',
+            'group' => 'nullable|in:' . implode(',', array_keys(Official::GROUPS)),
             'is_published' => 'nullable|boolean',
         ]);
 
@@ -38,6 +39,7 @@ class OfficialController extends Controller
             'photo' => $path,
             'bio' => $request->bio,
             'order' => $request->order ?? 0,
+            'group' => $request->group ?: 'pemkab',
             'is_published' => $request->has('is_published') ? $request->is_published : true,
         ]);
 
@@ -54,6 +56,7 @@ class OfficialController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'bio' => 'nullable|string',
             'order' => 'nullable|integer|min:0',
+            'group' => 'nullable|in:' . implode(',', array_keys(Official::GROUPS)),
             'is_published' => 'nullable|boolean',
         ]);
 
@@ -62,6 +65,7 @@ class OfficialController extends Controller
             'position' => $request->position,
             'bio' => $request->bio,
             'order' => $request->order ?? 0,
+            'group' => $request->group ?: 'pemkab',
             'is_published' => $request->has('is_published') ? $request->is_published : $official->is_published,
         ];
 
