@@ -71,7 +71,7 @@ class WhatsAppInboxController extends Controller
     public function redraft(WaConversation $conversation)
     {
         $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
-        $conversation->update(['reply_draft' => $messages->isEmpty() ? null : $this->draft($messages)]);
+        $conversation->update(['reply_draft' => $messages->isEmpty() ? null : $this->draft($messages, $conversation)]);
 
         // Inbox script: the suggestion card ('' when there is nothing to answer).
         if (request()->expectsJson()) {
@@ -150,6 +150,7 @@ class WhatsAppInboxController extends Controller
             'contact_name' => 'nullable|string|max:100',
             'label' => 'nullable|in:' . implode(',', array_keys(WaConversation::LABELS)),
             'notes' => 'nullable|string|max:2000',
+            'ai_memory' => 'nullable|string|max:1500',
         ]);
         $conversation->update($data);
 
@@ -157,7 +158,7 @@ class WhatsAppInboxController extends Controller
     }
 
     /** Sapa Madani's answer to the citizen's unanswered messages, earlier turns as history. */
-    private function draft($messages): string
+    private function draft($messages, WaConversation $conversation): string
     {
         $lastOut = $messages->where('direction', 'out')->where('status', '!=', 'failed')->keys()->last();
         $pending = $lastOut === null ? $messages : $messages->slice($lastOut + 1);
@@ -168,11 +169,11 @@ class WhatsAppInboxController extends Controller
         }
         $history = $messages->take($lastOut === null ? 0 : $lastOut + 1)
             ->where(fn ($m) => $m->direction === 'in' || $m->status !== 'failed')
-            ->take(-10)
+            ->take(-20)
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
 
-        return app(AssistantController::class)->answer(mb_substr($question, 0, 1000), $history, 'wa');
+        return app(AssistantController::class)->answer(mb_substr($question, 0, 1000), $history, 'wa', $conversation);
     }
 
     private function conversations()

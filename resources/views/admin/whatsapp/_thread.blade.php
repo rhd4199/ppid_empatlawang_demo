@@ -18,12 +18,12 @@
                 <div class="fw-semibold text-truncate">{{ $conversation->displayName() ?: 'Warga' }}</div>
                 <div class="small text-muted text-truncate">+{{ $conversation->phone }} · {{ App\Models\WaConversation::STATUSES[$conversation->status] ?? $conversation->status }}@if ($conversation->label) · {{ App\Models\WaConversation::LABELS[$conversation->label] ?? $conversation->label }}@endif</div>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle ms-auto" data-bs-toggle="collapse" data-bs-target="#waContact" aria-expanded="{{ $errors->hasAny(['contact_name', 'label', 'notes']) ? 'true' : 'false' }}" title="Info kontak" aria-label="Info kontak"><i class="fas fa-user-pen"></i></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle ms-auto" data-bs-toggle="collapse" data-bs-target="#waContact" aria-expanded="{{ $errors->hasAny(['contact_name', 'label', 'notes', 'ai_memory']) ? 'true' : 'false' }}" title="Info kontak" aria-label="Info kontak"><i class="fas fa-user-pen"></i></button>
             <a href="{{ wa_link($conversation->phone) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success rounded-circle" title="Buka di WhatsApp"><i class="fab fa-whatsapp"></i></a>
         </div>
         {{-- Contact card (CRM): officer-set name, label, notes; WhatsApp profile name stays as a hint. --}}
         <form id="waContact" action="{{ route('admin.wa-inbox.contact', [$conversation] + $filters) }}" method="POST"
-              class="collapse border-bottom bg-light px-3 py-2 {{ $errors->hasAny(['contact_name', 'label', 'notes']) ? 'show' : '' }}" data-wa-contact>
+              class="collapse border-bottom bg-light px-3 py-2 {{ $errors->hasAny(['contact_name', 'label', 'notes', 'ai_memory']) ? 'show' : '' }}" data-wa-contact>
             @csrf
             @method('PUT')
             <div class="row g-2">
@@ -44,7 +44,11 @@
                     <label class="form-label small mb-0" for="waContactNotes">Catatan petugas</label>
                     <textarea id="waContactNotes" name="notes" rows="2" maxlength="2000" class="form-control form-control-sm" placeholder="mis. minta salinan Laporan Kinerja 2025, sudah dikirim via email">{{ old('notes', $conversation->notes) }}</textarea>
                 </div>
-                @foreach (['contact_name', 'label', 'notes'] as $field)
+                <div class="col-12">
+                    <label class="form-label small mb-0" for="waContactMemory">Ingatan Sapa Madani <span class="text-muted">(diisi AI dari percakapan; boleh dikoreksi)</span></label>
+                    <textarea id="waContactMemory" name="ai_memory" rows="2" maxlength="1500" class="form-control form-control-sm" placeholder="Belum ada">{{ old('ai_memory', $conversation->ai_memory) }}</textarea>
+                </div>
+                @foreach (['contact_name', 'label', 'notes', 'ai_memory'] as $field)
                     @error($field)<div class="col-12 small text-danger">{{ $message }}</div>@enderror
                 @endforeach
                 <div class="col-12 text-end"><button type="submit" class="btn btn-sm btn-success rounded-pill"><i class="fas fa-save me-1"></i> Simpan</button></div>

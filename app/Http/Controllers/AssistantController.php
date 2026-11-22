@@ -8,7 +8,9 @@ use App\Support\AssistantFallback;
 use App\Support\AssistantInfo;
 use App\Support\DocumentFinder;
 use App\Support\RequirementFinder;
+use App\Models\WaConversation;
 use App\Support\AssistantTools;
+use App\Support\CitizenMemory;
 use App\Support\WhatsAppFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -72,25 +74,27 @@ TXT;
      * @param  array<int, array{role: string, content: string}>  $history  earlier turns, oldest first
      * @param  string  $channel  'wa' = WhatsApp: the AI writes WhatsApp formatting and the reply is converted to it
      */
-    public function answer(string $message, array $history = [], string $channel = 'web'): string
+    public function answer(string $message, array $history = [], string $channel = 'web', ?WaConversation $person = null): string
     {
         $wa = $channel === 'wa';
 
-        return $wa ? WhatsAppFormat::text($this->rawAnswer($message, $history, $wa)) : WhatsAppFormat::plain($this->rawAnswer($message, $history, false));
+        return $wa ? WhatsAppFormat::text($this->rawAnswer($message, $history, $wa, $person)) : WhatsAppFormat::plain($this->rawAnswer($message, $history, false));
     }
 
-    private function rawAnswer(string $message, array $history, bool $wa): string
+    /** $person: the WhatsApp citizen, whose memory (CitizenMemory) goes into the prompt and who can be remembered via ingat_warga. */
+    private function rawAnswer(string $message, array $history, bool $wa, ?WaConversation $person = null): string
     {
         $settings = assistant_settings();
 
         if (config('services.openai.key')) {
             $messages = [
-                ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'], $message) . ($wa ? "\n\n" . WhatsAppFormat::PROMPT : '')],
+                ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'], $message) . ($wa ? "\n\n" . WhatsAppFormat::PROMPT : '')
+                    . ($person ? "\n\n" . CitizenMemory::prompt($person) : '')],
                 ...array_map(fn ($m) => ['role' => $m['role'], 'content' => $m['content']], $history),
                 ['role' => 'user', 'content' => $message],
             ];
 
-            return $this->reply(fn () => $this->openAi($messages), 'OpenAI');
+            return $this->reply(fn () => $this->openAi($messages, $person), 'OpenAI');
         }
 
         if ($settings['api_url'] !== '') {
@@ -107,7 +111,7 @@ TXT;
     }
 
     /** Chat completion with the Persyaratan Layanan tools: run the model's tool calls, then ask again (max MAX_ROUNDS). */
-    private function openAi(array $messages): ?string
+    private function openAi(array $messages, ?WaConversation $person = null): ?string
     {
         for ($round = 0; ; $round++) {
             $tools = $round < AssistantTools::MAX_ROUNDS; // last round: no tools, so the model must answer
@@ -117,7 +121,7 @@ TXT;
                     'max_tokens' => (int) config('services.openai.max_tokens'),
                     'temperature' => 0.2, // factual service answers, little invention
                     'messages' => $messages,
-                    'tools' => $tools ? AssistantTools::definitions() : null,
+                    'tools' => $tools ? [...AssistantTools::definitions(), ...($person ? [CitizenMemory::TOOL] : [])] : null,
                 ]))->throw()->json('choices.0.message');
             if (empty($choice['tool_calls']) || ! $tools) {
                 return $choice['content'] ?? null;
@@ -126,7 +130,9 @@ TXT;
             foreach ($choice['tool_calls'] as $call) {
                 $args = json_decode($call['function']['arguments'] ?? '{}', true);
                 $messages[] = ['role' => 'tool', 'tool_call_id' => $call['id'],
-                    'content' => json_encode(AssistantTools::run($call['function']['name'] ?? '', is_array($args) ? $args : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
+                    'content' => json_encode($person && ($call['function']['name'] ?? '') === 'ingat_warga'
+                        ? CitizenMemory::remember($person, (string) ($args['catatan'] ?? ''))
+                        : AssistantTools::run($call['function']['name'] ?? '', is_array($args) ? $args : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
             }
         }
     }

@@ -68,7 +68,7 @@ class WhatsAppBot
         $confirming = str_contains($lastOut, RequirementFinder::CONFIRM) || str_contains($lastOut, RequirementFinder::STEPS_ASK);
         $reason = $confirming ? null : self::handoffReason($last->body);
 
-        $history = $messages->slice(0, -1)->take(-10)
+        $history = $messages->slice(0, -1)->take(-20)
             ->filter(fn ($m) => $m->direction === 'in' || $m->status !== 'failed')
             ->map(fn ($m) => ['role' => $m->direction === 'in' ? 'user' : 'assistant', 'content' => mb_substr($m->body, 0, 1000)])
             ->values()->all();
@@ -76,7 +76,7 @@ class WhatsAppBot
         // Answering our "maksudnya layanan X?" (ya / a number) is not a menu choice.
         $choice = $confirming ? null : self::menuChoice(mb_strtolower(trim($last->body)));
         $question = $choice !== null ? self::MENU[$choice] : mb_substr($last->body, 0, 1000);
-        $reply = app(AssistantController::class)->answer($question, $history, 'wa');
+        $reply = app(AssistantController::class)->answer($question, $history, 'wa', $conversation);
         $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');
         // A failed send stays new so an officer sees it.
         $conversation->update(match (true) {
