@@ -59,6 +59,7 @@ class AssistantInfoTest extends TestCase
         }
         $this->assertStringNotContainsString('GRATIS', $this->reply('minta data biaya perjalanan dinas'));
         // market prices are not the PPID fee
+        \Illuminate\Support\Facades\Http::fake(['api-panelhargav2.badanpangan.go.id/*' => \Illuminate\Support\Facades\Http::response('down', 500)]); // no price data: honest pointer
         $price = $this->reply('Berapa harga cabe hari ini');
         $this->assertStringNotContainsString('GRATIS', $price);
         $this->assertStringContainsString('panelharga.badanpangan.go.id', $price);

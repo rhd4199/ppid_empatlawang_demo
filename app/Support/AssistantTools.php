@@ -51,6 +51,11 @@ class AssistantTools
                 ['dari_tanggal' => ['type' => 'string', 'description' => 'Opsional, YYYY-MM-DD; bawaan hari ini']]),
             $fn('cari_pengadaan', 'Informasi pengadaan barang/jasa yang diumumkan di situs PPID (judul, kategori, status).',
                 ['kata_kunci' => ['type' => 'string', 'description' => 'Opsional']]),
+            $fn('harga_pangan', 'Harga eceran bahan pangan terbaru (beras, cabai, bawang, daging, telur, gula, minyak goreng, ikan, dll.) di Kabupaten Empat Lawang dari Panel Harga Badan Pangan Nasional.',
+                ['komoditas' => ['type' => 'string', 'description' => 'Opsional, mis. "cabai", "beras"; kosong = semua']]),
+            $fn('cuaca', 'Prakiraan cuaca BMKG per 3 jam untuk sebuah kecamatan di Empat Lawang, plus peringatan dini cuaca BMKG yang sedang berlaku.',
+                ['kecamatan' => ['type' => 'string', 'enum' => array_column(BmkgWeather::DISTRICTS, 'name'), 'description' => 'Bawaan Tebing Tinggi']]),
+            $fn('info_bencana', 'Kejadian bencana 30 hari terakhir di Empat Lawang dan kabupaten sekitarnya (data BNPB): jenis, tanggal, dampak, kondisi.'),
             ...($web ? [$fn('cari_web', 'Cari di web publik (situs resmi pemerintah, media berita) bila data PPID di tool lain tidak punya jawabannya, mis. pejabat Forkopimda, kegiatan/berita di luar situs, regulasi umum. Hasilnya bukan data resmi PPID: sebut sumbernya dan bahwa informasi bisa belum terbaru.',
                 ['pertanyaan' => ['type' => 'string', 'description' => 'Pertanyaan/kata kunci pencarian, singkat dan spesifik']], ['pertanyaan'])] : []),
         ];
@@ -106,6 +111,11 @@ class AssistantTools
                 ->when(trim((string) ($args['kata_kunci'] ?? '')), fn ($q, $term) => $q->whereRaw('LOWER(title) LIKE ?', ['%' . mb_strtolower(mb_substr($term, 0, 100)) . '%']))
                 ->latest()->limit(8)->get(['title', 'category', 'status'])->map(fn ($p) => ['judul' => $p->title, 'kategori' => $p->category, 'status' => $p->status])->all()
                 ?: 'Tidak ada yang cocok.', 'halaman' => route('procurements.index')],
+            'harga_pangan' => ($p = FoodPrice::find((string) ($args['komoditas'] ?? ''))) ? $p + ['sumber' => 'Panel Harga Badan Pangan Nasional (harga konsumen)']
+                : ['error' => 'Data harga tidak ditemukan/tidak tersedia saat ini. Arahkan ke panelharga.badanpangan.go.id.'],
+            'cuaca' => self::weather((string) ($args['kecamatan'] ?? '')),
+            'info_bencana' => ['kejadian' => array_map(fn ($e) => ['tanggal' => $e['date'], 'wilayah' => $e['region'], 'jenis' => $e['type'], 'dampak' => $e['impact'], 'kondisi' => mb_strimwidth((string) $e['status'], 0, 200, '…')],
+                array_slice(BnpbDisaster::recent(), 0, 8)) ?: 'Tidak ada kejadian bencana tercatat 30 hari terakhir.', 'sumber' => 'BNPB'],
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
             default => ['error' => "Tool {$name} tidak ada."],
         };
@@ -141,6 +151,21 @@ class AssistantTools
 
         return ['jawaban' => trim((string) ($message['content'] ?? '')), 'sumber' => $sources,
             'catatan' => 'Dari web publik, bukan data resmi PPID. Sebut nama situs sumbernya saja (tanpa tautan) dan bahwa informasi bisa belum terbaru.'];
+    }
+
+    /** BMKG forecast (next 24 hours) for a district by name + active early warnings for Empat Lawang. */
+    private static function weather(string $district): array
+    {
+        $code = collect(BmkgWeather::DISTRICTS)->search(fn ($d) => mb_strtolower($d['name']) === mb_strtolower(trim($district))) ?: BmkgWeather::DEFAULT_DISTRICT;
+        $slots = array_map(fn ($s) => ['waktu' => $s['time'] . ' WIB', 'cuaca' => $s['desc'], 'suhu' => $s['temp'] . '°C', 'kelembapan' => $s['humidity'] . '%'],
+            BmkgWeather::upcoming(BmkgWeather::forecast($code)));
+
+        return [
+            'kecamatan' => BmkgWeather::DISTRICTS[$code]['name'],
+            'prakiraan' => $slots ?: 'Data prakiraan sedang tidak tersedia.',
+            'peringatan_dini' => array_map(fn ($a) => ['judul' => $a['title'], 'kecamatan' => $a['areas'], 'mulai' => $a['start'], 'hingga' => $a['end'], 'dampak' => $a['impact']], BmkgWeather::alerts()) ?: 'Tidak ada peringatan dini.',
+            'sumber' => $slots[0]['source'] ?? 'BMKG',
+        ];
     }
 
     /** Agenda start: a valid YYYY-MM-DD from the model, else today. */

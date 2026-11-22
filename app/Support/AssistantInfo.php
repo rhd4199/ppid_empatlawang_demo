@@ -24,8 +24,12 @@ class AssistantInfo
         $standard = route('standard-service.index');
 
         // "minta data biaya perjalanan dinas" is a document request, not a fee question
-        // "harga cabe": market prices are not a PPID fee question; PPID holds no daily price data, so point to the official panels.
-        if (preg_match('/\b(harga|harganya)\b/u', $text) && preg_match('/\b(cabe|cabai|beras|bawang|minyak|gula|telur|daging|ayam|ikan|sayur|sembako|pangan|bbm|bensin|pertalite|pertamax|solar|lpg|elpiji|gas|pupuk|kopi|karet|sawit|emas|pasar)\b/u', $text)) {
+        // "harga cabe": market prices, not the PPID fee. Food: Panel Harga Bapanas (FoodPrice); other goods: point to the panels.
+        if (preg_match('/\b(harga|harganya)\b/u', $text) && preg_match('/\b(cabe|cabai|beras|bawang|minyak|gula|telur|daging|ayam|ikan|sayur|sembako|pangan|bbm|bensin|pertalite|pertamax|solar|lpg|elpiji|gas|pupuk|kopi|karet|sawit|emas|pasar|terigu|garam|kedelai|jagung)\b/u', $text, $item)) {
+            if ($price = self::price($item[1])) {
+                return $price;
+            }
+
             return 'Mohon maaf, data harga pangan dan barang harian belum tersedia di PPID. Harga terbaru bisa dicek di Panel Harga Badan Pangan Nasional (panelharga.badanpangan.go.id) atau PIHPS Bank Indonesia (bi.go.id/hargapangan), atau ditanyakan ke Dinas Perindustrian dan Perdagangan Kabupaten Empat Lawang.';
         }
         // "harga" alone is a fee question only about the PPID service itself ("harga salinan dokumen?")
@@ -37,6 +41,9 @@ class AssistantInfo
         if (preg_match('/\b(berapa lama|berapa hari|lamanya|lama (proses|prosesnya|diproses|dijawab|jawab)|waktu proses|jangka waktu|kapan (selesai|dijawab|diproses|keluar))\b/u', $text)) {
             return self::DURATION . ' Bila jawabannya belum sesuai, keberatan dapat diajukan dan Atasan PPID menanggapi paling lambat 30 hari kerja.'
                 . ' Status permohonan bisa dicek di menu Cek Status Permohonan (' . route('request.status') . "). Alur lengkapnya ada di halaman Standar Layanan ({$standard}#alur).";
+        }
+        if (preg_match('/\b(cuaca|prakiraan|ramalan|hujan|gerimis|mendung|cerah|suhu)\b/u', $text) && $weather = self::weather($text)) {
+            return $weather;
         }
         if ($official = self::official($text)) {
             return $official;
@@ -53,6 +60,34 @@ class AssistantInfo
         }
 
         return null;
+    }
+
+    /** BMKG forecast for the named district (default Tebing Tinggi): next slots + an active early warning. */
+    private static function weather(string $text): ?string
+    {
+        $code = collect(BmkgWeather::DISTRICTS)->search(fn ($d) => str_contains($text, mb_strtolower($d['name']))) ?: BmkgWeather::DEFAULT_DISTRICT;
+        $slots = array_slice(BmkgWeather::upcoming(BmkgWeather::forecast($code)), 0, 4);
+        if (! $slots) {
+            return null;
+        }
+        $lines = array_map(fn ($s) => '- ' . substr($s['time'], 11, 5) . " WIB: {$s['desc']}, {$s['temp']}°C", $slots);
+        $alert = BmkgWeather::alerts()[0] ?? null;
+
+        return 'Prakiraan cuaca Kecamatan ' . BmkgWeather::DISTRICTS[$code]['name'] . " ({$slots[0]['source']}):\n" . implode("\n", $lines)
+            . ($alert ? "\nPeringatan dini BMKG: {$alert['title']}" . ($alert['end'] ? " (hingga {$alert['end']})" : '') . '.' : '');
+    }
+
+    /** Latest consumer prices from Panel Harga Bapanas for a commodity word; whole list for "sembako/pangan/pasar". */
+    private static function price(string $item): ?string
+    {
+        $found = in_array($item, ['sembako', 'pangan', 'pasar'], true) ? FoodPrice::latest() : FoodPrice::find($item);
+        if (! $found) {
+            return null;
+        }
+        $lines = array_map(fn ($r) => '- ' . $r['komoditas'] . ': Rp' . number_format($r['harga'], 0, ',', '.') . '/' . $r['satuan'], array_slice($found['harga'], 0, 12));
+
+        return "Harga eceran rata-rata di {$found['wilayah']} (Panel Harga Badan Pangan Nasional, data {$found['harga'][0]['tanggal']}):\n"
+            . implode("\n", $lines) . "\nHarga di pasar bisa sedikit berbeda.";
     }
 
     /** Officials by name from the Official table; "siapa PPID" → PPID structure. Null when not asked. */
