@@ -126,6 +126,36 @@ return [
             ['out', 'Selamat siang. Data realisasi Dana Desa dikelola Dinas PMD. Silakan ajukan permohonan informasi resmi lewat website agar tercatat, nanti kami koordinasikan dengan PPID Pelaksana PMD.', 'officer'],
             ['in', 'Baik sudah saya ajukan barusan'],
         ]],
+        // Bot answers first, the citizen asks further, an officer takes over.
+        ['label' => 'permohonan', 'notes' => 'Minta salinan Perbup tunjangan perangkat desa — dikirim via email.', 'thread' => [
+            ['in', 'Selamat pagi, PPID buka hari Sabtu tidak?'],
+            ['out', 'Selamat pagi. Layanan PPID tutup pada hari Sabtu, Minggu dan libur nasional. Silakan datang Senin–Jumat, atau ajukan permohonan online kapan saja di https://ppid.empatlawangkab.go.id/permohonan-informasi', 'bot'],
+            ['in', 'Kalau minta salinan Perbup tentang tunjangan perangkat desa bisa lewat WA saja?'],
+            ['out', 'Bisa, Bapak/Ibu {name}. Mohon kirim nama lengkap, nomor KTP dan email, nanti salinan Perbup kami kirim dalam bentuk PDF.', 'officer'],
+            ['in', '{name}, email saya sudah saya kirim ya pak'],
+            ['out', 'Sudah kami kirim ke email Bapak/Ibu. Silakan dicek juga folder spam. Terima kasih 🙏', 'officer'],
+        ]],
+        ['label' => 'aduan', 'notes' => 'Aduan sampah menumpuk, diteruskan ke DLH.', 'thread' => [
+            ['in', 'Assalamualaikum'],
+            ['out', "Wa'alaikumsalam. Selamat datang di layanan WhatsApp PPID Kabupaten Empat Lawang. Ada yang bisa kami bantu?", 'bot'],
+            ['in', 'Sampah di pinggir jalan {village} menumpuk sudah seminggu tidak diangkut, bau sekali'],
+            ['out', 'Mohon maaf atas ketidaknyamanannya. Laporan sudah kami teruskan ke Dinas Lingkungan Hidup. Bila berkenan, kirimkan foto dan lokasi persisnya.', 'officer'],
+            ['in', 'Sudah diangkut tadi pagi pak, terima kasih responnya cepat'],
+            ['out', 'Alhamdulillah, terima kasih juga atas laporannya 🙏', 'officer'],
+        ]],
+        ['label' => 'permohonan', 'thread' => [
+            ['in', 'Berapa lama proses permohonan informasi?'],
+            ['out', 'Permohonan informasi dijawab paling lambat 10 hari kerja sejak diterima, dan dapat diperpanjang 7 hari kerja dengan pemberitahuan tertulis (UU 14/2008).', 'bot'],
+            ['in', 'Saya sudah ajukan 3 hari lalu atas nama {name}, statusnya bisa dicek dimana?'],
+            ['out', 'Status permohonan bisa dicek di menu Cek Status Permohonan pada website PPID dengan nomor registrasi. Permohonan atas nama {name} sudah kami terima dan sedang diproses PPID Pelaksana.', 'officer'],
+        ]],
+        ['label' => 'umum', 'thread' => [
+            ['in', 'Syarat pindah domisili ke Empat Lawang apa saja?'],
+            ['out', 'Pindah datang diurus di Disdukcapil Kabupaten Empat Lawang: Surat Pindah (SKPWNI) dari daerah asal, KK dan KTP-el. Rincian: https://ppid.empatlawangkab.go.id/persyaratan', 'bot'],
+            ['in', 'Kalau surat pindahnya belum ada, bisa diurus online?'],
+            ['out', 'Bisa, SKPWNI bisa diajukan online lewat aplikasi Identitas Kependudukan Digital (IKD) atau layanan online Disdukcapil daerah asal. Setelah terbit, bawa ke Disdukcapil Empat Lawang untuk cetak KK/KTP baru.', 'officer'],
+            ['in', 'Siap pak, sangat membantu'],
+        ]],
         ['label' => 'umum', 'failed' => true, 'thread' => [
             ['in', 'Pak kapan pembuatan SIM keliling ke {village}?'],
             ['out', 'Jadwal SIM keliling ditetapkan Satlantas Polres Empat Lawang, biasanya diumumkan di media sosial Polres. Silakan pantau di sana ya.', 'officer'],
