@@ -120,6 +120,11 @@ class AssistantToolsTest extends TestCase
         Http::assertSent(fn (Request $r) => ! str_contains($r['messages'][0]['content'], 'format WhatsApp')); // web channel
     }
 
+    public function test_web_chat_gets_plain_text_from_ai_markdown(): void
+    {
+        $this->assertSame("Syarat\nCabai: Rp70.000\nPeta: https://x.test/m", WhatsAppFormat::plain("## Syarat\n**Cabai**: Rp70.000\n[Peta](https://x.test/m)"));
+    }
+
     public function test_fallback_requirement_answer_is_dressed_for_whatsapp(): void
     {
         $reply = WhatsAppFormat::text("Baik, Bapak/Ibu. Persyaratan KTP-el Baru (dilayani Disdukcapil):\n1. Fotokopi KK.\nBiaya: Gratis\n"

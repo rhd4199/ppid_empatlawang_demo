@@ -76,7 +76,7 @@ TXT;
     {
         $wa = $channel === 'wa';
 
-        return $wa ? WhatsAppFormat::text($this->rawAnswer($message, $history, $wa)) : $this->rawAnswer($message, $history, false);
+        return $wa ? WhatsAppFormat::text($this->rawAnswer($message, $history, $wa)) : WhatsAppFormat::plain($this->rawAnswer($message, $history, false));
     }
 
     private function rawAnswer(string $message, array $history, bool $wa): string

@@ -12,6 +12,12 @@ class WhatsAppFormat
     /** Added to the AI system prompt for the WhatsApp channel. */
     public const PROMPT = 'Balasan ini dikirim lewat WhatsApp. Pakai format WhatsApp, bukan Markdown: *teks tebal* (satu bintang) untuk judul/poin penting, _miring_ untuk catatan, daftar bernomor "1." untuk persyaratan/langkah dan "•" untuk poin lain, paragraf pendek dipisah baris kosong, tautan ditulis polos (tanpa [teks](url)), tanpa tabel dan tanpa judul #. Boleh 1–2 emoji yang relevan (mis. 📋 🔗 💰 🕗), jangan berlebihan.';
 
+    /** Web chat panel shows plain text (URLs become links there): drop AI Markdown (**bold**, # headings, [text](url)). */
+    public static function plain(string $reply): string
+    {
+        return preg_replace(['/\*\*(.+?)\*\*/u', '/__(.+?)__/u', '/^#{1,6}\s*/mu', '/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/u'], ['$1', '$1', '', '$1: $2'], $reply);
+    }
+
     public static function text(string $reply): string
     {
         $rules = [
