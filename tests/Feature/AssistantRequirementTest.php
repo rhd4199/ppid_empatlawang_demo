@@ -25,6 +25,7 @@ class AssistantRequirementTest extends TestCase
             ['Balik Nama Kendaraan Bekas (Motor/Mobil)', 'balik-nama-kendaraan', 'kendaraan', 'Samsat Kabupaten Empat Lawang', 'balik nama, bbn, bbnkb, motor bekas, mobil bekas', ['KTP-el pemilik baru.', 'BPKB asli dan STNK asli.', 'Kuitansi jual beli.', 'Cek fisik.', 'Surat kuasa.', 'Pengantar mutasi.']],
             ['Balik Nama Sertifikat Tanah karena Jual Beli', 'balik-nama-sertifikat-jual-beli', 'pertanahan', 'Kantor Pertanahan', 'balik nama sertifikat, ajb, ppat', ['Akta Jual Beli dari PPAT.']],
             ['Uji Berkala Kendaraan (KIR)', 'uji-kir', 'kendaraan', 'Dinas Perhubungan', 'kir, uji kir, tes emisi, tes rem', ['Buku uji lama.']],
+            ['KTP-el Baru (Pertama Kali)', 'ktp-el-baru', 'kependudukan', 'Disdukcapil Kabupaten Empat Lawang', 'ktp baru, rekam ktp', ['Telah berusia 17 tahun.']],
             ['Draft SIM Rahasia', 'draft-sim', 'kendaraan', 'Satpas', 'sim', ['Rahasia.'], false],
         ];
         foreach ($rows as $r) {
@@ -76,6 +77,8 @@ class AssistantRequirementTest extends TestCase
             $this->assertStringNotContainsString('KIR', $this->ask($text));
         }
         $this->assertStringContainsString('Uji Berkala Kendaraan', $this->ask('syarat uji kir'));
+        // Palembang dialect + "bikin" = the new KTP, not Ganti Alamat KTP-el.
+        $this->assertStringContainsString('Persyaratan KTP-el Baru', $this->ask('Cara bikin KTP cak mano'));
     }
 
     public function test_ppid_questions_are_not_hijacked(): void

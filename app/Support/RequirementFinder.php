@@ -19,7 +19,9 @@ class RequirementFinder
         'berapa', 'biaya', 'biayanya', 'lama', 'lamanya', 'butuh', 'perlu', 'diperlukan', 'dibutuhkan', 'dokumen', 'berkas', 'apakah',
         'kalau', 'kalo', 'klo', 'nih', 'dong', 'sih', 'kah', 'harus', 'bawa', 'dibawa', 'langkah', 'alur', 'info', 'informasi', 'tentang',
         'mengenai', 'soal', 'halo', 'hai', 'selamat', 'pagi', 'siang', 'sore', 'malam', 'terima', 'kasih', 'ini', 'itu', 'kantor', 'el',
-        'empat', 'lawang', 'kabupaten', 'kab', 'gratis', 'bayar', 'baru'];
+        'empat', 'lawang', 'kabupaten', 'kab', 'gratis', 'bayar', 'baru',
+        // Palembang/Besemah chat: "cak mano" = bagaimana
+        'cak', 'mano', 'camano', 'cakmano', 'gek', 'nian', 'kito', 'aku', 'nak', 'dimano', 'apo'];
 
     /** Words people type vs. words in titles/keywords. */
     private const SYNONYMS = ['ektp' => 'ktp', 'akte' => 'akta', 'sertipikat' => 'sertifikat', 'serifikat' => 'sertifikat',
@@ -74,7 +76,11 @@ class RequirementFinder
             return collect();
         }
 
-        return $rows->where('score', $best)->sortByDesc('titleScore')->take(3)->values();
+        // "bikin/buat KTP" = the new one first ("KTP-el Baru", not "Ganti Alamat KTP-el").
+        $create = (bool) preg_match('/\b(bikin|buat|membuat|pembuatan|baru)\b/u', mb_strtolower($text));
+        $rows->each(fn ($row) => $row->isNew = $create && str_contains(mb_strtolower($row->title), 'baru') ? 1 : 0);
+
+        return $rows->where('score', $best)->sortBy([['titleScore', 'desc'], ['isNew', 'desc']])->take(3)->values();
     }
 
     /** Requirement list items as plain text (the column holds an <ol>/<ul> from the seeder or the admin editor). */
