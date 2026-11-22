@@ -30,6 +30,7 @@ Route::get('/informasi-publik/{id}/unduh', [InfoPublicController::class, 'downlo
 Route::resource('standar-layanan', StandardServiceController::class)->only(['index'])->names('standard-service');
 Route::get('/persyaratan', [App\Http\Controllers\ServiceRequirementController::class, 'index'])->name('service-requirements.index');
 Route::get('/persyaratan/{slug}', [App\Http\Controllers\ServiceRequirementController::class, 'show'])->name('service-requirements.show');
+Route::get('/mbg', [App\Http\Controllers\SppgController::class, 'index'])->name('sppg.index');
 Route::resource('laporan', ReportController::class)->only(['index'])->names('reports');
 Route::resource('berita', NewsController::class)
     ->only(['index', 'show'])

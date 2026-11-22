@@ -14,7 +14,7 @@ class SitemapController extends Controller
     {
         $urls = collect([
             'home', 'profiles.index', 'officials.index', 'informasi-publik.index', 'standard-service.index', 'service-requirements.index',
-            'reports.index', 'news.index', 'galleries.index', 'events.index', 'procurements.index',
+            'reports.index', 'news.index', 'galleries.index', 'events.index', 'procurements.index', 'sppg.index',
             'contact.index', 'request.create', 'complaint.create',
         ])->map(fn ($name) => ['loc' => route($name), 'lastmod' => null]);
 

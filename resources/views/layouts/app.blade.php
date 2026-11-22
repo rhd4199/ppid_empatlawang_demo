@@ -511,11 +511,12 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('news.*') || request()->routeIs('galleries.*') || request()->routeIs('events.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Informasi</a>
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('news.*') || request()->routeIs('galleries.*') || request()->routeIs('events.*') || request()->routeIs('sppg.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Informasi</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('news.index') }}">Berita PPID</a></li>
                             <li><a class="dropdown-item" href="{{ route('galleries.index') }}">Galeri</a></li>
                             <li><a class="dropdown-item" href="{{ route('events.index') }}">Calendar Event</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('sppg.*') ? 'active' : '' }}" href="{{ route('sppg.index') }}">Makan Bergizi Gratis (SPPG)</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
