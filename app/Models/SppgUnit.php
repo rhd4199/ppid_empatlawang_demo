@@ -89,6 +89,42 @@ class SppgUnit extends Model
         }));
     }
 
+    /**
+     * Sapa Madani answer without AI for "sppg di pendopo ada berapa", "dimana lokasi sppg ulu musi", "dapur mbg".
+     * Null when the text is not about SPPG/MBG. $text is lower-case (AssistantFallback/WhatsAppBot).
+     */
+    public static function reply(string $text): ?string
+    {
+        if (! preg_match('/\b(sppg|mbg|makan bergizi( gratis)?|makan siang gratis|dapur (mbg|gizi|makan))\b/u', $text)) {
+            return null;
+        }
+        $units = static::published()->orderBy('kecamatan')->orderBy('name')->get();
+        $page = route('sppg.index');
+        $source = 'Sumber: Radar MBG Badan Gizi Nasional' . ($units->max('checked_at') ? ', dicek ' . $units->max('checked_at')->translatedFormat('j F Y') : '') . '.';
+        if ($units->isEmpty()) {
+            return "Data SPPG (dapur Makan Bergizi Gratis) di Empat Lawang belum tersedia di situs PPID. Informasi resminya ada di Radar MBG Badan Gizi Nasional (bgn.go.id/radar-mbg).";
+        }
+        // longest name first so "pendopo barat" wins over "pendopo"
+        $kecamatan = $units->pluck('kecamatan')->unique()->sortByDesc(fn ($k) => mb_strlen($k))
+            ->first(fn ($k) => preg_match('/\b' . preg_quote(mb_strtolower($k), '/') . '\b/u', $text));
+        $line = fn ($u) => "- {$u->name}" . ($u->address ? " — {$u->address}" : '') . ($u->institutions_count ? " ({$u->institutions_count} instansi dilayani)" : '');
+
+        if ($kecamatan) {
+            $here = $units->where('kecamatan', $kecamatan);
+
+            return "Di Kecamatan {$kecamatan} ada {$here->count()} SPPG (dapur Makan Bergizi Gratis) yang tercatat:\n"
+                . $here->map($line)->implode("\n")
+                . "\nDaftar lengkap dan sekolah yang dilayani ada di halaman MBG (" . route('sppg.index', ['kecamatan' => $kecamatan]) . "). {$source}"
+                . "\nApakah Bapak/Ibu ingin tahu SPPG di kecamatan lain?";
+        }
+        $perKecamatan = $units->countBy('kecamatan')->map(fn ($n, $k) => "{$k} {$n}")->implode(', ');
+        $statuses = $units->countBy(fn ($u) => mb_strtolower($u->status_label))->map(fn ($n, $s) => "{$n} {$s}")->implode(', ');
+
+        return "Saat ini tercatat {$units->count()} SPPG (dapur Makan Bergizi Gratis) di Kabupaten Empat Lawang ({$statuses}). Per kecamatan: {$perKecamatan}."
+            . " Nama, alamat, dan sekolah yang dilayani tiap SPPG ada di halaman MBG ({$page}). {$source}"
+            . "\nSPPG di kecamatan mana yang ingin Bapak/Ibu ketahui?";
+    }
+
     /** Data for the Sapa Madani tool data_sppg: summary, short list, page link. Published rows only. */
     public static function forAssistant(?string $kecamatan = null, ?string $keyword = null): array
     {

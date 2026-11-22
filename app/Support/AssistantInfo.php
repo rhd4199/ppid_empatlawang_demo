@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\ContactSetting;
 use App\Models\Official;
+use App\Models\SppgUnit;
 
 /**
  * Sapa Madani fallback answers for general office info: contact, hours/holidays, location, fees, processing time,
@@ -22,6 +23,11 @@ class AssistantInfo
     public static function reply(string $text): ?string
     {
         $standard = route('standard-service.index');
+
+        // MBG kitchens first: "dimana lokasi sppg ulu musi" is not about the PPID office address
+        if (($sppg = SppgUnit::reply($text)) !== null) {
+            return $sppg;
+        }
 
         // "minta data biaya perjalanan dinas" is a document request, not a fee question
         // "harga cabe": market prices, not the PPID fee. Food: Panel Harga Bapanas (FoodPrice); other goods: point to the panels.

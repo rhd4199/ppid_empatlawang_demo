@@ -8,6 +8,7 @@ use App\Models\News;
 use App\Models\Official;
 use App\Models\Procurement;
 use App\Models\ServiceRequirement;
+use App\Models\SppgUnit;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -56,6 +57,8 @@ class AssistantTools
             $fn('cuaca', 'Prakiraan cuaca BMKG per 3 jam untuk sebuah kecamatan di Empat Lawang, plus peringatan dini cuaca BMKG yang sedang berlaku.',
                 ['kecamatan' => ['type' => 'string', 'enum' => array_column(BmkgWeather::DISTRICTS, 'name'), 'description' => 'Bawaan Tebing Tinggi']]),
             $fn('info_bencana', 'Kejadian bencana 30 hari terakhir di Empat Lawang dan kabupaten sekitarnya (data BNPB): jenis, tanggal, dampak, kondisi.'),
+            $fn('data_sppg', 'SPPG (dapur program Makan Bergizi Gratis/MBG, Badan Gizi Nasional) di Empat Lawang: jumlah per status & kecamatan, nama, desa, alamat, jumlah instansi dilayani, dan SPPG mana yang melayani sebuah sekolah.',
+                ['kecamatan' => ['type' => 'string', 'description' => 'Opsional, mis. "Ulu Musi"'], 'kata_kunci' => ['type' => 'string', 'description' => 'Opsional: nama SPPG, desa, atau sekolah, mis. "SD Negeri 7 Muara Pinang"']]),
             ...($web ? [$fn('cari_web', 'Cari di web publik (situs resmi pemerintah, media berita) bila data PPID di tool lain tidak punya jawabannya, mis. pejabat Forkopimda, kegiatan/berita di luar situs, regulasi umum. Hasilnya bukan data resmi PPID: sebut sumbernya dan bahwa informasi bisa belum terbaru.',
                 ['pertanyaan' => ['type' => 'string', 'description' => 'Pertanyaan/kata kunci pencarian, singkat dan spesifik']], ['pertanyaan'])] : []),
         ];
@@ -116,6 +119,7 @@ class AssistantTools
             'cuaca' => self::weather((string) ($args['kecamatan'] ?? '')),
             'info_bencana' => ['kejadian' => array_map(fn ($e) => ['tanggal' => $e['date'], 'wilayah' => $e['region'], 'jenis' => $e['type'], 'dampak' => $e['impact'], 'kondisi' => mb_strimwidth((string) $e['status'], 0, 200, '…')],
                 array_slice(BnpbDisaster::recent(), 0, 8)) ?: 'Tidak ada kejadian bencana tercatat 30 hari terakhir.', 'sumber' => 'BNPB'],
+            'data_sppg' => SppgUnit::forAssistant($args['kecamatan'] ?? null, $args['kata_kunci'] ?? null),
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
             default => ['error' => "Tool {$name} tidak ada."],
         };
