@@ -140,7 +140,7 @@ class AssistantTools
             ->map(fn ($c) => ['judul' => $c['title'] ?? '', 'url' => $c['url'] ?? ''])->unique('url')->take(5)->values()->all();
 
         return ['jawaban' => trim((string) ($message['content'] ?? '')), 'sumber' => $sources,
-            'catatan' => 'Dari web publik, bukan data resmi PPID. Sebut sumbernya (nama situs/tautan) dan bahwa informasi bisa belum terbaru.'];
+            'catatan' => 'Dari web publik, bukan data resmi PPID. Sebut nama situs sumbernya saja (tanpa tautan) dan bahwa informasi bisa belum terbaru.'];
     }
 
     /** Agenda start: a valid YYYY-MM-DD from the model, else today. */

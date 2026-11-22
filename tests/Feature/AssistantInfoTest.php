@@ -58,6 +58,10 @@ class AssistantInfoTest extends TestCase
             $this->assertStringContainsString(route('standard-service.index') . '#biaya', $fee);
         }
         $this->assertStringNotContainsString('GRATIS', $this->reply('minta data biaya perjalanan dinas'));
+        // market prices are not the PPID fee
+        $price = $this->reply('Berapa harga cabe hari ini');
+        $this->assertStringNotContainsString('GRATIS', $price);
+        $this->assertStringContainsString('panelharga.badanpangan.go.id', $price);
 
         foreach (['berapa lama prosesnya?', 'kapan dijawab', 'berapa hari permohonan selesai'] as $message) {
             $this->assertStringContainsString('10 + 7 hari kerja', $this->reply($message), $message);

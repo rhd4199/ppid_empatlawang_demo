@@ -24,7 +24,14 @@ class AssistantInfo
         $standard = route('standard-service.index');
 
         // "minta data biaya perjalanan dinas" is a document request, not a fee question
-        if (preg_match('/\b(biaya|biayanya|bayar|bayarnya|berbayar|gratis|tarif|ongkos|dipungut|harga)\b/u', $text) && ! preg_match('/\b(data|dokumen|laporan|anggaran|apbd|perjalanan)\b/u', $text)) {
+        // "harga cabe": market prices are not a PPID fee question; PPID holds no daily price data, so point to the official panels.
+        if (preg_match('/\b(harga|harganya)\b/u', $text) && preg_match('/\b(cabe|cabai|beras|bawang|minyak|gula|telur|daging|ayam|ikan|sayur|sembako|pangan|bbm|bensin|pertalite|pertamax|solar|lpg|elpiji|gas|pupuk|kopi|karet|sawit|emas|pasar)\b/u', $text)) {
+            return 'Mohon maaf, data harga pangan dan barang harian belum tersedia di PPID. Harga terbaru bisa dicek di Panel Harga Badan Pangan Nasional (panelharga.badanpangan.go.id) atau PIHPS Bank Indonesia (bi.go.id/hargapangan), atau ditanyakan ke Dinas Perindustrian dan Perdagangan Kabupaten Empat Lawang.';
+        }
+        // "harga" alone is a fee question only about the PPID service itself ("harga salinan dokumen?")
+        $fee = preg_match('/\b(biaya|biayanya|bayar|bayarnya|berbayar|gratis|tarif|ongkos|dipungut)\b/u', $text)
+            || preg_match('/\bharga(nya)?\b/u', $text) && preg_match('/\b(layanan|informasi|salinan|fotokopi|cetak|ppid|permohonan)\b/u', $text);
+        if ($fee && ! preg_match('/\b(data|dokumen|laporan|anggaran|apbd|perjalanan)\b/u', $text)) {
             return self::FEE . " Rinciannya ada di halaman Standar Layanan ({$standard}#biaya).";
         }
         if (preg_match('/\b(berapa lama|berapa hari|lamanya|lama (proses|prosesnya|diproses|dijawab|jawab)|waktu proses|jangka waktu|kapan (selesai|dijawab|diproses|keluar))\b/u', $text)) {
