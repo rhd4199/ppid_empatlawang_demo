@@ -9,6 +9,8 @@ use App\Models\Official;
 use App\Models\Procurement;
 use App\Models\ServiceRequirement;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * OpenAI tools for Sapa Madani: the model looks up public site data itself (requirements, documents, officials,
@@ -24,6 +26,7 @@ class AssistantTools
     /** OpenAI "tools" parameter. */
     public static function definitions(): array
     {
+        $web = (string) config('services.openai.search_model') !== '';
         $fn = fn (string $name, string $description, array $properties = [], array $required = []) => ['type' => 'function', 'function' => [
             'name' => $name,
             'description' => $description,
@@ -48,6 +51,8 @@ class AssistantTools
                 ['dari_tanggal' => ['type' => 'string', 'description' => 'Opsional, YYYY-MM-DD; bawaan hari ini']]),
             $fn('cari_pengadaan', 'Informasi pengadaan barang/jasa yang diumumkan di situs PPID (judul, kategori, status).',
                 ['kata_kunci' => ['type' => 'string', 'description' => 'Opsional']]),
+            ...($web ? [$fn('cari_web', 'Cari di web publik (situs resmi pemerintah, media berita) bila data PPID di tool lain tidak punya jawabannya, mis. pejabat Forkopimda, kegiatan/berita di luar situs, regulasi umum. Hasilnya bukan data resmi PPID: sebut sumbernya dan bahwa informasi bisa belum terbaru.',
+                ['pertanyaan' => ['type' => 'string', 'description' => 'Pertanyaan/kata kunci pencarian, singkat dan spesifik']], ['pertanyaan'])] : []),
         ];
     }
 
@@ -101,8 +106,41 @@ class AssistantTools
                 ->when(trim((string) ($args['kata_kunci'] ?? '')), fn ($q, $term) => $q->whereRaw('LOWER(title) LIKE ?', ['%' . mb_strtolower(mb_substr($term, 0, 100)) . '%']))
                 ->latest()->limit(8)->get(['title', 'category', 'status'])->map(fn ($p) => ['judul' => $p->title, 'kategori' => $p->category, 'status' => $p->status])->all()
                 ?: 'Tidak ada yang cocok.', 'halaman' => route('procurements.index')],
+            'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
             default => ['error' => "Tool {$name} tidak ada."],
         };
+    }
+
+    /**
+     * Public-web lookup by an OpenAI search model (answer + cited URLs). Never throws: a failure becomes an error the
+     * model must report honestly. Costs one more OpenAI call, bounded by MAX_ROUNDS.
+     */
+    private static function web(string $query): array
+    {
+        if ($query === '' || (string) config('services.openai.search_model') === '') {
+            return ['error' => 'Pencarian web tidak tersedia.'];
+        }
+        try {
+            $message = Http::withToken(config('services.openai.key'))->timeout(45)->acceptJson()
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => config('services.openai.search_model'),
+                    'web_search_options' => ['search_context_size' => 'low',
+                        'user_location' => ['type' => 'approximate', 'approximate' => ['country' => 'ID', 'region' => 'Sumatera Selatan', 'city' => 'Empat Lawang']]],
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Cari di web publik (utamakan situs resmi pemerintah dan media berita tepercaya) dan jawab ringkas dalam bahasa Indonesia, maksimal 120 kata. Sebut tanggal/tahun informasi. Bila tidak menemukan sumber yang jelas, katakan tidak ditemukan; jangan menebak.'],
+                        ['role' => 'user', 'content' => $query . ' (Kabupaten Empat Lawang, Sumatera Selatan)'],
+                    ],
+                ])->throw()->json('choices.0.message');
+        } catch (\Throwable $e) {
+            Log::warning('Sapa Madani web search error: ' . class_basename($e) . ' ' . mb_substr($e->getMessage(), 0, 200));
+
+            return ['error' => 'Pencarian web gagal. Katakan jawabannya belum bisa dipastikan dan arahkan ke halaman Kontak atau Permohonan Informasi.'];
+        }
+        $sources = collect($message['annotations'] ?? [])->pluck('url_citation')->filter()
+            ->map(fn ($c) => ['judul' => $c['title'] ?? '', 'url' => $c['url'] ?? ''])->unique('url')->take(5)->values()->all();
+
+        return ['jawaban' => trim((string) ($message['content'] ?? '')), 'sumber' => $sources,
+            'catatan' => 'Dari web publik, bukan data resmi PPID. Sebut sumbernya (nama situs/tautan) dan bahwa informasi bisa belum terbaru.'];
     }
 
     /** Agenda start: a valid YYYY-MM-DD from the model, else today. */

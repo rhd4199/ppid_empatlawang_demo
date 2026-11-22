@@ -42,6 +42,8 @@ return [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
         'max_tokens' => env('OPENAI_MAX_TOKENS', 500),
+        // Model with built-in web search for the cari_web tool; empty = no web search.
+        'search_model' => env('OPENAI_SEARCH_MODEL', 'gpt-4o-search-preview'),
     ],
 
     'resend' => [

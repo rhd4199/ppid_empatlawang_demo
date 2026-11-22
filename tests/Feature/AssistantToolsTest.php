@@ -56,7 +56,29 @@ class AssistantToolsTest extends TestCase
         $this->assertSame(['Rapat Lalu', 'Rapat Nanti'], array_column(AssistantTools::run('agenda_kegiatan', ['dari_tanggal' => now()->subWeek()->toDateString()])['agenda'], 'kegiatan'));
         $this->assertSame(route('contact.index'), AssistantTools::run('kontak_ppid', [])['halaman_kontak']);
         $this->assertArrayHasKey('hasil', AssistantTools::run('cari_dokumen', ['kata_kunci' => 'apbd']));
-        $this->assertCount(9, AssistantTools::definitions());
+        $this->assertCount(10, AssistantTools::definitions());
+        config(['services.openai.search_model' => '']);
+        $this->assertNotContains('cari_web', array_column(array_column(AssistantTools::definitions(), 'function'), 'name')); // switched off
+    }
+
+    public function test_web_search_tool_returns_answer_with_sources_or_an_honest_error(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::sequence()
+            ->push(['choices' => [['message' => ['content' => 'Kapolres saat ini AKBP Contoh (2026).', 'annotations' => [
+                ['type' => 'url_citation', 'url_citation' => ['url' => 'https://berita.test/a', 'title' => 'Berita A']],
+                ['type' => 'url_citation', 'url_citation' => ['url' => 'https://berita.test/a', 'title' => 'Berita A']],
+            ]]]]])
+            ->push(['error' => 'boom'], 500)]);
+
+        $ok = AssistantTools::run('cari_web', ['pertanyaan' => 'kapolres terbaru']);
+        $this->assertSame('Kapolres saat ini AKBP Contoh (2026).', $ok['jawaban']);
+        $this->assertSame([['judul' => 'Berita A', 'url' => 'https://berita.test/a']], $ok['sumber']); // de-duplicated
+        Http::assertSent(fn (Request $r) => $r['model'] === 'gpt-4o-search-preview' && isset($r['web_search_options'])
+            && str_contains($r['messages'][1]['content'], 'Empat Lawang'));
+
+        $this->assertArrayHasKey('error', AssistantTools::run('cari_web', ['pertanyaan' => 'x'])); // API failure never throws
+        $this->assertArrayHasKey('error', AssistantTools::run('cari_web', ['pertanyaan' => '  ']));
     }
 
     public function test_openai_runs_tool_calls_then_answers_in_whatsapp_format(): void
