@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             GalleryFeedSeeder::class,
             EventSeeder::class,
             ProcurementSeeder::class,
+            SppgUnitSeeder::class,
         ]);
     }
 }

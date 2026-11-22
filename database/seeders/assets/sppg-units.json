@@ -1,0 +1,2082 @@
+[
+    {
+        "bgn_id": "WZFMZGXD",
+        "code": "16.11.01.2006.02",
+        "name": "SPPG Empat Lawang Muara Pinang Muara Pinang Baru",
+        "kecamatan": "Muara Pinang",
+        "village": "Muara Pinang Baru",
+        "address": "Jl. Lintas Kepahiang Pagar Alam Desa Muara Pinang Baru Kec. Muara Pinang, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 12,
+        "institutions": [
+            {
+                "name": "PAUD Kasih Ibu Muara Pinang",
+                "village": "Batu Jungul",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 12 Muara Pinang",
+                "village": "Batu Jungul",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Daarul Huffadz Al Amanah Maleha Hasyim",
+                "village": "Muara Pinang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "KB Pelangi Muara Pinang",
+                "village": "Muara Pinang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Mtsn 2 Empat Lawang",
+                "village": "Muara Pinang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Abdurrahman 2",
+                "village": "Muara Pinang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 3 Muara Pinang",
+                "village": "Padang Burnai",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "TK Satu Atap SDN 3 Muara Pinang",
+                "village": "Padang Burnai",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Aburrahman",
+                "village": "Suka Dana",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 11 Muara Pinang",
+                "village": "Suka Dana",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SMP N 1 Muara Pinang",
+                "village": "Talang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SDN 4 Muara Pinang",
+                "village": "Tanjung Kurung",
+                "kecamatan": "Muara Pinang"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "7LXTTQML",
+        "code": "16.11.01.2016.04",
+        "name": "SPPG Empat Lawang Muara Pinang Talang Benteng",
+        "kecamatan": "Muara Pinang",
+        "village": "Talang Benteng",
+        "address": "Jl. MIN 1 Empat Lawang, Desa Talang Benteng, Kec. Muara Pinang, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 11,
+        "institutions": [
+            {
+                "name": "SMP Negeri 3 Muara Pinang",
+                "village": "Gedung Agung",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 1 Muara Pinang",
+                "village": "Muara Pinang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 16 Muara Pinang",
+                "village": "Muara Pinang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "KB Kasih Bunda Muara Pinang",
+                "village": "Muara Pinang Lama",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 21 Muara Pinang",
+                "village": "Muara Pinang Lama",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 2 Muara Pinang",
+                "village": "Talang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Taam Nurul Iman",
+                "village": "Talang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "MIN 1 Empat Lawang",
+                "village": "Talang Benteng",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Harapan Bunda",
+                "village": "Talang Benteng",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SDN 10 Muara Pinang",
+                "village": "Talang Benteng",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Tunas Bangsa",
+                "village": "Tanjung Tawang",
+                "kecamatan": "Muara Pinang"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "08WOH1PE",
+        "code": "16.11.01.2019.01",
+        "name": "SPPG Empat Lawang Muara Pinang Muara Timbuk",
+        "kecamatan": "Muara Pinang",
+        "village": "Muara Timbuk",
+        "address": "Desa Muara Timbuk, Kecamatan Muara Pinang, Kabupaten Empat Lawang, Provinsi Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 18,
+        "institutions": [
+            {
+                "name": "SD Negeri 7 Muara Pinang",
+                "village": "Batu Galang",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "KB Ceria Muara Pinang",
+                "village": "Gedung Agung",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SMAN 1 Muara Pinang",
+                "village": "Lubuk Tanjung",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "MTS Albarokah",
+                "village": "Muara Pinang Lama",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Mas Madinatul Ilmi",
+                "village": "Muara Pinang Lama",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Mis Miftahul Ulum",
+                "village": "Muara Semah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Miftahul Ulum",
+                "village": "Muara Semah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 20 Muara Pinang",
+                "village": "Muara Timbuk",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 18 Muara Pinang",
+                "village": "Pajar Menang",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 15 Muara Pinang",
+                "village": "Sapa Panjang",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "TK Albarokah 2",
+                "village": "Sapa Panjang",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "TK Buah Hati Muara Pinang",
+                "village": "Seleman Ilir",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Andes",
+                "village": "Seleman Ulu",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Harapan Baru",
+                "village": "Seleman Ulu",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "RA Al Umari",
+                "village": "Talang Baru",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Mis Assasudin",
+                "village": "Tanjung Tawang",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 19 Muara Pinang",
+                "village": "Tanjung Tawang",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 5 Muara Pinang",
+                "village": "Tanjung Tawang",
+                "kecamatan": "Muara Pinang"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "FUFNB13L",
+        "code": "16.11.01.2022.03",
+        "name": "SPPG Empat Lawang Muara Pinang Sawah",
+        "kecamatan": "Muara Pinang",
+        "village": "Sawah",
+        "address": "Jl. Raya Kepahiang Pagar Alam, Sawah, Kec. Muara Pinang, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 11,
+        "institutions": [
+            {
+                "name": "SDN 6 Muara Pinang",
+                "village": "Niur",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "KB Harapan Bangsa",
+                "village": "Sawah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "Mis Al Azhar",
+                "village": "Sawah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "PAUD Laskar Pelangi",
+                "village": "Sawah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 13 Muara Pinang",
+                "village": "Sawah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 14 Muara Pinang",
+                "village": "Sawah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 9 Muara Pinang",
+                "village": "Sawah",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SMP Negeri 2 Muara Pinang",
+                "village": "Seleman Ilir",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SD Negeri 17 Muara Pinang",
+                "village": "Seleman Ulu",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SDN 8 Muara Pinang",
+                "village": "Seleman Ulu",
+                "kecamatan": "Muara Pinang"
+            },
+            {
+                "name": "SMAN 2 Muara Pinang",
+                "village": "Talang Benteng",
+                "kecamatan": "Muara Pinang"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "GWTQWVKE",
+        "code": "16.11.02.1030.02",
+        "name": "SPPG Empat Lawang Pendopo Pendopo",
+        "kecamatan": "Pendopo",
+        "village": "Pendopo",
+        "address": "Pendopo, Kec. Pendopo, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 12,
+        "institutions": [
+            {
+                "name": "SD Negeri 1 Pendopo",
+                "village": "Beruge Ilir",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 18 Pendopo",
+                "village": "Beruge Ilir",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 21 Pendopo",
+                "village": "Beruge Ilir",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "TK Satu Atap SDN 1 Pendopo",
+                "village": "Beruge Ilir",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 7 Pendopo",
+                "village": "Lubuk Layang",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 8 Pendopo",
+                "village": "Nanjungan",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SMP Negeri 1 Pendopo",
+                "village": "Nanjungan",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 2 Pendopo",
+                "village": "Pagar Tengah",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 26 Pendopo",
+                "village": "Pendopo",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "TK Pertiwi",
+                "village": "Pendopo",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 24 Pendopo",
+                "village": "Tanjung Eran",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 22 Pendopo",
+                "village": "Tanjung Raman",
+                "kecamatan": "Pendopo"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "19SKFTR1",
+        "code": "16.11.02.2022.01",
+        "name": "SPPG Empat Lawang Pendopo Gn. Meraksa Baru",
+        "kecamatan": "Pendopo",
+        "village": "Gn. Meraksa Baru",
+        "address": "Gunung Meraksa Baru, Kecamatan Pendopo, Kabupaten Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 26,
+        "institutions": [
+            {
+                "name": "SD Negeri 6 Pendopo",
+                "village": "Bayau",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD It Birrul Walidain",
+                "village": "Gn Merakasa Lama",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 4 Pendopo",
+                "village": "Gn Merakasa Lama",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SMP It Birrul Walidain",
+                "village": "Gn Merakasa Lama",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "Smks Al Khair",
+                "village": "Gn Merakasa Lama",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "TK It Birrul Walidain",
+                "village": "Gn Merakasa Lama",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "Mtss Al Khair",
+                "village": "Gn. Meraksa Baru",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 13 Pendopo",
+                "village": "Gn. Meraksa Baru",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 25 Pendopo",
+                "village": "Gn. Meraksa Baru",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 3 Pendopo",
+                "village": "Gn. Meraksa Baru",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SMP Negeri 3 Pendopo",
+                "village": "Gn. Meraksa Baru",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 27 Pendopo",
+                "village": "Landur",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 5 Pendopo",
+                "village": "Landur",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SMAN 1 Pendopo",
+                "village": "Landur",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "TK Melati Indah",
+                "village": "Landur",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "PAUD Aisyah",
+                "village": "Manggilan",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 16 Pendopo",
+                "village": "Manggilan",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "PAUD Cahaya Bulan",
+                "village": "Muara Karang",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Muhammadiyah Muara Karang Pendopo",
+                "village": "Muara Karang",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 12 Pendopo",
+                "village": "Muara Karang",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SMP Muhammadiyah Muara Karang Pendopo",
+                "village": "Muara Karang",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "PAUD Citra Insani",
+                "village": "Pagar Tengah",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 17 Pendopo",
+                "village": "Pagar Tengah",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "PAUD Rahayu",
+                "village": "Pendopo",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SMP Negeri 2 Pendopo",
+                "village": "Sarang Bulan",
+                "kecamatan": "Pendopo"
+            },
+            {
+                "name": "SD Negeri 14 Pendopo",
+                "village": "Tanjung Baru",
+                "kecamatan": "Pendopo"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "5ZKMLWVL",
+        "code": "16.11.03.2005.01",
+        "name": "SPPG Empat Lawang Ulu Musi Muara Kalangan",
+        "kecamatan": "Ulu Musi",
+        "village": "Muara Kalangan",
+        "address": "Desa Muara Kalangan, Kecamatan Ulu Musi, Kabupaten Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 29,
+        "institutions": [
+            {
+                "name": "SDN 5 Ulu Musi",
+                "village": "Batu Bidung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "PAUD Harapan",
+                "village": "Batu Lintang",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 10 Ulu Musi",
+                "village": "Batu Lintang",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 7 Ulu Musi",
+                "village": "Galang",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "TK/PAUD Tadika Anma",
+                "village": "Galang",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "PAUD Dirgantara",
+                "village": "Kunduran",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 3 Ulu Musi",
+                "village": "Lb. Puding Baru",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 4 Ulu Musi",
+                "village": "Lb. Puding Baru",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "TK Melati",
+                "village": "Lb. Puding Baru",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "PAUD Al-Qausar",
+                "village": "Muara Betung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 2 Ulu Musi",
+                "village": "Muara Betung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "RA An Nur",
+                "village": "Muara Kalangan",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SD Negeri 11 Ulu Musi",
+                "village": "Muara Kalangan",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "TK Aq-Serunting Sakti",
+                "village": "Muara Kalangan",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 1 Ulu Musi",
+                "village": "Padang Tepong",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SMAN 1 Ulu Musi",
+                "village": "Padang Tepong",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SMPN 1 Ulu Musi",
+                "village": "Padang Tepong",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "TK Harapan Bunda",
+                "village": "Padang Tepong",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "TK Satu Atap Ulu Musi",
+                "village": "Padang Tepong",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "KB Kemang Sakti Ulu Musi",
+                "village": "Pulau Kemang",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "PAUD Ar-Rofah",
+                "village": "Simpang Perigi",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SD Negeri 12 Ulu Musi",
+                "village": "Simpang Perigi",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SMP Negeri 2 Ulu Musi",
+                "village": "Simpang Perigi",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "PAUD Bina Belia Ulu Musi",
+                "village": "Tanjung Agung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SD Muhammadiyah 26 Ulu Musi",
+                "village": "Tanjung Agung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 6 Ulu Musi",
+                "village": "Tanjung Agung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SDN 9 Ulu Musi",
+                "village": "Tanjung Agung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "SMP Negeri 4 Ulu Musi",
+                "village": "Tanjung Agung",
+                "kecamatan": "Ulu Musi"
+            },
+            {
+                "name": "TK Al-Jannati",
+                "village": "Tanjung Agung",
+                "kecamatan": "Ulu Musi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "STANXADT",
+        "code": "16.11.04.1013.01",
+        "name": "SPPG Empat Lawang Tebing Tinggi Tanjungkupang",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Tanjungkupang",
+        "address": "Jl. Lintas Utama Sumatera No. 11 RT 002 RW 002, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kab. Empat Lawang",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 2,
+        "institutions": [
+            {
+                "name": "SMP Negeri 1 Tebing Tinggi",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Mtsn 1 Empat Lawang",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "0H6GD3J8",
+        "code": "16.11.04.1013.02",
+        "name": "SPPG Empat Lawang Tebing Tinggi Tanjungkupang 2",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Tanjungkupang",
+        "address": "Jl Lintas Sumatera No. 14 RT.003 RW.007 Kelurahan Tanjung Kupang, Kecamatan Tebing Tinggi, Kabupaten Empat Lawang, Provinsi Sumatera Selatan, Tanjungkupang , Tebing Tinggi, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 13,
+        "institutions": [
+            {
+                "name": "SD Negeri 3 Tebing Tinggi",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMAN 2 Tebing Tinggi",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 25 Tebing Tinggi",
+                "village": "Makarti Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Mis Khairul Hidayah",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 6 Tebing Tinggi",
+                "village": "Tanjung Makmur",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Mtss Daarul Mahabbah",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD/TK Permata Hati",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Al-Azhar Cairo",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 29 Tebing Tinggi",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMA Al Azhar Cairo Empat Lawang",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMAN 1 Tebing Tinggi",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMP Al- Azhar Cairo Empat Lawang",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Al Azhar Cairo Empat Lawang",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "4CYA7V1E",
+        "code": "16.11.04.1013.06",
+        "name": "SPPG Empat Lawang Tebing Tinggi Tanjungkupang 3",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Tanjungkupang",
+        "address": "Jl. Lintas Sumatera, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 8,
+        "institutions": [
+            {
+                "name": "RA Nurul Falah",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Islam Terpadu Aisyiyah Tebing Tinggi",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Aisyiyah",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Man 1 Empat Lawang",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Molaya",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 5 Tebing Tinggi",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 7 Tebing Tinggi",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK/PAUD Athaya",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "4S8VHGY9",
+        "code": "16.11.04.1013.07",
+        "name": "SPPG Empat Lawang Tebing Tinggi Tanjungkupang 4",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Tanjungkupang",
+        "address": "Tanjungkupang, Kec. Tebing Tinggi, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 13,
+        "institutions": [
+            {
+                "name": "SD Negeri 27 Tebing Tinggi",
+                "village": "Aur Gading",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMP Negeri 7 Tebing Tinggi",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Pembina",
+                "village": "Kelumpang Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Kemang Manis Ceria Tebing Tinggi",
+                "village": "Kemang Manis",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Smas Muhammadiyah Tebing Tinggi",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "Smps Muhammadiyah Tebing Tinggi",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 9 Tebing Tinggi",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SDN 12 Tebing Tinggi",
+                "village": "Rantau Tenang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "RA Fatayat Muslimat Nu",
+                "village": "Tanjung Makmur",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 4 Tebing Tinggi",
+                "village": "Tanjung Makmur",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 16 Tebing Tinggi",
+                "village": "Ujung Alih",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Pertiwi",
+                "village": "Ulak Mengkudu",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 14 Tebing Tinggi",
+                "village": "Ulak Mengkudu",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "P53G5SY1",
+        "code": "16.11.04.1013.08",
+        "name": "SPPG Empat Lawang Tebing Tinggi Tanjungkupang 5",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Tanjungkupang",
+        "address": "Jl. Lintas Sumatera, Tanjungkupang, Kec. Tebing Tinggi, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 12,
+        "institutions": [
+            {
+                "name": "TK Harapan Bersinar Baru Tebing Tinggi",
+                "village": "Batu Raja Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Matahari Tebing Tinggi",
+                "village": "Batu Raja Lama",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 10 Tebing Tinggi",
+                "village": "Batu Raja Lama",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 15 Tebing Tinggi",
+                "village": "Batu Raja Lama",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMP Negeri 4 Tebing Tinggi",
+                "village": "Batu Raja Lama",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Al Faruq",
+                "village": "Batu Raja Lama",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Sekar Melati",
+                "village": "Fajar Bakti",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 19 Tebing Tinggi",
+                "village": "Fajar Bakti",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMP Negeri 6 Tebing Tinggi",
+                "village": "Fajar Bakti",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Al Aamiin",
+                "village": "Kota Gading",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD It Assajjad",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Tahfidz Assajjad Tebing Tinggi",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "YMXOMRDW",
+        "code": "16.11.04.1017.03",
+        "name": "SPPG Empat Lawang Tebing Tinggi Ps. Tebing Tinggi",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Ps. Tebing Tinggi",
+        "address": "Jl. H Noerdin Panji Depan RSUD Empat Lawang Kecamatan Tebing Tinggi Kabupaten Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 8,
+        "institutions": [
+            {
+                "name": "MTS MTS Abu Bakar Ash Shiddiq",
+                "village": "Lampar Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMP Negeri 5 Tebing Tinggi",
+                "village": "Lampar Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Bhayangkari",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 11 Tebing Tinggi",
+                "village": "Terusan Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 23 Tebing Tinggi",
+                "village": "Terusan Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMKN 1 Empat Lawang",
+                "village": "Terusan Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Satap SD Negeri 11",
+                "village": "Terusan Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Aisa",
+                "village": "Terusan Lama",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "JWVT1COU",
+        "code": "16.11.04.2011.05",
+        "name": "SPPG Empat Lawang Tebing Tinggi Kemang Manis",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Kemang Manis",
+        "address": "Jl. Lingkar Simpang Empat, Kemang Manis, Kec. Tebing Tinggi, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 7,
+        "institutions": [
+            {
+                "name": "SD Negeri 13 Tebing Tinggi",
+                "village": "Batu Pance",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "TK Aulia",
+                "village": "Batu Pance",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 2 Tebing Tinggi",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 26 Tebing Tinggi",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 8 Tebing Tinggi",
+                "village": "Ps. Tebing Tinggi",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Aries",
+                "village": "Rantau Tenang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "RA Bunda Abi",
+                "village": "Terusan Baru",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "BN1HZGLP",
+        "code": "16.11.04.2027.04",
+        "name": "SPPG Empat Lawang Tebing Tinggi Mekar Jaya",
+        "kecamatan": "Tebing Tinggi",
+        "village": "Mekar Jaya",
+        "address": "Jl. Poros Tebing Tinggi Pendopo Desa Mekar Jaya Kecamatan Tebing Tinggi, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 12,
+        "institutions": [
+            {
+                "name": "PAUD Alfani",
+                "village": "Jaya Loka",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 1 Tebing Tinggi",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 31 Tebing Tinggi",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SLB Negeri Empat Lawang",
+                "village": "Kupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 22 Tebing Tinggi",
+                "village": "Lampar Baru",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "KB It Ananda Tebing Tinggi",
+                "village": "Mekar Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Mutiara",
+                "village": "Mekar Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Islam Terpadu Ananda",
+                "village": "Mekar Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SD Negeri 24 Tebing Tinggi",
+                "village": "Mekar Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMAN 3 Tebing Tinggi",
+                "village": "Mekar Jaya",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "PAUD Fathina",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            },
+            {
+                "name": "SMP Negeri 2 Tebing Tinggi",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "JHGNNUSH",
+        "code": "16.11.05.2013.01",
+        "name": "SPPG Empat Lawang Lintang Kanan Babatan",
+        "kecamatan": "Lintang Kanan",
+        "village": "Babatan",
+        "address": "Desa Babatan, Kecamatan Lintang Kanan, Kabupaten Empat Lawang, Provinsi Sumatera Selatan, Babatan, Lintang Kanan, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 27,
+        "institutions": [
+            {
+                "name": "PAUD Muara Keban",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 1 Lintang Kanan",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 18 Lintang Kanan",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 2 Lintang Kanan",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 5 Lintang Kanan",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SMP Negeri 2 Lintang Kanan",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "TK Puyang Ketib Lintang Kanan",
+                "village": "Babatan",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 13 Lintang Kanan",
+                "village": "Batu Ampar",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 17 Lintang Kanan",
+                "village": "Endalo",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 16 Lintang Kanan",
+                "village": "Karang Tanding",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 3 Lintang Kanan",
+                "village": "Lesung Batu",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 7 Lintang Kanan",
+                "village": "Lesung Batu",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 19 Lintang Kanan",
+                "village": "Lubuk Cik",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 6 Lintang Kanan",
+                "village": "Lubuk Tapang",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 4 Lintang Kanan",
+                "village": "Muara Danau",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SMAN 1 Lintang Kanan",
+                "village": "Muara Danau",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 11 Lintang Kanan",
+                "village": "Nibung",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 12 Lintang Kanan",
+                "village": "Pagar Jati",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SMP Negeri 3 Lintang Kanan",
+                "village": "Pagar Jati",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 14 Lintang Kanan",
+                "village": "Rantau Alih",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 10 Lintang Kanan",
+                "village": "Rantau Kasai",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SMP Negeri 1 Lintang Kanan",
+                "village": "Rantau Kasai",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 15 Lintang Kanan",
+                "village": "Suka Rami",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 8 Lintang Kanan",
+                "village": "Tanjung Alam",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 20 Lintang Kanan",
+                "village": "Tanjung Jati",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SD Negeri 9 Lintang Kanan",
+                "village": "Umo Jati",
+                "kecamatan": "Lintang Kanan"
+            },
+            {
+                "name": "SMA Negeri 2 Lintang Kanan",
+                "village": "Umo Jati",
+                "kecamatan": "Lintang Kanan"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "DJWGU3SS",
+        "code": "16.11.06.2008.01",
+        "name": "SPPG Empat Lawang Talang Padang Talang Padang",
+        "kecamatan": "Talang Padang",
+        "village": "Talang Padang",
+        "address": "Talang Padang, Kec. Talang Padang, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 16,
+        "institutions": [
+            {
+                "name": "SD Negeri 12 Talang Padang",
+                "village": "Canggu",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 4 Talang Padang",
+                "village": "Karang Are",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 7 Talang Padang",
+                "village": "Karang Are",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SDN 11 Talang Padang",
+                "village": "Kembahang Baru",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 10 Talang Padang",
+                "village": "Kembahang Lama",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SMP N 1 Talang Padang",
+                "village": "Kembahang Lama",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 3 Talang Padang",
+                "village": "Lampar Baru",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SMAN 1 Talang Padang",
+                "village": "Lampar Baru",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "TK Satu A Tap SDN 3 Talang Padang",
+                "village": "Lampar Baru",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 8 Talang Padang",
+                "village": "Lubuk Buntak",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 9 Talang Padang",
+                "village": "Macang Manis",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 1 Talang Padang",
+                "village": "Pasar Tl. Padang",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 5 Talang Padang",
+                "village": "Remantai",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 2 Talang Padang",
+                "village": "Talang Padang",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SD Negeri 6 Talang Padang",
+                "village": "Ulak Dabuk",
+                "kecamatan": "Talang Padang"
+            },
+            {
+                "name": "SMP Negeri 2 Talang Padang",
+                "village": "Ulak Dabuk",
+                "kecamatan": "Talang Padang"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "XS111O6O",
+        "code": "16.11.07.2005.01",
+        "name": "SPPG Empat Lawang Pasemah Air Keruh Kebon Jati",
+        "kecamatan": "Pasemah Air Keruh",
+        "village": "Kebon Jati",
+        "address": "Desa Bandar Agung, Kecamatan Pasma Air Keruh, Kabupaten Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 21,
+        "institutions": [
+            {
+                "name": "KB Al-Latif",
+                "village": "Bandar Agung",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 16 Pasemah Air Keruh",
+                "village": "Bandar Agung",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "KB Barokah",
+                "village": "Kebon Jati",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "PAUD Golden Kid S",
+                "village": "Kebon Jati",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 15 Pasemah Air Keruh",
+                "village": "Kebon Jati",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 3 Pasemah Air Keruh",
+                "village": "Kebon Jati",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SMP Negeri 1 Pasemah Air Keruh",
+                "village": "Kebon Jati",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SDN 17 Pasemah Air Keruh",
+                "village": "Lawang Agung",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "TK Azkia",
+                "village": "Lawang Agung",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "Arina",
+                "village": "Nanjungan",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 1 Pasemah Air Keruh",
+                "village": "Nanjungan",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SDN 14 Pasemah Air Keruh",
+                "village": "Nanjungan",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "TK Agnes",
+                "village": "Nanjungan",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "KB Al-Iklas",
+                "village": "Pagar Jati",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "Kamboja",
+                "village": "Penantian",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 4 Pasemah Air Keruh",
+                "village": "Penantian",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "PAUD Loreta",
+                "village": "Talang Padang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 7 Pasemah Air Keruh",
+                "village": "Talang Padang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SMP Negeri 3 Pasemah Air Keruh",
+                "village": "Talang Padang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "An Nur",
+                "village": "Talang Randai",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 8 Pasemah Air Keruh",
+                "village": "Tanjung Beringin",
+                "kecamatan": "Pasemah Air Keruh"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "K6VMJAJW",
+        "code": "16.11.07.2009.02",
+        "name": "SPPG Empat Lawang Pasemah Air Keruh Talang Randai",
+        "kecamatan": "Pasemah Air Keruh",
+        "village": "Talang Randai",
+        "address": "Jl. Nanjungan, Talang Randai, Kec. Pasemah Air Keruh, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 20,
+        "institutions": [
+            {
+                "name": "SD Negeri 11 Pasemah Air Keruh",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 12 Pasemah Air Keruh",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 5 Pasemah Air Keruh",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SMK Negeri 3 Empat Lawang",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SMP Negeri 4 Pasemah Air Keruh",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "TK Nur Raisya Pasemah Air Keruh",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "TK Tunas Harapan",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "Taam Baitul Hikmah",
+                "village": "Air Mayam",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 10 Pasemah Air Keruh",
+                "village": "Muara Aman",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "PAUD/TK Muara Kasih",
+                "village": "Muara Rungga",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 13 Pasemah Air Keruh",
+                "village": "Muara Sindang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 6 Pasemah Air Keruh",
+                "village": "Muara Sindang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SMAN 1 Pasemah Air Keruh",
+                "village": "Muara Sindang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "TK Al Ikhlas Pasemah Air Keruh",
+                "village": "Muara Sindang",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "PAUD Tunas Bindu",
+                "village": "Padang Bindu",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 9 Pasemah Air Keruh",
+                "village": "Padang Bindu",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SMP Negeri 2 Pasemah Air Keruh",
+                "village": "Padang Bindu",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "PAUD An-Nisaa Pasemah Air Keruh",
+                "village": "Padang Gelai",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "SD Negeri 2 Pasemah Air Keruh",
+                "village": "Padang Gelai",
+                "kecamatan": "Pasemah Air Keruh"
+            },
+            {
+                "name": "PAUD Baitul Ilmi",
+                "village": "Penantian",
+                "kecamatan": "Pasemah Air Keruh"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "GDIRMMQU",
+        "code": "16.11.08.2006.01",
+        "name": "SPPG Empat Lawang Sikap Dalam Karang Dapo Lama",
+        "kecamatan": "Sikap Dalam",
+        "village": "Karang Dapo Lama",
+        "address": "Jl. Kepahiang, Desa Karang Dapo Lama, Kecamatan Sikap Dalam, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 24,
+        "institutions": [
+            {
+                "name": "PAUD Mawar",
+                "village": "Bandar Aji",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 4 Sikap Dalam",
+                "village": "Bandar Aji",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Ceria",
+                "village": "Karang Anyar",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 8 Sikap Dalam",
+                "village": "Karang Anyar",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Kurnia",
+                "village": "Karang Dapo Baru",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 2 Sikap Dalam",
+                "village": "Karang Dapo Lama",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "TK Aisyiyah Bustanul Athfal Sikap Dalam",
+                "village": "Karang Dapo Lama",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Kenanga",
+                "village": "Karang Gede",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 1 Sikap Dalam",
+                "village": "Karang Gede",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SMPN 1 Sikap Dalam",
+                "village": "Karang Gede",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Melati",
+                "village": "Martapura",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 7 Sikap Dalam",
+                "village": "Martapura",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SMPN 2 Sikap Dalam",
+                "village": "Martapura",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Raudatul Jannah",
+                "village": "Paduraksa",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 3 Sikap Dalam",
+                "village": "Paduraksa",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Cahaya",
+                "village": "Puntang",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 5 Sikap Dalam",
+                "village": "Puntang",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Pelangi",
+                "village": "Tangga Rasa",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 6 Sikap Dalam",
+                "village": "Tangga Rasa",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SMA Negeri 1 Sikap Dalam",
+                "village": "Tangga Rasa",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Cahaya Tapa",
+                "village": "Tapa Baru",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 9 Sikap Dalam",
+                "village": "Tapa Baru",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "PAUD Kasih Ibu",
+                "village": "Tapa Lama",
+                "kecamatan": "Sikap Dalam"
+            },
+            {
+                "name": "SD Negeri 10 Sikap Dalam",
+                "village": "Tapa Lama",
+                "kecamatan": "Sikap Dalam"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "NUV10TBX",
+        "code": "16.11.09.2001.01",
+        "name": "SPPG Empat Lawang Saling Lubuk Kelumpang",
+        "kecamatan": "Saling",
+        "village": "Lubuk Kelumpang",
+        "address": "Jl. Lintas Sumatera, Desa Lubuk Kelumpang, Kecamatan Saling, Kabupaten Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 16,
+        "institutions": [
+            {
+                "name": "PAUD Kebon Indah Saling",
+                "village": "Kebon",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "TK Prima Insani",
+                "village": "Lubuk Kelumpang",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "KB Al_Alim",
+                "village": "Sawah",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 1 Saling",
+                "village": "Sawah",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "TK Mutiara Bunda Saling",
+                "village": "Sawah",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 5 Saling",
+                "village": "Suka Kaya",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 9 Saling",
+                "village": "Taba",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "PAUD Bina Jaya Saling",
+                "village": "Tanjungning Jaya",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 8 Saling",
+                "village": "Tanjungning Jaya",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "PAUD Tudung Indah",
+                "village": "Tanjungning Lama",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 11 Saling",
+                "village": "Tanjungning Lama",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "PAUD Moulbuay Indah",
+                "village": "Tanjungning Simpang",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 7 Saling",
+                "village": "Tanjungning Simpang",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SMAN 1 Saling",
+                "village": "Tanjungning Simpang",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "PAUD Saling Indah",
+                "village": "Tanjungning Tengah",
+                "kecamatan": "Saling"
+            },
+            {
+                "name": "SD Negeri 2 Saling",
+                "village": "Tanjungning Tengah",
+                "kecamatan": "Saling"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "J5ZZDMFL",
+        "code": "16.11.10.2001.01",
+        "name": "SPPG Empat Lawang Pendopo Barat Muaralintang Lama",
+        "kecamatan": "Pendopo Barat",
+        "village": "Muaralintang Lama",
+        "address": "Desa Muara Lintang Lama Kec. Pendopo Barat, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 9,
+        "institutions": [
+            {
+                "name": "PAUD Az-Zahra",
+                "village": "Karang Caya",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Islam Terpadu Barokatul Quran Pendopo Barat",
+                "village": "Karang Caya",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SMA Negeri 1 Pendopo Barat",
+                "village": "Karang Caya",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SMP Negeri 2 Pendopo Barat",
+                "village": "Karang Caya",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "PAUD Muara Indah",
+                "village": "Muaralintang Baru",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 1 Pendopo Barat",
+                "village": "Muaralintang Lama",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 3 Pendopo Barat",
+                "village": "Tanjungraya",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "PAUD Harapan Bangsa Pendopo Barat",
+                "village": "Tebat Payang",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 2 Pendopo Barat",
+                "village": "Tebat Payang",
+                "kecamatan": "Pendopo Barat"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "33D5SEGH",
+        "code": "16.11.10.2009.02",
+        "name": "SPPG Empat Lawang Pendopo Barat Rantau Dodor",
+        "kecamatan": "Pendopo Barat",
+        "village": "Rantau Dodor",
+        "address": "Jl. Kepahiang Pagar Alam, Desa Rantau Dodor, Kec. Pendopo Barat, Kab. Empat Lawang, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": true,
+        "institutions_count": 16,
+        "institutions": [
+            {
+                "name": "SD Negeri 7 Pendopo Barat",
+                "village": "Air Kandis",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "PAUD Mutiara Ibu",
+                "village": "Kungkilan",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 6 Pendopo Barat",
+                "village": "Kungkilan",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Muhammadiyah Lingge",
+                "village": "Lingge",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 4 Pendopo Barat",
+                "village": "Lingge",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 8 Pendopo Barat",
+                "village": "Lingge",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SMPN 3 Pendopo Barat",
+                "village": "Lingge",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "TK Sayang Bunda",
+                "village": "Lingge",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SMP Negeri 1 Pendopo Barat",
+                "village": "Muaralintang Baru",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "PAUD Melati",
+                "village": "Muaralintang Lama",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 9 Pendopo Barat",
+                "village": "Muaralintang Lama",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 10 Pendopo Barat",
+                "village": "Padang Bindu",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SD Negeri 5 Pendopo Barat",
+                "village": "Rantau Dodor",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "SMP Negeri 4 Pendopo Barat",
+                "village": "Rantau Dodor",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "TK Tunas Bangsa",
+                "village": "Rantau Dodor",
+                "kecamatan": "Pendopo Barat"
+            },
+            {
+                "name": "PAUD Al-Barokah",
+                "village": "Tanjungraya",
+                "kecamatan": "Pendopo Barat"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    },
+    {
+        "bgn_id": "YGV4IAZK",
+        "code": "16.72.05.1001.01",
+        "name": "SPPG Kota Pagar Alam Dempo Tengah Karang Dalo",
+        "kecamatan": "Dempo Tengah",
+        "village": null,
+        "address": "Simpang Kerta Dewa, Karang Dalo, Kec. Dempo Tengah, Kota Pagar Alam, Sumatera Selatan",
+        "status": "operasional",
+        "in_regency": false,
+        "institutions_count": 1,
+        "institutions": [
+            {
+                "name": "PAUD An Naba",
+                "village": "Tanjungkupang",
+                "kecamatan": "Tebing Tinggi"
+            }
+        ],
+        "source_url": "https://www.bgn.go.id/radar-mbg/",
+        "checked_at": "2026-11-22"
+    }
+]
