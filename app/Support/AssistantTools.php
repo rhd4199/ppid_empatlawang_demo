@@ -124,7 +124,7 @@ class AssistantTools
             'info_bencana' => ['kejadian' => array_map(fn ($e) => ['tanggal' => $e['date'], 'wilayah' => $e['region'], 'jenis' => $e['type'], 'dampak' => $e['impact'], 'kondisi' => mb_strimwidth((string) $e['status'], 0, 200, '…')],
                 array_slice(BnpbDisaster::recent(), 0, 8)) ?: 'Tidak ada kejadian bencana tercatat 30 hari terakhir.', 'sumber' => 'BNPB'],
             'data_sppg' => SppgUnit::forAssistant($args['kecamatan'] ?? null, $args['kata_kunci'] ?? null),
-            'cari_tempat' => PlaceFinder::find((string) ($args['jenis'] ?? ''), (string) ($args['lokasi'] ?? '')) + ['sumber' => 'OpenStreetMap (bisa belum lengkap)'],
+            'cari_tempat' => self::places((string) ($args['jenis'] ?? ''), (string) ($args['lokasi'] ?? '')),
             'berita_google' => ['berita' => GoogleNews::search((string) ($args['kata_kunci'] ?? '')) ?: 'Tidak ada berita yang ditemukan.', 'sumber' => 'Google News; sebut nama medianya saja'],
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
             default => ['error' => "Tool {$name} tidak ada."],
@@ -137,30 +137,46 @@ class AssistantTools
      */
     private static function web(string $query): array
     {
-        if ($query === '' || (string) config('services.openai.search_model') === '') {
+        if ($query === '' || (string) config('services.openai.search_model') === '' || ! config('services.openai.key')) {
             return ['error' => 'Pencarian web tidak tersedia.'];
         }
         try {
-            $message = Http::withToken(config('services.openai.key'))->timeout(45)->acceptJson()
-                ->post('https://api.openai.com/v1/chat/completions', [
+            // Responses API + built-in web_search (the old *-search-preview chat models were retired).
+            $output = Http::withToken(config('services.openai.key'))->timeout(60)->acceptJson()
+                ->post('https://api.openai.com/v1/responses', [
                     'model' => config('services.openai.search_model'),
-                    'web_search_options' => ['search_context_size' => 'low',
-                        'user_location' => ['type' => 'approximate', 'approximate' => ['country' => 'ID', 'region' => 'Sumatera Selatan', 'city' => 'Empat Lawang']]],
-                    'messages' => [
-                        ['role' => 'system', 'content' => 'Cari di web publik (utamakan situs resmi pemerintah dan media berita tepercaya) dan jawab ringkas dalam bahasa Indonesia, maksimal 120 kata. Sebut tanggal/tahun informasi. Bila tidak menemukan sumber yang jelas, katakan tidak ditemukan; jangan menebak.'],
-                        ['role' => 'user', 'content' => $query . ' (Kabupaten Empat Lawang, Sumatera Selatan)'],
-                    ],
-                ])->throw()->json('choices.0.message');
+                    'tools' => [['type' => 'web_search', 'search_context_size' => 'low',
+                        'user_location' => ['type' => 'approximate', 'country' => 'ID', 'region' => 'Sumatera Selatan', 'city' => 'Empat Lawang']]],
+                    'instructions' => 'Cari di web publik (utamakan situs resmi pemerintah, media berita tepercaya, dan Google Maps untuk tempat) dan jawab ringkas dalam bahasa Indonesia, maksimal 150 kata, tanpa tabel. Sebut tanggal/tahun informasi bila ada. Bila tidak menemukan sumber yang jelas, katakan tidak ditemukan; jangan menebak.',
+                    'input' => $query . ' (Kabupaten Empat Lawang, Sumatera Selatan)',
+                ])->throw()->json('output');
         } catch (\Throwable $e) {
             Log::warning('Sapa Madani web search error: ' . class_basename($e) . ' ' . mb_substr($e->getMessage(), 0, 200));
 
             return ['error' => 'Pencarian web gagal. Katakan jawabannya belum bisa dipastikan dan arahkan ke halaman Kontak atau Permohonan Informasi.'];
         }
-        $sources = collect($message['annotations'] ?? [])->pluck('url_citation')->filter()
+        $content = collect(is_array($output) ? $output : [])->where('type', 'message')->flatMap(fn ($m) => $m['content'] ?? [])->where('type', 'output_text');
+        $sources = $content->flatMap(fn ($c) => $c['annotations'] ?? [])->where('type', 'url_citation')
             ->map(fn ($c) => ['judul' => $c['title'] ?? '', 'url' => $c['url'] ?? ''])->unique('url')->take(5)->values()->all();
 
-        return ['jawaban' => trim((string) ($message['content'] ?? '')), 'sumber' => $sources,
+        return ['jawaban' => trim($content->pluck('text')->implode("\n")), 'sumber' => $sources,
             'catatan' => 'Dari web publik, bukan data resmi PPID. Sebut nama situs sumbernya saja (tanpa tautan) dan bahwa informasi bisa belum terbaru.'];
+    }
+
+    /**
+     * Places from the map; when it has fewer than 3 named places (OSM is sparse in Empat Lawang), the web-search model
+     * looks them up too, so "rekomendasi nginap" gets names instead of only a Google Maps link.
+     */
+    private static function places(string $kind, string $area): array
+    {
+        $found = PlaceFinder::find($kind, $area) + ['sumber' => 'OpenStreetMap (bisa belum lengkap)'];
+        $named = array_filter($found['tempat'], fn ($p) => $p['nama'] !== '(tanpa nama di peta)');
+        if (count($named) < 3) {
+            $web = self::web('Rekomendasi ' . $found['jenis'] . ($area !== '' ? " di {$area}" : '') . ': nama tempat, alamat/desa, dan nomor telepon bila ada');
+            $found['dari_web'] = $web['error'] ?? $web;
+        }
+
+        return $found;
     }
 
     /** BMKG forecast (next 24 hours) for a district by name + active early warnings for Empat Lawang. */

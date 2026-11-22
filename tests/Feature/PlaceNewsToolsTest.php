@@ -15,7 +15,8 @@ class PlaceNewsToolsTest extends TestCase
     {
         Http::fake(['nominatim.openstreetmap.org/*' => Http::response([
             ['name' => 'Wisma Contoh', 'type' => 'guest_house', 'display_name' => 'Wisma Contoh, Tebing Tinggi, Empat Lawang', 'lat' => '-3.6', 'lon' => '103.07'],
-            ['name' => '', 'type' => 'hotel', 'display_name' => 'Jl. X, Pendopo', 'lat' => '-3.9', 'lon' => '102.9'],
+            ['name' => '', 'type' => 'hotel', 'display_name' => 'Jl. X, Pendopo, Empat Lawang', 'lat' => '-3.9', 'lon' => '102.9'],
+            ['name' => 'Hotel Pagar Alam', 'type' => 'hotel', 'display_name' => 'Pagar Alam Selatan, Pagar Alam', 'lat' => '-4.02', 'lon' => '103.25'], // outside: dropped
         ])]);
 
         $r = PlaceFinder::find('tempat nginap', 'Tebing Tinggi');

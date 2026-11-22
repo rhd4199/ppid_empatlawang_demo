@@ -95,6 +95,10 @@ class PlaceFinder
         }
         $places = [];
         foreach (is_array($rows) ? $rows : [] as $r) {
+            // The box also covers Pagar Alam/Lahat edges: keep only places whose address is in the regency.
+            if (! str_contains((string) ($r['display_name'] ?? ''), 'Empat Lawang')) {
+                continue;
+            }
             $places[] = [
                 'nama' => ($r['name'] ?? '') !== '' ? $r['name'] : '(tanpa nama di peta)',
                 'jenis' => str_replace('_', ' ', (string) ($r['type'] ?? '')),

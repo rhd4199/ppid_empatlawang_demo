@@ -65,17 +65,17 @@ class AssistantToolsTest extends TestCase
     {
         config(['services.openai.key' => 'sk-test']);
         Http::fake(['api.openai.com/*' => Http::sequence()
-            ->push(['choices' => [['message' => ['content' => 'Kapolres saat ini AKBP Contoh (2026).', 'annotations' => [
-                ['type' => 'url_citation', 'url_citation' => ['url' => 'https://berita.test/a', 'title' => 'Berita A']],
-                ['type' => 'url_citation', 'url_citation' => ['url' => 'https://berita.test/a', 'title' => 'Berita A']],
-            ]]]]])
+            ->push(['output' => [['type' => 'web_search_call'], ['type' => 'message', 'content' => [['type' => 'output_text', 'text' => 'Kapolres saat ini AKBP Contoh (2026).', 'annotations' => [
+                ['type' => 'url_citation', 'url' => 'https://berita.test/a', 'title' => 'Berita A'],
+                ['type' => 'url_citation', 'url' => 'https://berita.test/a', 'title' => 'Berita A'],
+            ]]]]]])
             ->push(['error' => 'boom'], 500)]);
 
         $ok = AssistantTools::run('cari_web', ['pertanyaan' => 'kapolres terbaru']);
         $this->assertSame('Kapolres saat ini AKBP Contoh (2026).', $ok['jawaban']);
         $this->assertSame([['judul' => 'Berita A', 'url' => 'https://berita.test/a']], $ok['sumber']); // de-duplicated
-        Http::assertSent(fn (Request $r) => $r['model'] === 'gpt-4o-search-preview' && isset($r['web_search_options'])
-            && str_contains($r['messages'][1]['content'], 'Empat Lawang'));
+        Http::assertSent(fn (Request $r) => str_ends_with($r->url(), '/v1/responses') && $r['model'] === 'gpt-4o-mini' && $r['tools'][0]['type'] === 'web_search'
+            && str_contains($r['input'], 'Empat Lawang'));
 
         $this->assertArrayHasKey('error', AssistantTools::run('cari_web', ['pertanyaan' => 'x'])); // API failure never throws
         $this->assertArrayHasKey('error', AssistantTools::run('cari_web', ['pertanyaan' => '  ']));
