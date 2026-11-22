@@ -50,14 +50,14 @@ class WhatsAppBotTest extends TestCase
         $this->get(route('admin.wa-inbox.show', $c))->assertSee('Bot Sapa Madani (otomatis)');
     }
 
-    public function test_document_request_goes_to_officer_inbox(): void
+    public function test_document_request_answered_by_ai_and_flagged_for_officer(): void
     {
         $this->configure();
         $c = $this->incoming('Selamat pagi, saya minta salinan dokumen kontrak jalan desa', 'm1');
 
-        Http::assertNothingSent();
+        Http::assertSentCount(1); // every message gets an AI reply
         $this->assertSame(['new', 'Permintaan dokumen / permohonan informasi'], [$c->status, $c->handoff_reason]);
-        $this->assertSame(0, $c->messages()->where('direction', 'out')->count());
+        $this->assertSame('bot', $c->messages()->where('direction', 'out')->sole()->sender);
 
         $this->actingAs(User::factory()->create())->get(route('admin.wa-inbox.index'))
             ->assertSee('>Baru</span>', false)->assertSee('Butuh petugas: Permintaan dokumen');
@@ -93,17 +93,17 @@ class WhatsAppBotTest extends TestCase
         $this->assertSame('Bot tidak yakin dengan maksud pertanyaan', WhatsAppBot::handoffReason('anak saya sakit tolong dibantu'));
     }
 
-    public function test_menu_numbers_answered_by_bot_and_zero_goes_to_officer(): void
+    public function test_menu_numbers_answered_by_ai_and_zero_flagged_for_officer(): void
     {
         $this->configure();
         $c = $this->incoming('2', 'm1');
-        Http::assertSent(fn (Request $r) => str_contains($r['message'], route('request.create')) && str_contains($r['message'], 'Ketik angka lain'));
+        Http::assertSent(fn (Request $r) => str_contains($r['message'], route('request.create'))); // topic, not "2"
         $this->assertSame('done', $c->status);
 
         $this->incoming('0', 'm2');
         $c->refresh();
         $this->assertSame(['new', 'Warga minta bicara dengan petugas'], [$c->status, $c->handoff_reason]);
-        $this->assertSame(1, $c->messages()->where('direction', 'out')->count()); // no bot reply to 0
+        $this->assertSame(2, $c->messages()->where('direction', 'out')->count()); // AI answers 0 too
 
         $this->assertNull(WhatsAppBot::handoffReason('tes'));
         $this->assertNull(WhatsAppBot::handoffReason(' 4. '));
