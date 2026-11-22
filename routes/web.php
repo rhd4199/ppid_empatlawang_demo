@@ -99,6 +99,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->parameters(['persyaratan-layanan' => 'id'])
         ->names('service-requirements');
 
+    // SPPG (dapur Makan Bergizi Gratis) — public page /mbg
+    Route::post('/sppg/{id}/toggle-status', [App\Http\Controllers\Admin\SppgUnitController::class, 'toggleStatus'])->name('sppg.toggle-status');
+    Route::resource('sppg', App\Http\Controllers\Admin\SppgUnitController::class)
+        ->except(['show'])
+        ->parameters(['sppg' => 'id'])
+        ->names('sppg');
+
     Route::post('/laporan/bulk-action', [App\Http\Controllers\Admin\ReportController::class, 'bulkAction'])->name('reports.bulk-action');
     Route::post('/laporan/{id}/toggle-status', [App\Http\Controllers\Admin\ReportController::class, 'toggleStatus'])->name('reports.toggle-status');
     Route::resource('laporan', App\Http\Controllers\Admin\ReportController::class)->names('reports');

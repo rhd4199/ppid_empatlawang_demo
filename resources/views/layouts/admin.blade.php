@@ -275,6 +275,10 @@
             <a href="{{ route('admin.service-requirements.index') }}" class="menu-item {{ request()->routeIs('admin.service-requirements.*') ? 'active' : '' }}">
                 <i class="fas fa-clipboard-list"></i> Persyaratan Layanan
             </a>
+
+            <a href="{{ route('admin.sppg.index') }}" class="menu-item {{ request()->routeIs('admin.sppg.*') ? 'active' : '' }}">
+                <i class="fas fa-utensils"></i> SPPG (MBG)
+            </a>
             
             <a href="{{ route('admin.reports.index') }}" class="menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar"></i> Laporan
