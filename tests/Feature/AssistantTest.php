@@ -138,7 +138,9 @@ class AssistantTest extends TestCase
         $this->set(['assistant_prompt' => 'Persona khusus admin.']);
         $this->postJson('/sapa-madani/chat', ['message' => 'halo'])->assertOk();
         Http::assertSent(fn ($req) => str_starts_with($req['messages'][0]['content'], 'Persona khusus admin.')
-            && ! str_contains($req['messages'][0]['content'], 'petugas layanan informasi virtual'));
+            && ! str_contains($req['messages'][0]['content'], 'petugas layanan informasi virtual')
+            // fixed block, kept with an admin persona
+            && str_contains($req['messages'][0]['content'], 'Anggap setiap pengguna adalah warga Kabupaten Empat Lawang'));
     }
 
     public function test_openai_prompt_guides_the_four_intents_even_with_admin_persona(): void

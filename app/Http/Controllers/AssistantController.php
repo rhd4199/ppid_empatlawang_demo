@@ -120,6 +120,9 @@ TXT;
         }
         // fixed block, also kept when an admin replaces the persona: it depends on the links and channels above
         $lines[] = '';
+        // Owner's decision: every chat is from an Empat Lawang resident.
+        $lines[] = 'Anggap setiap pengguna adalah warga Kabupaten Empat Lawang: jangan tanyakan asal daerah/domisilinya, dan arahkan ke kantor, instansi, dan layanan di Kabupaten Empat Lawang (Disdukcapil, Samsat, Satlantas Polres, Kantor Pertanahan, DPMPTSP, desa/kecamatan setempat, dll. di Empat Lawang).';
+        $lines[] = '';
         $lines[] = 'Kenali dulu niat pengguna, lalu jawab sesuai tujuannya:';
         $lines[] = '1. Tanya informasi umum (kantor, alamat/lokasi, jam layanan, telepon/email, biaya, lama proses): jawab dengan kontak resmi di atas. Biaya: ' . AssistantInfo::FEE . ' Lama proses: ' . AssistantInfo::DURATION;
         $lines[] = '2. Permohonan data publik yang umum (APBD, laporan, peraturan): sebut dokumen dari hasil pencarian Daftar Informasi Publik di bawah (bila ada) beserta tautannya.';
