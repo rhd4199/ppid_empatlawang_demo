@@ -26,12 +26,12 @@ class AssistantFallback
         $topic = self::topic($text, $lastReply);
 
         if ($topic) {
-            $opener = $greeting ?? Arr::random(['Baik, Bapak/Ibu.', 'Tentu, Bapak/Ibu.', 'Bisa, Bapak/Ibu.', 'Siap, Bapak/Ibu.']);
+            $opener = $greeting ?? (str_starts_with($topic, 'Mohon maaf') ? '' : Arr::random(['Baik, Bapak/Ibu.', 'Tentu, Bapak/Ibu.', 'Bisa, Bapak/Ibu.', 'Siap, Bapak/Ibu.']));
             if (str_starts_with($topic, RequirementFinder::CONFIRM) || str_ends_with($topic, '?')) {
                 return (str_starts_with($topic, RequirementFinder::CONFIRM) ? ($greeting ? "{$greeting} " : '') : "{$opener} ") . $topic; // ends with its own follow-up question
             }
 
-            return "{$opener} {$topic} " . Arr::random([
+            return ltrim("{$opener} {$topic} ") . Arr::random([
                 'Ada lagi yang bisa saya bantu?',
                 'Apakah ada bagian yang masih kurang jelas, Bapak/Ibu?',
                 'Semoga membantu. Ada hal lain yang ingin ditanyakan?',

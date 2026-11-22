@@ -51,6 +51,13 @@ class AssistantInfo
     /** Officials by name from the Official table; "siapa PPID" → PPID structure. Null when not asked. */
     private static function official(string $text): ?string
     {
+        // Officials outside our table (police, prosecutor, DPRD, camat, ...): say so instead of guessing a name.
+        if (preg_match('/\bsiapa\b/u', $text) && preg_match('/\b(kapolres|kapolsek|kapolda|polres|polsek|kajari|kejari|kejaksaan|dandim|kodim|danramil|ketua (dprd|pengadilan)|dprd|camat|kades|kepala desa|lurah|direktur rsud|gubernur|kepala kua)\b/u', $text, $m)) {
+            $office = ['kapolres' => 'Kapolres', 'polres' => 'Kapolres', 'kapolsek' => 'Kapolsek', 'polsek' => 'Kapolsek', 'kajari' => 'Kajari', 'kejari' => 'Kajari', 'dandim' => 'Dandim', 'kodim' => 'Dandim', 'ketua dprd' => 'Ketua DPRD', 'dprd' => 'Ketua DPRD', 'direktur rsud' => 'Direktur RSUD', 'kepala kua' => 'Kepala KUA'][$m[1]] ?? ucfirst($m[1]);
+
+            return "Mohon maaf, nama {$office} belum ada di data pejabat kami, jadi saya tidak bisa memastikannya agar tidak keliru. "
+                . 'Informasi resminya bisa dilihat di situs atau media sosial resmi instansi tersebut. Data pejabat Pemerintah Kabupaten Empat Lawang yang tersedia ada di halaman Profil Pejabat (' . route('officials.index') . ').';
+        }
         $ppid = preg_match('/\b(ppid utama|atasan ppid|siapa ppid|siapa (kepala|pejabat) ppid|ppid nya|ppidnya)\b/u', $text);
         $role = preg_match('/\b(bupati|wakil bupati|wabup|sekda|sekretaris daerah|kadis|kepala dinas|pejabat)\b/u', $text);
         if (! $ppid && ! ($role && preg_match('/\b(siapa|nama|pejabat)\b/u', $text))) {

@@ -74,6 +74,10 @@ class AssistantInfoTest extends TestCase
         $this->assertStringNotContainsString('A. Wakil', $this->reply('siapa bupati empat lawang'));
         $this->assertStringContainsString('H. Bupati Contoh', $this->reply('siapa bupati empat lawang'));
         $this->assertStringContainsString(route('officials.index'), $this->reply('daftar pejabat'));
+        // Not in our table: no guessed name, no list of Pemkab officials as if it were the answer.
+        $police = $this->reply('Siapa kapolres empat lawang yang baru?');
+        $this->assertStringStartsWith('Mohon maaf, nama Kapolres belum ada di data pejabat kami', $police);
+        $this->assertStringNotContainsString('H. Bupati Contoh', $police);
 
         $visit = $this->reply('bisa datang langsung ke kantor?');
         $this->assertStringContainsString('Jl. Contoh No. 1', $visit);
