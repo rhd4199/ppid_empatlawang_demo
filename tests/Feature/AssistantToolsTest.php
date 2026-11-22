@@ -38,6 +38,27 @@ class AssistantToolsTest extends TestCase
         $this->assertArrayHasKey('error', AssistantTools::run('detail_persyaratan', ['slug' => 'draft']));
     }
 
+    public function test_site_data_tools(): void
+    {
+        \App\Models\Official::create(['name' => 'AKBP Contoh', 'position' => 'Kapolres Empat Lawang', 'order' => 1, 'is_published' => true]);
+        \App\Models\Official::create(['name' => 'Rahasia', 'position' => 'Kapolres Lama', 'order' => 2, 'is_published' => false]);
+        \App\Models\News::create(['title' => 'Bupati Resmikan Pasar', 'slug' => 'pasar', 'content' => '<p>Isi <b>berita</b></p>', 'is_published' => true, 'published_at' => now()->subDay()]);
+        \App\Models\News::create(['title' => 'Bupati Besok', 'slug' => 'besok', 'content' => 'x', 'is_published' => true, 'published_at' => now()->addDay()]);
+        \App\Models\Event::create(['title' => 'Rapat Lalu', 'slug' => 'lalu', 'start_date' => now()->subDays(3)]);
+        \App\Models\Event::create(['title' => 'Rapat Nanti', 'slug' => 'nanti', 'start_date' => now()->addDays(3), 'location' => 'Aula']);
+
+        $this->assertSame([['jabatan' => 'Kapolres Empat Lawang', 'nama' => 'AKBP Contoh']], AssistantTools::run('daftar_pejabat', ['jabatan' => 'Kapolres'])['pejabat']);
+        $this->assertIsString(AssistantTools::run('daftar_pejabat', ['jabatan' => 'dandim'])['pejabat']); // not in data: say so
+        $news = AssistantTools::run('cari_berita', ['kata_kunci' => 'bupati'])['berita'];
+        $this->assertSame(['Bupati Resmikan Pasar'], array_column($news, 'judul')); // future post hidden
+        $this->assertSame('Isi berita', $news[0]['ringkasan']);
+        $this->assertSame(['Rapat Nanti'], array_column(AssistantTools::run('agenda_kegiatan', [])['agenda'], 'kegiatan'));
+        $this->assertSame(['Rapat Lalu', 'Rapat Nanti'], array_column(AssistantTools::run('agenda_kegiatan', ['dari_tanggal' => now()->subWeek()->toDateString()])['agenda'], 'kegiatan'));
+        $this->assertSame(route('contact.index'), AssistantTools::run('kontak_ppid', [])['halaman_kontak']);
+        $this->assertArrayHasKey('hasil', AssistantTools::run('cari_dokumen', ['kata_kunci' => 'apbd']));
+        $this->assertCount(9, AssistantTools::definitions());
+    }
+
     public function test_openai_runs_tool_calls_then_answers_in_whatsapp_format(): void
     {
         config(['services.openai.key' => 'sk-test']);
@@ -65,8 +86,11 @@ class AssistantToolsTest extends TestCase
         $call = ['choices' => [['message' => ['role' => 'assistant', 'content' => null, 'tool_calls' => [
             ['id' => 'c', 'type' => 'function', 'function' => ['name' => 'daftar_persyaratan', 'arguments' => '{}']],
         ]]]]];
-        Http::fake(['api.openai.com/*' => Http::sequence()->push($call)->push($call)->push($call)
-            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Jawaban akhir']]]])]);
+        $sequence = Http::sequence();
+        for ($i = 0; $i < AssistantTools::MAX_ROUNDS; $i++) {
+            $sequence->push($call); // the model keeps asking for tools
+        }
+        Http::fake(['api.openai.com/*' => $sequence->push(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Jawaban akhir']]]])]);
 
         $this->assertSame('Jawaban akhir', app(AssistantController::class)->answer('layanan apa saja?'));
         Http::assertSentCount(AssistantTools::MAX_ROUNDS + 1);

@@ -153,6 +153,7 @@ TXT;
         // Owner's decision: every chat is from an Empat Lawang resident.
         $lines[] = 'Anggap setiap pengguna adalah warga Kabupaten Empat Lawang: jangan tanyakan asal daerah/domisilinya, dan arahkan ke kantor, instansi, dan layanan di Kabupaten Empat Lawang (Disdukcapil, Samsat, Satlantas Polres, Kantor Pertanahan, DPMPTSP, desa/kecamatan setempat, dll. di Empat Lawang).';
         $lines[] = '';
+        $lines[] = 'Anda punya tool untuk data situs: persyaratan layanan, dokumen Daftar Informasi Publik (cari_dokumen), nama pejabat (daftar_pejabat), kontak PPID, berita terbaru, agenda kegiatan, dan pengadaan. Pakai tool bila data di atas belum cukup; nama pejabat hanya dari daftar_pejabat (bila tidak ada, katakan belum tersedia).';
         $lines[] = 'Akhiri setiap jawaban dengan satu pertanyaan lanjutan yang singkat dan relevan (mis. "Apakah Bapak/Ibu ingin tahu langkah-langkah pengurusannya?" atau "Apakah ada dokumen lain yang Bapak/Ibu cari?"), kecuali pengguna sedang berpamitan atau berterima kasih.';
         $lines[] = '';
         $lines[] = 'Kenali dulu niat pengguna, lalu jawab sesuai tujuannya:';
