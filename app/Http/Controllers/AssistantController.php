@@ -11,6 +11,7 @@ use App\Support\RequirementFinder;
 use App\Models\WaConversation;
 use App\Support\AssistantTools;
 use App\Support\CitizenMemory;
+use App\Support\ReportDesk;
 use App\Support\WhatsAppFormat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -130,7 +131,7 @@ TXT;
                     'max_tokens' => (int) config('services.openai.max_tokens'),
                     'temperature' => 0.2, // factual service answers, little invention
                     'messages' => $messages,
-                    'tools' => $tools ? [...AssistantTools::definitions(), ...($person ? [CitizenMemory::TOOL] : [])] : null,
+                    'tools' => $tools ? [...AssistantTools::definitions(), ReportDesk::TOOL, ...($person ? [CitizenMemory::TOOL] : [])] : null,
                 ]))->throw()->json('choices.0.message');
             if (empty($choice['tool_calls']) || ! $tools) {
                 return $choice['content'] ?? null;
@@ -139,11 +140,19 @@ TXT;
             foreach ($choice['tool_calls'] as $call) {
                 $args = json_decode($call['function']['arguments'] ?? '{}', true);
                 $messages[] = ['role' => 'tool', 'tool_call_id' => $call['id'],
-                    'content' => json_encode($person && ($call['function']['name'] ?? '') === 'ingat_warga'
-                        ? CitizenMemory::remember($person, (string) ($args['catatan'] ?? ''))
-                        : AssistantTools::run($call['function']['name'] ?? '', is_array($args) ? $args : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
+                    'content' => json_encode($this->runTool($call['function']['name'] ?? '', is_array($args) ? $args : [], $person), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
             }
         }
+    }
+
+    /** Tools that need the citizen (memory, reports) are handled here; the rest are read-only site data. */
+    private function runTool(string $name, array $args, ?WaConversation $person): array
+    {
+        return match (true) {
+            $name === 'ingat_warga' && $person !== null => CitizenMemory::remember($person, (string) ($args['catatan'] ?? '')),
+            $name === 'catat_laporan' => ReportDesk::record($args, $person, $person ? 'whatsapp' : 'web'),
+            default => AssistantTools::run($name, $args),
+        };
     }
 
     /** Persona (admin override or default) plus official contact data, site links and matching documents, so the model never has to guess them. */
@@ -167,7 +176,11 @@ TXT;
             'Standar Layanan – Pengaduan' => route('standard-service.index') . '#pengaduan',
         ];
 
-        $lines = [trim($persona !== '' ? $persona : self::DEFAULT_PROMPT), '', 'Kontak resmi PPID:'];
+        // Owner: the model must know the current time (greetings, "hari ini", office hours, "besok").
+        $now = now('Asia/Jakarta')->locale('id');
+        $lines = [trim($persona !== '' ? $persona : self::DEFAULT_PROMPT), '',
+            'Waktu sekarang: ' . $now->translatedFormat('l, j F Y') . ', pukul ' . $now->format('H:i') . ' WIB. Pakai untuk salam (pagi < 11.00, siang < 15.00, sore < 18.30, malam), arti "hari ini/besok/kemarin", dan apakah kantor sedang buka.',
+            '', 'Kontak resmi PPID:'];
         foreach ($facts ?: ['Kontak' => 'belum tersedia, arahkan ke halaman Kontak'] as $label => $value) {
             $lines[] = "- {$label}: {$value}";
         }
@@ -192,8 +205,8 @@ TXT;
         $lines[] = '1. Tanya informasi umum (kantor, alamat/lokasi, jam layanan, telepon/email, biaya, lama proses): jawab dengan kontak resmi di atas. Biaya: ' . AssistantInfo::FEE . ' Lama proses: ' . AssistantInfo::DURATION;
         $lines[] = '2. Permohonan data publik yang umum (APBD, laporan, peraturan): sebut dokumen dari hasil pencarian Daftar Informasi Publik di bawah (bila ada) beserta tautannya.';
         $lines[] = '3. Permohonan data khusus/tidak umum atau yang tidak ada di hasil pencarian (kontrak, daftar penerima, rincian per desa): jelaskan singkat prosedur permohonan dan beri tautan "Standar Layanan – Permohonan" serta "Permohonan Informasi".';
-        $lines[] = '4. Pengaduan/laporan warga: bila jenisnya belum jelas, tanyakan balik dulu (jalan/fasilitas umum rusak, pelayanan publik, penyalahgunaan wewenang/pungli, lainnya). Bila sudah jelas, sebut kanal sesuai jenis dan beri tautan "Standar Layanan – Pengaduan". '
-            . 'Jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
+        $lines[] = '4. Pengaduan/laporan warga (jalan rusak, fasilitas umum, pelayanan publik, pungli, sampah, bencana, dll.): TINDAK LANJUT UTAMA adalah mencatat laporannya. Langkah: (a) tunjukkan empati singkat; (b) tanyakan rincian yang belum ada, 1–2 pertanyaan per pesan: apa persisnya masalahnya dan dampaknya, lokasi tepat (desa/kelurahan, kecamatan, nama jalan atau patokan), sejak kapan, dan nama pelapor (boleh anonim); di chat situs minta juga nomor HP yang bisa dihubungi (opsional); (c) bila uraian dan lokasi sudah cukup jelas, panggil tool catat_laporan, lalu sampaikan kode laporannya dan bahwa petugas PPID akan meneruskan ke instansi terkait serta mengabari; (d) BARU SETELAH ITU sebutkan apa lagi yang bisa warga lakukan: kirim foto kondisi ke chat ini, dan/atau lapor juga lewat kanal resmi sesuai jenisnya dengan tautan "Standar Layanan – Pengaduan". Jangan langsung melempar warga ke kanal lain sebelum laporannya dicatat. '
+            . 'Kanal resmi — jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
             . 'Jangan arahkan pengaduan ke Permohonan Informasi atau Pengajuan Keberatan (keberatan hanya untuk permohonan informasi yang ditolak/tidak ditanggapi).';
         $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari data Persyaratan Layanan: blok "Data Persyaratan Layanan" di bawah (bila ada) atau tool cari_persyaratan / detail_persyaratan / daftar_persyaratan (pakai tool bila blok itu kosong atau kurang rinci). Bila layanan yang cocok hanya kebetulan dari kata kunci dan namanya tidak disebut pengguna (mis. "cara bikin kue" → izin PIRT), konfirmasi dulu: "Apakah yang Bapak/Ibu maksud persyaratan …?" sebelum memberi rinciannya; bila jelas (mis. "syarat KTP hilang"), langsung jawab. Sebut instansinya dan beri tautannya; bila tidak ditemukan, jangan mengarang: arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
 

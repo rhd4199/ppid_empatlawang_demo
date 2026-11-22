@@ -100,6 +100,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->names('service-requirements');
 
     // SPPG (dapur Makan Bergizi Gratis) — public page /mbg
+    Route::get('/laporan-warga', [App\Http\Controllers\Admin\CitizenReportController::class, 'index'])->name('citizen-reports.index');
+    Route::put('/laporan-warga/{report}', [App\Http\Controllers\Admin\CitizenReportController::class, 'update'])->name('citizen-reports.update');
     Route::post('/sppg/impor', [App\Http\Controllers\Admin\SppgUnitController::class, 'import'])->name('sppg.import');
     Route::post('/sppg/{id}/toggle-status', [App\Http\Controllers\Admin\SppgUnitController::class, 'toggleStatus'])->name('sppg.toggle-status');
     Route::resource('sppg', App\Http\Controllers\Admin\SppgUnitController::class)

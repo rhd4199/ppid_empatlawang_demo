@@ -159,7 +159,7 @@ class AssistantTest extends TestCase
                     && str_contains($system, "Standar Layanan – Permohonan: {$standard}#permohonan")
                     && str_contains($system, "Standar Layanan – Pengaduan: {$standard}#pengaduan")
                     && str_contains($system, 'Kenali dulu niat pengguna')
-                    && str_contains($system, 'tanyakan balik dulu')
+                && str_contains($system, 'TINDAK LANJUT UTAMA adalah mencatat laporannya') && str_contains($system, 'catat_laporan')
                     && str_contains($system, 'Inspektorat Daerah Kabupaten Empat Lawang')
                     && str_contains($system, 'SMS ke 1708')
                     && str_contains($system, 'GRATIS')

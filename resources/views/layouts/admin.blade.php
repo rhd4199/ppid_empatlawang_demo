@@ -313,6 +313,11 @@
                 <i class="fab fa-whatsapp"></i> WhatsApp
                 @if ($waUnread)<span class="badge rounded-pill bg-success ms-auto" data-wa-unread>{{ $waUnread }}</span>@endif
             </a>
+            @php $newReports = App\Models\CitizenReport::where('status', 'baru')->count(); @endphp
+            <a href="{{ route('admin.citizen-reports.index') }}" class="menu-item {{ request()->routeIs('admin.citizen-reports.*') ? 'active' : '' }}">
+                <i class="fas fa-bullhorn"></i> Laporan Warga
+                @if ($newReports)<span class="badge rounded-pill bg-danger ms-auto">{{ $newReports }}</span>@endif
+            </a>
             
             <!-- Interaksi Dropdown -->
             <a href="#interactionSubmenu" data-bs-toggle="collapse" class="menu-item dropdown-toggle {{ request()->routeIs('admin.contact.*') || request()->routeIs('admin.requests.*') || request()->routeIs('admin.complaints.*') ? 'active' : '' }}" role="button" aria-expanded="false">

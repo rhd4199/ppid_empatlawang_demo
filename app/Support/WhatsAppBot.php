@@ -76,8 +76,13 @@ class WhatsAppBot
         // Answering our "maksudnya layanan X?" (ya / a number) is not a menu choice.
         $choice = $confirming ? null : self::menuChoice(mb_strtolower(trim($last->body)));
         $question = $choice !== null ? self::MENU[$choice] : mb_substr($last->body, 0, 1000);
+        $started = now()->subSecond();
         $reply = app(AssistantController::class)->answer($question, $history, 'wa', $conversation);
         $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');
+        // The AI recorded/updated a report in this turn (catat_laporan): it waits for an officer.
+        if ($report = \App\Models\CitizenReport::where('wa_conversation_id', $conversation->id)->where('updated_at', '>=', $started)->latest('id')->first()) {
+            $reason = "Laporan warga {$report->code}: " . \App\Models\CitizenReport::CATEGORIES[$report->category];
+        }
         // A failed send stays new so an officer sees it.
         $conversation->update(match (true) {
             ! $result['ok'] => ['handoff_reason' => 'Balasan otomatis gagal terkirim'],
@@ -85,6 +90,7 @@ class WhatsAppBot
             default => ['status' => 'done', 'handoff_reason' => null, 'reply_draft' => null, 'last_message_at' => now()],
         });
     }
+
     /** "2", "2.", " 2 " → '2'; '0'..'5' only. */
     private static function menuChoice(string $text): ?string
     {
