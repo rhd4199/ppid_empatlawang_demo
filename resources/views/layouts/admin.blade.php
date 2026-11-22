@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{-- Always light, even when the browser/OS is dark ("only" also stops Chrome's auto dark mode). --}}
+    <meta name="color-scheme" content="only light">
+    <style>:root { color-scheme: only light; }</style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Admin PPID') }} - Admin Panel</title>
