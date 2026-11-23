@@ -2,7 +2,20 @@
 
 Base URL: `{APP_URL}/api/v1` (e.g. `https://ppid.example.go.id/api/v1`)
 
-All endpoints below require a **Bearer token**. Every response is JSON.
+Every response is JSON. Writes and private data need a **Bearer token**; public content can be read without one.
+
+### Public read (no token)
+
+`GET` without an `Authorization` header is open for public content: `/documents`, `/news`, `/galleries`, `/events`, `/officials` (list and `/{id}`), `/profiles`, `/profiles/{slug}`, `/settings/contact`, `/settings/stats`.
+
+- Lists return published items only (`is_published` is forced to `1`); an unpublished item by id answers `404`.
+- Still need a token: every `POST/PUT/PATCH/DELETE`, and `/contacts`, `/information-requests`, `/complaints` (personal data).
+- A request that sends an `Authorization` header is checked as a token request (wrong token = `401`, even for public paths).
+- Rate limit: 120 requests/minute per client.
+
+```bash
+curl -H "Accept: application/json" "https://ppid.example.go.id/api/v1/documents?category=laporan"
+```
 
 ---
 

@@ -24,11 +24,34 @@ class ApiTest extends TestCase
 
     public function test_rejects_missing_wrong_or_unconfigured_token(): void
     {
-        $this->getJson('/api/v1/news')->assertUnauthorized();
+        $this->getJson('/api/v1/contacts')->assertUnauthorized();
+        $this->postJson('/api/v1/news', ['title' => 'X'])->assertUnauthorized();
         $this->getJson('/api/v1/news', ['Authorization' => 'Bearer nope'])->assertUnauthorized();
 
         config(['services.api.token' => '']);
         $this->getJson('/api/v1/news', ['Authorization' => 'Bearer '])->assertUnauthorized();
+    }
+
+    public function test_public_read_without_token_shows_published_content_only(): void
+    {
+        $shown = News::create(['title' => 'Terbit', 'slug' => 'terbit', 'content' => 'x', 'is_published' => true]);
+        $hidden = News::create(['title' => 'Draf', 'slug' => 'draf', 'content' => 'x', 'is_published' => false]);
+
+        $this->getJson('/api/v1/news')->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', $shown->id);
+        $this->getJson('/api/v1/news?is_published=0')->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', $shown->id);
+        $this->getJson("/api/v1/news/{$shown->id}")->assertOk()->assertJsonPath('title', 'Terbit');
+        $this->getJson("/api/v1/news/{$hidden->id}")->assertNotFound();
+
+        foreach (['documents', 'galleries', 'events', 'officials', 'profiles', 'settings/contact', 'settings/stats'] as $path) {
+            $this->getJson("/api/v1/$path")->assertSuccessful();
+        }
+        foreach (['contacts', 'information-requests', 'complaints'] as $path) {
+            $this->getJson("/api/v1/$path")->assertUnauthorized();
+        }
+        $this->deleteJson("/api/v1/news/{$shown->id}")->assertUnauthorized();
+
+        // the admin token still sees drafts
+        $this->getJson('/api/v1/news', $this->auth)->assertOk()->assertJsonCount(2, 'data');
     }
 
     public function test_document_crud_with_file_and_category_filter(): void
