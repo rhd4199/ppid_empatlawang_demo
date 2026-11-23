@@ -140,16 +140,23 @@
     const EMBED = @json($embed);
     const closePanel = () => EMBED ? parent.postMessage('sapa-madani:close', '*') : toggle(false); // embed: the parent hides the iframe
     let busy = false;
-    // chat survives page changes within this tab (sessionStorage); storage blocked → page-only memory
-    const blank = () => ({ messages: [], history: [], open: false });
+    // The chat is kept per browser (localStorage: every tab, survives closing it) and forgotten after KEEP_DAYS without
+    // use (shared computers). Whether the panel is open stays per tab (sessionStorage). Storage blocked → page-only memory.
+    const KEEP_DAYS = 30, OPEN_KEY = 'smChatOpen';
+    const blank = () => ({ messages: [], history: [], at: 0 });
     let state = blank();
-    try { state = Object.assign(blank(), JSON.parse(sessionStorage.getItem(KEY))); } catch (e) { /* blocked or corrupt */ }
-    if (!Array.isArray(state.messages) || !Array.isArray(state.history)) state = blank();
+    try { state = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY))); } catch (e) { /* blocked or corrupt */ }
+    if (!Array.isArray(state.messages) || !Array.isArray(state.history) || Date.now() - state.at > KEEP_DAYS * 864e5) state = blank();
+    try { state.open = sessionStorage.getItem(OPEN_KEY) === '1'; } catch (e) { state.open = false; }
     let shown = 0; // stored messages rendered so far, counted from the newest; older ones load when scrolled to the top
     function save() {
         state.messages = state.messages.slice(-MAX_MESSAGES);
         state.history = state.history.slice(-MAX_HISTORY);
-        try { sessionStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage blocked: page-only memory */ }
+        const { open, ...chat } = state;
+        try {
+            sessionStorage.setItem(OPEN_KEY, open ? '1' : '0');
+            localStorage.setItem(KEY, JSON.stringify({ ...chat, at: chat.messages.length ? Date.now() : 0 }));
+        } catch (e) { /* storage blocked: page-only memory */ }
     }
 
     function toggle(show, focus = true) {
