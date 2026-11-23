@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Agency;
 use App\Models\ContactSetting;
 use App\Models\Event;
 use App\Models\News;
@@ -46,8 +47,10 @@ class AssistantTools
             $fn('daftar_pejabat', 'Nama pejabat publik Kabupaten Empat Lawang yang ada di data PPID (bupati, wakil, sekda, kepala dinas, Forkopimda, DPRD, camat, dll.). Satu-satunya sumber nama pejabat; jangan menebak nama di luar hasil ini.',
                 ['jabatan' => ['type' => 'string', 'description' => 'Opsional: saring kata pada jabatan, mis. "kapolres", "dinas kesehatan", "camat"']]),
             $fn('kontak_ppid', 'Alamat, telepon, email, jam layanan dan media sosial kantor PPID Kabupaten Empat Lawang SAJA. Bukan kontak instansi lain (Disdukcapil, Samsat, dinas, dll.): untuk itu pakai kontak_instansi.'),
-            $fn('kontak_instansi', 'Alamat, telepon dan jam layanan instansi SELAIN PPID di Empat Lawang (Disdukcapil, Samsat, Polres, Satpas SIM, Kantor Pertanahan, DPMPTSP, dinas, kecamatan, puskesmas, dll.), dicari di web publik. Sebut sumbernya; bila tidak ditemukan, katakan jujur.',
-                ['instansi' => ['type' => 'string', 'description' => 'mis. "Disdukcapil", "Samsat", "Kantor Camat Pendopo"']], ['instansi']),
+            $fn('kontak_instansi', 'Profil, alamat, telepon, email, situs dan jam layanan instansi SELAIN PPID di Empat Lawang. Dicari dulu di Direktori Perangkat Daerah situs PPID (dinas, badan, sekretariat, inspektorat, Satpol PP, RSUD, kecamatan), bila tidak ada baru di web publik (Samsat, Polres, Satpas SIM, Kantor Pertanahan, puskesmas, dll.). Sebut sumbernya; bila tidak ditemukan, katakan jujur.',
+                ['instansi' => ['type' => 'string', 'description' => 'mis. "Disdukcapil", "Dinas Kesehatan", "Kantor Camat Pendopo", "Samsat"']], ['instansi']),
+            $fn('daftar_instansi', 'Daftar perangkat daerah (OPD) Pemkab Empat Lawang di Direktori Perangkat Daerah situs PPID: nama, singkatan, tautan profil, per kategori.',
+                ['kategori' => ['type' => 'string', 'enum' => array_keys(Agency::CATEGORIES), 'description' => 'Opsional: hanya satu kategori']]),
             $fn('cari_berita', 'Berita terbaru di situs PPID/Pemkab (judul, tanggal, ringkasan, tautan). Pakai untuk pertanyaan kejadian/kegiatan terbaru.',
                 ['kata_kunci' => ['type' => 'string', 'description' => 'Opsional; kosong = 5 berita terbaru']]),
             $fn('agenda_kegiatan', 'Agenda/kegiatan Pemkab dan PPID yang akan datang (atau di sekitar tanggal tertentu).',
@@ -129,7 +132,8 @@ class AssistantTools
             'data_sppg' => SppgUnit::forAssistant($args['kecamatan'] ?? null, $args['kata_kunci'] ?? null),
             'cari_tempat' => self::places((string) ($args['jenis'] ?? ''), (string) ($args['lokasi'] ?? '')),
             'berita_google' => ['berita' => GoogleNews::search((string) ($args['kata_kunci'] ?? '')) ?: 'Tidak ada berita yang ditemukan.', 'sumber' => 'Google News; sebut nama medianya saja'],
-            'kontak_instansi' => self::web('Alamat kantor, nomor telepon/WhatsApp resmi dan jam layanan ' . mb_substr(trim((string) ($args['instansi'] ?? '')), 0, 100) . ' Kabupaten Empat Lawang. Hanya dari sumber yang menyebut instansi itu secara jelas; jangan menebak nomor.'),
+            'daftar_instansi' => AgencyDirectory::list($args['kategori'] ?? null),
+            'kontak_instansi' => AgencyDirectory::contact((string) ($args['instansi'] ?? '')) ?? self::web('Alamat kantor, nomor telepon/WhatsApp resmi dan jam layanan ' . mb_substr(trim((string) ($args['instansi'] ?? '')), 0, 100) . ' Kabupaten Empat Lawang. Hanya dari sumber yang menyebut instansi itu secara jelas; jangan menebak nomor.'),
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
             default => ['error' => "Tool {$name} tidak ada."],
         };
