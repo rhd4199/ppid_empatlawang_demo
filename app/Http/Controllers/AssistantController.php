@@ -126,6 +126,7 @@ TXT;
     /** Chat completion with the Persyaratan Layanan tools: run the model's tool calls, then ask again (max MAX_ROUNDS). */
     private function openAi(array $messages, ?WaConversation $person = null): ?string
     {
+        $searched = false; // cari_web ran for this question
         for ($round = 0; ; $round++) {
             $tools = $round < AssistantTools::MAX_ROUNDS; // last round: no tools, so the model must answer
             $choice = Http::withToken(config('services.openai.key'))->timeout(30)->acceptJson()
@@ -137,15 +138,36 @@ TXT;
                     'tools' => $tools ? [...AssistantTools::definitions(), ReportDesk::TOOL, ...($person ? [CitizenMemory::TOOL] : [])] : null,
                 ]))->throw()->json('choices.0.message');
             if (empty($choice['tool_calls']) || ! $tools) {
+                // Safety net: the model sometimes answers "data belum tersedia" without the web search the prompt
+                // requires. Run cari_web for the question ourselves and let it answer again with the result.
+                if ($tools && ! $searched && AssistantTools::webSearchOn() && self::saysNotFound((string) ($choice['content'] ?? ''))) {
+                    $searched = true;
+                    $question = (string) collect($messages)->where('role', 'user')->last()['content'];
+                    $messages[] = ['role' => 'assistant', 'content' => null, 'tool_calls' => [['id' => 'auto_web', 'type' => 'function',
+                        'function' => ['name' => 'cari_web', 'arguments' => json_encode(['pertanyaan' => $question], JSON_UNESCAPED_UNICODE)]]]];
+                    $messages[] = ['role' => 'tool', 'tool_call_id' => 'auto_web',
+                        'content' => json_encode(AssistantTools::run('cari_web', ['pertanyaan' => $question]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
+
+                    continue;
+                }
+
                 return $choice['content'] ?? null;
             }
             $messages[] = $choice;
             foreach ($choice['tool_calls'] as $call) {
+                $searched = $searched || ($call['function']['name'] ?? '') === 'cari_web';
                 $args = json_decode($call['function']['arguments'] ?? '{}', true);
                 $messages[] = ['role' => 'tool', 'tool_call_id' => $call['id'],
                     'content' => json_encode($this->runTool($call['function']['name'] ?? '', is_array($args) ? $args : [], $person), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
             }
         }
+    }
+
+    /** The reply admits the answer is missing ("data … belum tersedia", "tidak ditemukan", "belum bisa dipastikan"). */
+    public static function saysNotFound(string $reply): bool
+    {
+        return (bool) preg_match('/\b(data|informasi)\b[^.!?\n]{0,120}\b(belum|tidak)\s+(tersedia|ada|ditemukan|tercatat)\b'
+            . '|\b(belum|tidak)\s+(menemukan|ditemukan)\b|\bbelum\s+bisa\s+dipastikan\b/iu', $reply);
     }
 
     /** Tools that need the citizen (memory, reports) are handled here; the rest are read-only site data. */

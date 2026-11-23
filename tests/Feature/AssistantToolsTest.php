@@ -102,6 +102,47 @@ class AssistantToolsTest extends TestCase
         $this->assertStringContainsString('Fotokopi KK', $tool['content']);
     }
 
+    public function test_not_found_answer_without_web_search_gets_one_automatically(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::sequence()
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Maaf Bapak/Ibu, data tentang siapa Sekretaris Satgas Makan Bergizi Gratis (MBG) belum tersedia di data resmi kami.']]]])
+            ->push(['output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => 'Sekretaris Satgas MBG: Fulan (2026).', 'annotations' => []]]]]])
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Menurut berita daring, sekretarisnya Fulan.']]]])]);
+
+        $this->assertSame('Menurut berita daring, sekretarisnya Fulan.', app(AssistantController::class)->answer('siapa sekretaris Satgas MBG'));
+        $sent = Http::recorded()->map(fn ($pair) => $pair[0])->values();
+        $this->assertCount(3, $sent);
+        $this->assertStringEndsWith('/v1/responses', $sent[1]->url());
+        $this->assertStringContainsString('siapa sekretaris Satgas MBG', $sent[1]['input']);
+        $tool = collect($sent[2]['messages'])->firstWhere('role', 'tool');
+        $this->assertSame('auto_web', $tool['tool_call_id']);
+        $this->assertStringContainsString('Fulan', $tool['content']);
+    }
+
+    public function test_not_found_answer_after_a_web_search_is_kept(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::sequence()
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => null, 'tool_calls' => [
+                ['id' => 'w', 'type' => 'function', 'function' => ['name' => 'cari_web', 'arguments' => '{"pertanyaan":"sekretaris satgas mbg"}']],
+            ]]]]])
+            ->push(['output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => 'Tidak ditemukan.', 'annotations' => []]]]]])
+            ->push(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Sudah saya cari di web, namanya belum ditemukan.']]]])]);
+
+        $this->assertSame('Sudah saya cari di web, namanya belum ditemukan.', app(AssistantController::class)->answer('siapa sekretaris Satgas MBG'));
+        Http::assertSentCount(3); // no second, automatic search
+    }
+
+    public function test_says_not_found_matches_refusals_only(): void
+    {
+        $this->assertTrue(AssistantController::saysNotFound('Maaf, data tentang siapa Sekretaris Satgas MBG belum tersedia di data resmi kami.'));
+        $this->assertTrue(AssistantController::saysNotFound('Saya belum menemukan informasinya.'));
+        $this->assertTrue(AssistantController::saysNotFound('Jawabannya belum bisa dipastikan.'));
+        $this->assertFalse(AssistantController::saysNotFound('Syarat SIM baru: KTP-el asli dan fotokopi. Biaya PNBP SIM A Rp120.000.'));
+        $this->assertFalse(AssistantController::saysNotFound('Layanan ini tidak dipungut biaya.'));
+    }
+
     public function test_tool_rounds_are_capped(): void
     {
         config(['services.openai.key' => 'sk-test']);

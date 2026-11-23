@@ -25,10 +25,16 @@ class AssistantTools
     /** Tool rounds per answer (each round = one more OpenAI call). */
     public const MAX_ROUNDS = 4;
 
+    /** cari_web is offered (a search model is configured). */
+    public static function webSearchOn(): bool
+    {
+        return (string) config('services.openai.search_model') !== '';
+    }
+
     /** OpenAI "tools" parameter. */
     public static function definitions(): array
     {
-        $web = (string) config('services.openai.search_model') !== '';
+        $web = self::webSearchOn();
         $fn = fn (string $name, string $description, array $properties = [], array $required = []) => ['type' => 'function', 'function' => [
             'name' => $name,
             'description' => $description,
