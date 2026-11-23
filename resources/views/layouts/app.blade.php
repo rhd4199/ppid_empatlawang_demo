@@ -464,7 +464,7 @@
                         <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Beranda</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('profiles.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Profil</a>
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('profiles.*') || request()->routeIs('officials.*') || request()->routeIs('agencies.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">Profil</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="https://empatlawangkab.go.id/" target="_blank">Pemkab Empat Lawang</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'tentang-ppid') }}">Tentang PPID</a></li>
@@ -472,6 +472,7 @@
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'struktur-organisasi') }}">Struktur Organisasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('profiles.show', 'tugas-fungsi') }}">Tugas & Fungsi</a></li>
                             <li><a class="dropdown-item {{ request()->routeIs('officials.*') ? 'active' : '' }}" href="{{ route('officials.index') }}">Pejabat & Pejabat Struktural</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('agencies.*') ? 'active' : '' }}" href="{{ route('agencies.index') }}">Perangkat Daerah (OPD) & Kecamatan</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
