@@ -67,4 +67,29 @@ class PortalToolsTest extends TestCase
         $this->assertStringContainsString('Kolom tersedia: tahun, persen', PortalTools::run('portal_baris', ['dataset' => 'ngawur', 'filter' => ['x' => '1']])['error']); // 4xx message reaches the model
         $this->assertStringContainsString('502', PortalTools::run('portal_info_dataset', ['dataset' => 'mati'])['error']);
     }
+
+    public function test_point_layers_geo_layers_changelog_and_survey(): void
+    {
+        $rows = array_map(fn ($i) => ['nama' => "Puskesmas {$i}", 'kecamatan' => 'Pendopo', 'lat' => -3.8, 'lng' => 102.9], range(1, 40));
+        Http::fake([
+            'portal.test/api/v1/poi*' => Http::response(['dataset' => 'poi-empat-lawang', 'total' => 40, 'records' => $rows]),
+            'portal.test/api/v1/geo/kecamatan' => Http::response(['type' => 'FeatureCollection', 'features' => [
+                ['properties' => ['code' => '16.11.02', 'name' => 'Pendopo'], 'geometry' => ['type' => 'Polygon', 'coordinates' => [[[0, 0]]]]],
+                ['properties' => ['code' => '16.11.04', 'name' => 'Tebing Tinggi'], 'geometry' => ['type' => 'Polygon', 'coordinates' => [[[1, 1]]]]]]]),
+            'portal.test/api/v1/changelog' => Http::response(['entries' => array_map(fn ($i) => ['date' => "2026-11-0{$i}", 'title' => "perubahan {$i}"], range(1, 8))]),
+            'portal.test/api/v1/feedback/summary' => Http::response(['responden' => 12, 'rata_rata' => 4.5]),
+        ]);
+
+        $poi = PortalTools::run('portal_titik', ['jenis' => 'poi', 'q' => 'puskesmas', 'filter' => ['kecamatan' => 'Pendopo'], 'jumlah' => 99]);
+        $this->assertSame([40, PortalTools::MAX_ROWS, PortalTools::MAX_ROWS], [$poi['total'], $poi['ditampilkan'], count($poi['baris'])]);
+        Http::assertSent(fn (Request $r) => str_contains($r->url(), '/api/v1/poi') && $r['kecamatan'] === 'Pendopo' && $r['q'] === 'puskesmas');
+        $this->assertSame('poi', PortalTools::run('portal_titik', ['jenis' => 'hacker'])['lapisan']); // unknown kind falls back to poi
+
+        $geo = PortalTools::run('portal_geo', ['lapisan' => 'kecamatan', 'nama' => 'tebing']);
+        $this->assertSame([2, 1, [['code' => '16.11.04', 'name' => 'Tebing Tinggi']]], [$geo['jumlah_fitur'], $geo['cocok'], $geo['atribut']]); // no geometry
+        $this->assertArrayHasKey('error', PortalTools::run('portal_geo', ['lapisan' => '../etc']));
+
+        $this->assertCount(5, PortalTools::run('portal_pembaruan', [])['pembaruan']);
+        $this->assertSame(12, PortalTools::run('portal_survei', [])['responden']);
+    }
 }
