@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['human' => \App\Http\Middleware\HumanCheck::class]);
+        // Sapa Madani chat: stateless and rate-limited; the embed iframe on other sites has no session cookie for a CSRF token.
+        $middleware->validateCsrfTokens(except: ['sapa-madani/chat']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // API clients get JSON errors (401/404/422) even without an Accept header.

@@ -1,4 +1,7 @@
-{{-- Sapa Madani chat panel. Opened by any [data-sm-open] button. --}}
+{{-- Sapa Madani chat panel. Opened by any [data-sm-open] button.
+     $embed = true: full-frame panel for /sapa-madani/embed (other sites' iframe): always open, close asks the parent page,
+     links open in a new tab. --}}
+@php($embed = $embed ?? false)
 <div class="sm-panel" id="smPanel" role="dialog" aria-labelledby="smTitle" hidden>
     <div class="sm-head">
         <span class="sm-head-avatar" aria-hidden="true"><img src="{{ asset('assets/images/sapa-madani.png') }}" alt="" class="sm-logo"><span class="sm-online-dot"></span></span>
@@ -27,7 +30,7 @@
     @if($waUrl ?? null)
         <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="sm-wa"><i class="fab fa-whatsapp" aria-hidden="true"></i> Lebih nyaman lewat WhatsApp? Chat Sapa Madani di WA</a>
     @endif
-    <p class="sm-note">Jawaban AI bisa keliru — untuk permohonan resmi gunakan menu <a href="{{ route('request.create') }}">Permohonan</a>.</p>
+    <p class="sm-note">Jawaban AI bisa keliru — untuk permohonan resmi gunakan menu <a href="{{ route('request.create') }}" @if($embed) target="_blank" rel="noopener" @endif>Permohonan</a>.</p>
 </div>
 
 <style>
@@ -134,6 +137,8 @@
     const reset = panel.querySelector('[data-sm-reset]');
     const intro = box.innerHTML; // greeting + suggestion chips, restored on "new chat"
     const KEY = 'smChat', MAX_MESSAGES = 60, MAX_HISTORY = 10;
+    const EMBED = @json($embed);
+    const closePanel = () => EMBED ? parent.postMessage('sapa-madani:close', '*') : toggle(false); // embed: the parent hides the iframe
     let busy = false;
     // chat survives page changes within this tab (sessionStorage); storage blocked → page-only memory
     const blank = () => ({ messages: [], history: [], open: false });
@@ -197,6 +202,7 @@
             // own-site links show only the path ("/informasi-publik/27"): the full preview/production host wastes 2–3 lines
             a.textContent = href.origin === location.origin ? href.pathname + href.search + href.hash : url;
             if (href.origin !== location.origin) { a.target = '_blank'; a.rel = 'noopener noreferrer nofollow'; }
+            else if (EMBED) { a.target = '_blank'; a.rel = 'noopener'; } // PPID pages open beside the host site, not inside the frame
             el.append(a);
             last = m.index + url.length;
         }
@@ -239,10 +245,10 @@
     }
     box.addEventListener('scroll', () => { if (box.scrollTop < 60) loadOlder(); }, { passive: true });
     // reopen after navigation on desktop only: on phones the panel would cover the new page
-    if (state.open && window.matchMedia('(min-width: 768px)').matches) toggle(true, false);
+    if (EMBED || (state.open && window.matchMedia('(min-width: 768px)').matches)) toggle(true, false);
 
     document.addEventListener('click', e => { if (e.target.closest('[data-sm-open]')) toggle(!isOpen()); });
-    panel.querySelector('[data-sm-close]').addEventListener('click', () => toggle(false));
+    panel.querySelector('[data-sm-close]').addEventListener('click', closePanel);
     reset.addEventListener('click', () => {
         if (busy) return;
         state.messages = []; state.history = []; shown = 0; save();
@@ -250,7 +256,7 @@
         reset.hidden = true;
         input.focus();
     });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen()) toggle(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen()) closePanel(); });
     input.addEventListener('input', sync);
     box.addEventListener('click', e => { // delegated: the chips are re-created on "new chat"
         const chip = e.target.closest('.sm-chip');
@@ -278,7 +284,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', 'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '', // none in the embed page
                 },
                 body: JSON.stringify({ message, history: state.history.slice(-MAX_HISTORY) }),
             });

@@ -52,6 +52,9 @@ Route::get('/cek-status-permohonan', [InformationRequestController::class, 'chec
 Route::get('/cuaca', [App\Http\Controllers\WeatherController::class, 'show'])->middleware('throttle:60,1')->name('weather.show');
 Route::get('/bencana', [App\Http\Controllers\DisasterController::class, 'show'])->middleware('throttle:60,1')->name('disaster.show');
 Route::post('/sapa-madani/chat', [App\Http\Controllers\AssistantController::class, 'chat'])->middleware('throttle:assistant')->name('assistant.chat');
+// Sapa Madani for other sites: <script src=".../sapa-madani/embed.js"> + the framed chat page (AssistantEmbedController).
+Route::get('/sapa-madani/embed', [App\Http\Controllers\AssistantEmbedController::class, 'page'])->name('assistant.embed');
+Route::get('/sapa-madani/embed.js', [App\Http\Controllers\AssistantEmbedController::class, 'script'])->name('assistant.embed-script');
 
 Route::get('/pengajuan-keberatan', [ComplaintController::class, 'create'])->name('complaint.create');
 Route::post('/pengajuan-keberatan', [ComplaintController::class, 'store'])->middleware(['throttle:5,1', 'human'])->name('complaint.store');

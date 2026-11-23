@@ -42,6 +42,8 @@ return [
     // answered questions they did not understand; without AI the bot stays silent and officers answer.
     'assistant' => [
         'keyword_fallback' => (bool) env('ASSISTANT_KEYWORD_FALLBACK', false),
+        // Sites allowed to frame the Sapa Madani embed (CSP frame-ancestors, space-separated). See AssistantEmbedController.
+        'embed_origins' => env('ASSISTANT_EMBED_ORIGINS') ?: "'self' https://empatlawangkab.go.id https://*.empatlawangkab.go.id",
     ],
 
     // Portal Data Empat Lawang (public API /api/v1, docs at <url>/dokumentasi-api/). Change DATA_PORTAL_URL when the portal moves
