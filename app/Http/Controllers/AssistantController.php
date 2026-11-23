@@ -97,6 +97,9 @@ TXT;
         $settings = assistant_settings();
 
         if (config('services.openai.key')) {
+            // Tool rounds (news, web search, places) can pass PHP's default 30 s web limit → fatal 500 in the chat panel.
+            // ponytail: the web server (nginx/php-fpm) timeout must allow this too.
+            @set_time_limit(150);
             $messages = [
                 ['role' => 'system', 'content' => $this->systemPrompt($settings['prompt'], $message) . ($wa ? "\n\n" . WhatsAppFormat::PROMPT : '')
                     . ($person ? "\n\n" . CitizenMemory::prompt($person) : '')],
