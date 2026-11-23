@@ -37,7 +37,7 @@ class PortalTools
         $s = fn (string $d) => ['type' => 'string', 'description' => $d];
 
         return [
-            $fn('portal_cari_dataset', 'Cari dataset di Portal Data Empat Lawang (statistik BPS, kemiskinan, kondisi desa/PODES, DTSEN, pendidikan, kesehatan, fasilitas, dll.). Mengembalikan nama dataset, judul, sumber. Mulai dari sini untuk pertanyaan data/statistik, lalu portal_info_dataset dan portal_baris.',
+            $fn('portal_cari_dataset', 'Cari dataset di Portal Data Empat Lawang (statistik BPS, kemiskinan, kondisi desa/PODES, DTSEN, pendidikan, kesehatan, fasilitas, dll.). Mengembalikan nama dataset, judul, sumber. Mulai dari sini untuk pertanyaan data/statistik, lalu portal_info_dataset dan portal_baris. Tidak ketemu? lihat portal_katalog.',
                 ['kata_kunci' => $s('mis. "kemiskinan", "penduduk", "sekolah"; kosong = semua'), 'topik' => $s('Opsional, nama grup topik')]),
             $fn('portal_info_dataset', 'Metadata satu dataset: judul, sumber, lisensi, dan daftar kolom (id kolom dipakai sebagai filter di portal_baris).',
                 ['dataset' => $s('nama dataset dari portal_cari_dataset')], ['dataset']),
@@ -52,6 +52,8 @@ class PortalTools
                     'q' => $s('teks bebas, mis. "puskesmas"'), 'jumlah' => ['type' => 'integer', 'description' => '1–15, bawaan 10']], ['jenis']),
             $fn('portal_geo', 'Lapisan peta Empat Lawang (tanpa bentuk poligon, hanya ringkasan atribut): batas desa, batas kecamatan, jalan (kelas arteri/kolektor/lokal/…), sungai, dan sebaran penduduk. Pakai untuk nama/kode wilayah, nama jalan/sungai. Untuk luas dan jumlah desa per kecamatan pakai portal_wilayah (jenis kecamatan), bukan lapisan ini.',
                 ['lapisan' => ['type' => 'string', 'enum' => ['desa', 'kecamatan', 'jalan', 'sungai', 'penduduk-grid']], 'nama' => $s('saring nama mengandung kata ini'), 'jumlah' => ['type' => 'integer', 'description' => '1–15, bawaan 10']], ['lapisan']),
+            $fn('portal_katalog', 'Katalog lengkap semua dataset Portal Data (sama dengan halaman Daftar API, ±66 dataset) dikelompokkan per topik: nama dataset, judul, periode. Pakai bila portal_cari_dataset tidak menemukan, atau untuk tahu data apa saja yang tersedia.',
+                ['topik' => $s('Opsional: bencana, ekonomi, infrastruktur, kemiskinan, kependudukan, kesehatan, lingkungan, pemerintahan, pendidikan, pertanian, wilayah')]),
             $fn('portal_pembaruan', 'Riwayat pembaruan API dan data Portal Data (terbaru di atas): kapan data terakhir diperbarui dan apa yang berubah.'),
             $fn('portal_survei', 'Ringkasan survei kepuasan pengguna Portal Data.'),
         ];
@@ -70,6 +72,7 @@ class PortalTools
             'portal_baris' => self::rows($str('dataset'), is_array($args['filter'] ?? null) ? $args['filter'] : [], $str('q'), (int) ($args['jumlah'] ?? 10)),
             'portal_titik' => self::points(in_array($args['jenis'] ?? '', ['poi', 'fasilitas', 'permukiman'], true) ? $args['jenis'] : 'poi', is_array($args['filter'] ?? null) ? $args['filter'] : [], $str('q'), (int) ($args['jumlah'] ?? 10)),
             'portal_geo' => self::geo($str('lapisan'), $str('nama'), (int) ($args['jumlah'] ?? 10)),
+            'portal_katalog' => self::catalog(mb_strtolower($str('topik', 40))),
             'portal_pembaruan' => self::get('/api/v1/changelog', [], fn ($j) => ['pembaruan' => array_slice($j['entries'] ?? [], 0, 5)]),
             'portal_survei' => self::get('/api/v1/feedback/summary', [], fn ($j) => $j),
             'portal_wilayah' => self::region($str('jenis'), $str('kecamatan'), $str('nama_desa'), $str('kode_desa', 30)),
@@ -77,7 +80,53 @@ class PortalTools
         };
     }
 
+    /** Every dataset from /api/v1/endpoints (the "Daftar API" page), grouped by topic, compact. */
+    private static function catalog(string $topic): array
+    {
+        // cached whole (one cache key per URL); the topic filter is applied afterwards
+        $all = self::get('/api/v1/endpoints', [], function ($j) {
+            $groups = [];
+            foreach ($j['groups'] ?? [] as $g) {
+                if (str_starts_with((string) ($g['id'] ?? ''), 'dataset-')) {
+                    $groups[substr($g['id'], 8)] = array_values(array_map(fn ($i) => array_filter(['dataset' => $i['dataset'] ?? null, 'judul' => $i['title'] ?? null, 'periode' => $i['period'] ?? null]), $g['items'] ?? []));
+                }
+            }
+
+            return ['jumlah_dataset' => array_sum(array_map('count', $groups)), 'topik' => $groups, 'diperbarui' => $j['updated'] ?? null];
+        });
+        if ($topic === '' || isset($all['error'])) {
+            return $all;
+        }
+        $groups = array_intersect_key($all['topik'] ?? [], [$topic => 1]);
+
+        return ['jumlah_dataset' => array_sum(array_map('count', $groups)), 'topik' => $groups] + $all;
+    }
+
     private static function datasets(string $q, string $group): array
+    {
+        $found = self::search($q, $group);
+        // The API's q is a plain substring search; "penduduk miskin" or "sekolah" may miss. Fall back to words in catalog titles.
+        if (($found['jumlah'] ?? 1) === 0 && $q !== '') {
+            $common = ['jumlah', 'data', 'tahun', 'menurut', 'kabupaten', 'empat', 'lawang', 'berapa', 'per', 'dan'];
+            $words = array_diff(array_filter(preg_split('/\s+/u', mb_strtolower($q)), fn ($w) => mb_strlen($w) >= 4), $common);
+            $hits = [];
+            foreach (self::catalog('')['topik'] ?? [] as $topic => $items) {
+                foreach ($items as $i) {
+                    $text = mb_strtolower(($i['judul'] ?? '') . ' ' . ($i['dataset'] ?? ''));
+                    if ($score = count(array_filter($words, fn ($w) => str_contains($text, $w)))) {
+                        $hits[] = ['nama' => $i['dataset'] ?? null, 'judul' => $i['judul'] ?? null, 'topik' => $topic, 'periode' => $i['periode'] ?? null, 'skor' => $score];
+                    }
+                }
+            }
+            usort($hits, fn ($a, $b) => $b['skor'] <=> $a['skor']); // most matching words first
+
+            return ['jumlah' => count($hits), 'dataset' => array_slice($hits, 0, 30), 'catatan' => 'dari katalog (cocok per kata)'];
+        }
+
+        return $found;
+    }
+
+    private static function search(string $q, string $group): array
     {
         return self::get('/api/v1/datasets', array_filter(['q' => $q, 'group' => $group]), fn ($j) => [
             'jumlah' => $j['count'] ?? count($j['result'] ?? []),

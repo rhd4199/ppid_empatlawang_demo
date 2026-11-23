@@ -98,4 +98,26 @@ class PortalToolsTest extends TestCase
         $this->assertCount(5, PortalTools::run('portal_pembaruan', [])['pembaruan']);
         $this->assertSame(12, PortalTools::run('portal_survei', [])['responden']);
     }
+
+    public function test_catalog_from_daftar_api_and_search_fallback_to_catalog(): void
+    {
+        Http::fake([
+            'portal.test/api/v1/endpoints' => Http::response(['updated' => '2026-11-23', 'groups' => [
+                ['id' => 'umum', 'items' => [['path' => '/api/v1']]],
+                ['id' => 'dataset-pendidikan', 'items' => [
+                    ['dataset' => 'jumlah-guru-kecamatan', 'title' => 'Jumlah Guru menurut Jenjang, Status Sekolah, dan Kecamatan', 'period' => '2018-2024'],
+                    ['dataset' => 'angka-melek-huruf', 'title' => 'Angka Melek Huruf', 'period' => '2024']]],
+                ['id' => 'dataset-kemiskinan', 'items' => [['dataset' => 'kemiskinan', 'title' => 'Indikator Kemiskinan']]],
+            ]]),
+            'portal.test/api/v1/datasets*' => Http::response(['count' => 0, 'result' => []]),
+        ]);
+
+        $all = PortalTools::run('portal_katalog', []);
+        $this->assertSame([3, ['pendidikan', 'kemiskinan']], [$all['jumlah_dataset'], array_keys($all['topik'])]); // non-dataset groups left out
+        $this->assertSame(['pendidikan'], array_keys(PortalTools::run('portal_katalog', ['topik' => 'Pendidikan'])['topik']));
+
+        $found = PortalTools::run('portal_cari_dataset', ['kata_kunci' => 'jumlah guru sekolah']); // API found nothing
+        $this->assertSame('jumlah-guru-kecamatan', $found['dataset'][0]['nama']);
+        $this->assertSame(1, $found['jumlah']); // "jumlah" alone does not match everything
+    }
 }
