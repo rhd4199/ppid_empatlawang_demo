@@ -67,6 +67,35 @@ class ContactSettingController extends Controller
         return redirect()->route('admin.contact-settings.index')->with('success', 'Pengaturan Sapa Madani berhasil diperbarui.');
     }
 
+    /**
+     * What the WEB process sees (it can differ from artisan in the terminal: other env, cached config, long-lived
+     * workers). Never shows the key. ?test=1 also makes one tiny OpenAI call.
+     */
+    public function assistantStatus(Request $request)
+    {
+        $key = (string) config('services.openai.key');
+        $envFile = base_path('.env');
+        $settings = assistant_settings();
+
+        return response()->json([
+            'ai_available' => AssistantController::aiAvailable(),
+            'chat_enabled' => $settings['enabled'],
+            'openai_key_set' => $key !== '',
+            'openai_key_length' => strlen($key),
+            'openai_model' => config('services.openai.model'),
+            'assistant_api_url_set' => $settings['api_url'] !== '',
+            'config_cached' => app()->configurationIsCached(),
+            'env_file' => $envFile,
+            'env_file_readable' => is_readable($envFile),
+            'env_file_has_key' => is_readable($envFile) && preg_match('/^OPENAI_API_KEY=\S/m', (string) file_get_contents($envFile)) === 1,
+            'process_env_has_key' => (string) getenv('OPENAI_API_KEY') !== '',
+            'php_sapi' => PHP_SAPI,
+            'base_path' => base_path(),
+            'opcache' => function_exists('opcache_get_status') && (opcache_get_status(false)['opcache_enabled'] ?? false),
+            'openai_test' => $request->boolean('test') && $key !== '' ? \App\Console\Commands\AssistantCheck::ping($key) : null,
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
     private function customPrompt(string $prompt): string
     {
         $prompt = trim(str_replace("\r\n", "\n", $prompt));

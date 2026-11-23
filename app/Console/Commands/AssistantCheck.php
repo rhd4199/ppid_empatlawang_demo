@@ -10,7 +10,7 @@ use Throwable;
 /**
  * Sapa Madani diagnosis for servers without tinker (read-only home): shows which AI the chat uses, makes one tiny
  * OpenAI call and prints its HTTP status / error, then (--full) answers "halo" through the real chat path.
- * Never prints the key itself.
+ * Never prints the key itself. The web process may see other env: GET /admin/sapa-madani/status checks that side.
  */
 class AssistantCheck extends Command
 {
@@ -38,25 +38,14 @@ class AssistantCheck extends Command
             $this->warn('Key mengandung spasi atau tanda kutip — periksa baris OPENAI_API_KEY di .env.');
         }
 
-        try {
-            $res = Http::withToken($key)->timeout(30)->acceptJson()->post('https://api.openai.com/v1/chat/completions', [
-                'model' => config('services.openai.model'),
-                'max_tokens' => 5,
-                'messages' => [['role' => 'user', 'content' => 'Balas: ok']],
-            ]);
-        } catch (Throwable $e) {
-            $this->error('Tidak bisa menghubungi api.openai.com: ' . class_basename($e) . ' ' . mb_substr($e->getMessage(), 0, 300));
-            $this->line('cURL 6/7/28 = jaringan/firewall/proxy keluar server; cURL 60/77 = sertifikat CA PHP (curl.cainfo).');
+        $ping = self::ping($key);
+        if (! $ping['ok']) {
+            $this->error($ping['error']);
+            $this->line('401 = key salah/dicabut; 429 insufficient_quota = saldo/billing habis; 404 model_not_found = OPENAI_MODEL salah; cURL 6/7/28 = jaringan/firewall keluar; cURL 60/77 = sertifikat CA PHP.');
 
             return self::FAILURE;
         }
-        if (! $res->successful()) {
-            $this->error("OpenAI menolak (HTTP {$res->status()}): " . ($res->json('error.code') ?? '') . ' ' . mb_substr((string) ($res->json('error.message') ?? $res->body()), 0, 300));
-            $this->line('401 = key salah/dicabut; 429 insufficient_quota = saldo/billing habis; 404 model_not_found = OPENAI_MODEL salah / tak tersedia di akun.');
-
-            return self::FAILURE;
-        }
-        $this->info('OpenAI OK (HTTP 200), model ' . $res->json('model') . '.');
+        $this->info("OpenAI OK (HTTP 200), model {$ping['model']}.");
 
         if ($this->option('full')) {
             $started = microtime(true);
@@ -66,5 +55,23 @@ class AssistantCheck extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /** One tiny chat completion; also used by the admin web check (Admin\ContactSettingController::assistantStatus). */
+    public static function ping(string $key): array
+    {
+        try {
+            $res = Http::withToken($key)->timeout(30)->acceptJson()->post('https://api.openai.com/v1/chat/completions', [
+                'model' => config('services.openai.model'),
+                'max_tokens' => 5,
+                'messages' => [['role' => 'user', 'content' => 'Balas: ok']],
+            ]);
+        } catch (Throwable $e) {
+            return ['ok' => false, 'error' => 'Tidak bisa menghubungi api.openai.com: ' . class_basename($e) . ' ' . mb_substr($e->getMessage(), 0, 300)];
+        }
+
+        return $res->successful()
+            ? ['ok' => true, 'model' => $res->json('model')]
+            : ['ok' => false, 'error' => "OpenAI menolak (HTTP {$res->status()}): " . ($res->json('error.code') ?? '') . ' ' . mb_substr((string) ($res->json('error.message') ?? $res->body()), 0, 300)];
     }
 }

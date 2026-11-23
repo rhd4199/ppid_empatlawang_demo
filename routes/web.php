@@ -147,6 +147,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/pengaturan-kontak', [App\Http\Controllers\Admin\ContactSettingController::class, 'index'])->name('contact-settings.index');
     Route::put('/pengaturan-kontak', [App\Http\Controllers\Admin\ContactSettingController::class, 'update'])->name('contact-settings.update');
     Route::put('/pengaturan-kontak/asisten', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateAssistant'])->name('contact-settings.update-assistant');
+    Route::get('/sapa-madani/status', [App\Http\Controllers\Admin\ContactSettingController::class, 'assistantStatus'])->name('assistant.status');
     Route::put('/pengaturan-kontak/statistik', [App\Http\Controllers\Admin\ContactSettingController::class, 'updateStats'])->name('contact-settings.update-stats');
 
     // WhatsApp inbox (messages from the provider webhook)

@@ -35,4 +35,16 @@ class AssistantCheckTest extends TestCase
 
         $this->artisan('assistant:check')->expectsOutputToContain('OpenAI OK')->assertSuccessful();
     }
+
+    public function test_admin_web_status_shows_what_the_web_process_sees_without_the_key(): void
+    {
+        config(['services.openai.key' => 'sk-secret-123456']);
+        Http::fake(['api.openai.com/*' => Http::response(['model' => 'gpt-4.1-mini'])]);
+
+        $this->get('/admin/sapa-madani/status')->assertRedirect();
+
+        $res = $this->actingAs(\App\Models\User::factory()->create())->get('/admin/sapa-madani/status?test=1')->assertOk()
+            ->assertJson(['ai_available' => true, 'openai_key_set' => true, 'openai_test' => ['ok' => true]]);
+        $this->assertStringNotContainsString('secret-123456', $res->getContent());
+    }
 }
