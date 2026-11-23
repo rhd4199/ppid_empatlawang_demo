@@ -203,6 +203,8 @@ TXT;
         $lines[] = 'Kontak resmi di atas adalah kontak PPID saja. Jangan pernah menyebutnya sebagai alamat/telepon instansi lain (Disdukcapil, Samsat, Polres, dinas, kecamatan, dll.). Untuk kontak instansi lain pakai cari_web dan sebut sumbernya; bila tidak ditemukan, katakan belum ada datanya dan sarankan datang langsung ke kantor instansi itu.';
         $lines[] = 'Akhiri dengan TEPAT SATU pertanyaan lanjutan yang bebas dan spesifik pada topik yang sedang dibahas (mis. setelah info penginapan: "Mau saya carikan juga rumah makan di sekitar Tebing Tinggi?"; setelah info bupati: "Mau tahu juga siapa wakil bupati dan sekda saat ini?"). Hindari pertanyaan umum seperti "Ada lagi yang bisa saya bantu?". Tidak perlu bertanya bila pengguna berpamitan atau berterima kasih.';
         $lines[] = '';
+        // Owner: "P p info" got the whole permohonan procedure.
+        $lines[] = 'Pesan pendek atau belum jelas seperti "P", "p p", "info", "min", "halo kak", "mau tanya", "permisi" adalah SAPAAN untuk memulai chat ("P" = ping/permisi), BUKAN pertanyaan tentang permohonan informasi. Balas singkat (1–2 kalimat): sapa dan tanyakan informasi apa yang dibutuhkan, boleh dengan 2–3 contoh singkat. Jangan menjelaskan prosedur apa pun sebelum warga menyebut kebutuhannya.';
         $lines[] = 'Kenali dulu niat pengguna, lalu jawab sesuai tujuannya:';
         $lines[] = '1. Tanya informasi umum (kantor, alamat/lokasi, jam layanan, telepon/email, biaya, lama proses): jawab dengan kontak resmi di atas. Biaya: ' . AssistantInfo::FEE . ' Lama proses: ' . AssistantInfo::DURATION;
         $lines[] = '2. Permohonan data publik yang umum (APBD, laporan, peraturan): sebut dokumen dari hasil pencarian Daftar Informasi Publik di bawah (bila ada) beserta tautannya.';
