@@ -77,6 +77,7 @@ class WhatsAppBot
         $choice = $confirming ? null : self::menuChoice(mb_strtolower(trim($last->body)));
         $question = $choice !== null ? self::MENU[$choice] : mb_substr($last->body, 0, 1000);
         $started = now()->subSecond();
+        LarikaPresence::read($conversation, typing: true); // blue ticks + "sedang mengetik…" while the AI works
         $reply = app(AssistantController::class)->answer($question, $history, 'wa', $conversation);
         $result = WhatsAppGateway::sendLogged($conversation, $reply, 'bot');
         // The AI recorded/updated a report in this turn (catat_laporan): it waits for an officer.

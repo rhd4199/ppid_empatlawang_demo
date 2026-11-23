@@ -21,6 +21,8 @@
         <env name="APP_ENV" value="testing"/>
         <env name="ASSISTANT_KEYWORD_FALLBACK" value="true"/>
         <env name="OPENAI_API_KEY" value="" force="true"/><!-- never call the real OpenAI from tests -->
+        <env name="LARIKA_KEY" value="" force="true"/><!-- nor the real WhatsApp gateway -->
+        <env name="LARIKA_WEBHOOK_KEY" value="" force="true"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

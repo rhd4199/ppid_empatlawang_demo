@@ -21,6 +21,7 @@ class WhatsAppInboxController extends Controller
     {
         if ($conversation->status === 'new') {
             $conversation->update(['status' => 'read']);
+            \App\Support\LarikaPresence::read($conversation);
         }
         // No AI call here: an unanswered question shows "Menyiapkan draf…" and the inbox script fetches the draft (redraft).
         $messages = $conversation->messages()->orderBy('sent_at')->orderBy('id')->get();
