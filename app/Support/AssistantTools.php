@@ -68,6 +68,7 @@ class AssistantTools
                 ['jenis' => ['type' => 'string', 'description' => 'mis. "penginapan", "rumah makan", "wisata", "spbu"'], 'lokasi' => ['type' => 'string', 'description' => 'Opsional: kecamatan/desa, mis. "Tebing Tinggi"']], ['jenis']),
             $fn('berita_google', 'Berita terbaru tentang Kabupaten Empat Lawang dari Google News (judul, nama media, tanggal). Pakai untuk kejadian/isu terkini di luar situs PPID.',
                 ['kata_kunci' => ['type' => 'string', 'description' => 'Opsional, mis. "banjir", "kapolres"; otomatis dibatasi Empat Lawang']]),
+            ...(PortalTools::enabled() ? PortalTools::definitions() : []),
             ...($web ? [$fn('cari_web', 'Cari di web publik (situs resmi pemerintah, media berita) bila data PPID di tool lain tidak punya jawabannya, mis. pejabat Forkopimda, kegiatan/berita di luar situs, regulasi umum. Hasilnya bukan data resmi PPID: sebut sumbernya dan bahwa informasi bisa belum terbaru.',
                 ['pertanyaan' => ['type' => 'string', 'description' => 'Pertanyaan/kata kunci pencarian, singkat dan spesifik']], ['pertanyaan'])] : []),
         ];
@@ -135,6 +136,7 @@ class AssistantTools
             'daftar_instansi' => AgencyDirectory::list($args['kategori'] ?? null),
             'kontak_instansi' => AgencyDirectory::contact((string) ($args['instansi'] ?? '')) ?? self::web('Alamat kantor, nomor telepon/WhatsApp resmi dan jam layanan ' . mb_substr(trim((string) ($args['instansi'] ?? '')), 0, 100) . ' Kabupaten Empat Lawang. Hanya dari sumber yang menyebut instansi itu secara jelas; jangan menebak nomor.'),
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
+            str_starts_with($name, 'portal_') => PortalTools::run($name, $args),
             default => ['error' => "Tool {$name} tidak ada."],
         };
     }
