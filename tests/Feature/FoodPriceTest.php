@@ -53,4 +53,18 @@ class FoodPriceTest extends TestCase
         $this->assertArrayHasKey('error', AssistantTools::run('harga_pangan', []));
         $this->assertStringContainsString('panelharga.badanpangan.go.id', AssistantFallback::reply('harga cabe'));
     }
+
+    public function test_source_down_serves_last_good_prices_and_is_not_retried_for_30_minutes(): void
+    {
+        Http::fake(['api-panelhargav2.badanpangan.go.id/*' => Http::response(['data' => [$this->row(27, 'Beras Premium', 15000, 14900)]])]);
+        $this->assertCount(1, FoodPrice::latest()['harga']);
+
+        $this->travel(31)->minutes();
+        $calls = 0;
+        Http::fake(['api-panelhargav2.badanpangan.go.id/*' => function () use (&$calls) { $calls++; throw new \Illuminate\Http\Client\ConnectionException('cURL error 28'); }]);
+        $this->assertSame('Beras Premium', FoodPrice::latest()['harga'][0]['komoditas']); // stale copy
+        FoodPrice::latest();
+        FoodPrice::find('beras');
+        $this->assertSame(1, $calls); // the failure is cached too: one timeout per 30 minutes, not per chat
+    }
 }

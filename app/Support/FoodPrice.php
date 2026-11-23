@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Log;
 /**
  * Consumer food prices (harga eceran) from Panel Harga Badan Pangan Nasional, public API behind
  * panelharga.badanpangan.go.id (no key). Kab. Empat Lawang first; Sumatera Selatan when the regency has no figures.
- * Cached 10 minutes (successes only). Skill: workspace skills/bapanas-food-price.
+ * Cached 30 minutes, also when the source fails or is empty (no 10–15 s timeout per chat); while it is down the
+ * last good figures (kept 3 days) are served. Skill: workspace skills/bapanas-food-price.
  */
 class FoodPrice
 {
@@ -17,7 +18,8 @@ class FoodPrice
     const PROVINCE = 6;   // Sumatera Selatan
     const CITY = 109;     // Kab. Empat Lawang
     const LEVEL = 3;      // konsumen / eceran
-    const TTL = 600;
+    const TTL = 1800;
+    const STALE_TTL = 259200; // last good copy, used while the source is down
 
     /**
      * @return array{wilayah: string, harga: array<int, array{komoditas: string, harga: int, satuan: string, tanggal: string, perubahan: ?int}>}|array{}
@@ -53,13 +55,15 @@ class FoodPrice
             return $cached;
         }
         try {
-            $data = Http::timeout(15)->acceptJson()->withUserAgent('Mozilla/5.0 PPID Empat Lawang')
+            $data = Http::connectTimeout(5)->timeout(15)->acceptJson()->withUserAgent('Mozilla/5.0 PPID Empat Lawang')
                 ->get(self::URL, ['province_id' => self::PROVINCE, 'city_id' => $city, 'level_harga_id' => self::LEVEL])
                 ->throw()->json('data');
         } catch (\Throwable $e) {
             Log::warning('Panel Harga fetch failed: ' . class_basename($e) . ' ' . mb_substr($e->getMessage(), 0, 200));
+            $rows = Cache::get("$key:last", []);
+            Cache::put($key, $rows, self::TTL); // no retry (and no new timeout) for 30 minutes
 
-            return [];
+            return $rows;
         }
         $rows = [];
         foreach (is_array($data) ? $data : [] as $r) {
@@ -76,8 +80,9 @@ class FoodPrice
                 'perubahan' => $today && isset($r['yesterday']) && $r['yesterday'] ? $today - (int) $r['yesterday'] : null,
             ];
         }
+        Cache::put($key, $rows, self::TTL);
         if ($rows) {
-            Cache::put($key, $rows, self::TTL);
+            Cache::put("$key:last", $rows, self::STALE_TTL);
         }
 
         return $rows;
