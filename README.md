@@ -50,6 +50,7 @@ Tanpa kredensial S3, gambar upload tidak tampil (halaman tetap jalan).
 | `php artisan config:clear` | Setelah ubah `.env` di server yang memakai `config:cache` |
 | `php artisan whatsapp:larika-poll` | Terima pesan WhatsApp Larika (proses terus-menerus, lihat "WhatsApp Larika") |
 | `php artisan whatsapp:larika-webhook [--test]` | Daftarkan webhook Larika + cetak `LARIKA_WEBHOOK_KEY` |
+| `php artisan assistant:check [--full]` | Diagnosa Sapa Madani: key OpenAI terbaca?, model, tes koneksi + error OpenAI (tanpa tinker, key tidak ditampilkan) |
 
 ## Konfigurasi (.env)
 
