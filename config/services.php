@@ -47,9 +47,9 @@ return [
     ],
 
     // Portal Data Empat Lawang (public API /api/v1, docs at <url>/dokumentasi-api/). Change DATA_PORTAL_URL when the portal moves
-    // (dev preview now, production domain later); empty = the portal_* AI tools are off.
+    // (production by default; a dev preview in local .env); empty = the portal_* AI tools are off.
     'data_portal' => [
-        'url' => env('DATA_PORTAL_URL', 'https://dev-keruani-empatlawang-portal-155c99caa1.larika.id'),
+        'url' => env('DATA_PORTAL_URL', 'https://data.empatlawangkab.go.id'),
     ],
 
     // Cloudflare Turnstile for public forms (HumanCheck). Both empty = only honeypot + throttle.
