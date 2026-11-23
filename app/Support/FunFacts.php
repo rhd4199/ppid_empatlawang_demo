@@ -2,12 +2,12 @@
 
 namespace App\Support;
 
-use App\Models\Agency;
 use App\Models\SppgUnit;
 
 /**
- * "Tahukah Anda?" facts about Empat Lawang for short chat openers ("P p info"): fixed facts with a source, plus facts
- * built from our data and the Portal Data when they are reachable. Only sourced facts, never invented.
+ * "Tahukah Anda?" info for short chat openers ("P p info"): owner wants light general info from our own data —
+ * today's weather, food prices, the latest news, disasters nearby, a random statistic, SPPG — or a fixed sourced fact.
+ * A random kind is picked; kinds whose source is down are skipped. Never invented: the AI phrases the data it gets.
  */
 class FunFacts
 {
@@ -19,18 +19,65 @@ class FunFacts
         ['Kabupaten Empat Lawang dibentuk tahun 2007 sebagai pemekaran dari Kabupaten Lahat (UU Nomor 1 Tahun 2007).', 'UU No. 1 Tahun 2007 (peraturan.go.id, JDIH BPK)'],
     ];
 
-    /** @return array{fakta: string, sumber: string, jumlah_fakta: int} */
+    const HINT = 'Sampaikan sebagai SATU info singkat yang ringan (1–2 kalimat), angka/waktu persis seperti di data, sebut sumbernya singkat.';
+
     public static function random(): array
     {
-        // Owner: a random fact from any of our data, e.g. a statistic. Mostly a random Portal Data dataset (its newest
-        // rows, phrased by the AI); otherwise a ready fact from our own tables or the fixed list.
-        if (mt_rand(1, 100) <= 70 && $stat = self::statistic()) {
-            return $stat;
+        $kinds = ['weather', 'price', 'news', 'disaster', 'statistic', 'sppg'];
+        shuffle($kinds);
+        foreach ($kinds as $kind) {
+            if ($info = self::$kind()) {
+                return $info + ['petunjuk' => self::HINT];
+            }
         }
-        $facts = [...self::FIXED, ...self::fromData()];
-        [$fact, $source] = $facts[array_rand($facts)];
+        [$fact, $source] = self::FIXED[array_rand(self::FIXED)];
 
-        return ['fakta' => $fact, 'sumber' => $source];
+        return ['jenis' => 'fakta', 'fakta' => $fact, 'sumber' => $source];
+    }
+
+    private static function weather(): ?array
+    {
+        $slots = array_slice(BmkgWeather::upcoming(BmkgWeather::forecast(BmkgWeather::DEFAULT_DISTRICT)), 0, 3);
+        if (! $slots) {
+            return null;
+        }
+        $alert = BmkgWeather::alerts()[0]['title'] ?? null;
+
+        return ['jenis' => 'cuaca', 'wilayah' => 'Tebing Tinggi', 'prakiraan' => array_map(fn ($s) => substr($s['time'], 11, 5) . " WIB {$s['desc']} {$s['temp']}°C", $slots),
+            'peringatan_dini' => $alert, 'sumber' => $slots[0]['source'] ?? 'BMKG'];
+    }
+
+    private static function price(): ?array
+    {
+        $rows = FoodPrice::latest()['harga'] ?? [];
+        if (! $rows) {
+            return null;
+        }
+        $r = $rows[array_rand($rows)];
+
+        return ['jenis' => 'harga pangan', 'komoditas' => $r['komoditas'], 'harga' => 'Rp' . number_format($r['harga'], 0, ',', '.') . '/' . $r['satuan'],
+            'tanggal' => $r['tanggal'], 'sumber' => 'Panel Harga Badan Pangan Nasional'];
+    }
+
+    private static function news(): ?array
+    {
+        $item = GoogleNews::search('', 3)[0] ?? null;
+
+        return $item ? ['jenis' => 'berita terbaru', 'judul' => $item['judul'], 'tanggal' => $item['tanggal'], 'sumber' => $item['sumber']] : null;
+    }
+
+    private static function disaster(): ?array
+    {
+        $e = collect(BnpbDisaster::recent())->firstWhere('region', 'Empat Lawang');
+
+        return $e ? ['jenis' => 'kejadian bencana', 'tanggal' => $e['date'], 'bencana' => $e['type'], 'kondisi' => mb_strimwidth((string) $e['status'], 0, 150, '…'), 'sumber' => 'BNPB'] : null;
+    }
+
+    private static function sppg(): ?array
+    {
+        $n = SppgUnit::where('is_published', true)->count();
+
+        return $n ? ['jenis' => 'program', 'fakta' => "Ada {$n} dapur SPPG program Makan Bergizi Gratis yang beroperasi di Empat Lawang.", 'sumber' => 'Radar MBG Badan Gizi Nasional'] : null;
     }
 
     /** Newest rows of a random Portal Data dataset; null when the portal is unreachable. */
@@ -44,40 +91,11 @@ class FunFacts
             $d = $datasets[array_rand($datasets)];
             $rows = PortalTools::run('portal_baris', ['dataset' => $d['dataset'], 'jumlah' => 4]);
             if (! empty($rows['baris'])) {
-                return [
-                    'jenis' => 'statistik',
-                    'dataset' => $d['judul'] ?? $d['dataset'],
-                    'periode' => $d['periode'] ?? null,
-                    'data_terbaru' => $rows['baris'],
-                    'sumber' => 'Portal Data Empat Lawang',
-                    'petunjuk' => 'Ubah data ini menjadi SATU fakta menarik yang singkat dan benar (sebut angka, tahun, dan wilayahnya persis seperti di data; jangan menambah angka lain).',
-                ];
+                return ['jenis' => 'statistik', 'dataset' => $d['judul'] ?? $d['dataset'], 'periode' => $d['periode'] ?? null,
+                    'data_terbaru' => $rows['baris'], 'sumber' => 'Portal Data Empat Lawang'];
             }
         }
 
         return null;
-    }
-
-    /** Facts from live/local data; each one is skipped when its source is unavailable. */
-    private static function fromData(): array
-    {
-        $facts = [];
-        $kec = PortalTools::enabled() ? PortalTools::run('portal_wilayah', ['jenis' => 'kecamatan']) : [];
-        if (! empty($kec['kecamatan'])) {
-            $rows = $kec['kecamatan'];
-            $largest = collect($rows)->sortByDesc('luas_ha')->first();
-            $facts[] = ['Empat Lawang punya ' . count($rows) . ' kecamatan dengan ' . array_sum(array_column($rows, 'jumlah_desa')) . ' desa/kelurahan; kecamatan terluas adalah ' . $largest['kecamatan'] . ' (±' . number_format($largest['luas_ha'], 0, ',', '.') . ' ha).', 'Portal Data Empat Lawang'];
-        }
-        if ($sppg = SppgUnit::where('is_published', true)->count()) {
-            $facts[] = ["Saat ini ada {$sppg} dapur SPPG program Makan Bergizi Gratis yang beroperasi di Empat Lawang.", 'Radar MBG Badan Gizi Nasional'];
-        }
-        if ($opd = Agency::where('is_published', true)->where('category', '!=', 'kecamatan')->count()) {
-            $facts[] = ["Pemerintah Kabupaten Empat Lawang punya {$opd} perangkat daerah (dinas, badan, sekretariat dan lainnya) yang melayani warga.", 'direktori perangkat daerah PPID Empat Lawang'];
-        }
-        if ($chili = FoodPrice::find('cabai rawit')['harga'][0] ?? null) {
-            $facts[] = ['Harga ' . mb_strtolower($chili['komoditas']) . ' rata-rata di Empat Lawang per ' . $chili['tanggal'] . ' sekitar Rp' . number_format($chili['harga'], 0, ',', '.') . '/' . $chili['satuan'] . '.', 'Panel Harga Badan Pangan Nasional'];
-        }
-
-        return $facts;
     }
 }

@@ -30,11 +30,12 @@ class FunFactsTest extends TestCase
 
     public function test_a_sourced_fact_even_when_live_sources_are_down(): void
     {
-        Http::fake(fn () => Http::response('down', 502)); // portal and price panel unavailable
+        Http::fake(fn () => Http::response('down', 502)); // BMKG, Open-Meteo, price panel, news, BNPB, portal all down
+        config(['services.data_portal.url' => '']);
         $all = array_column(FunFacts::FIXED, 0);
         foreach (range(1, 5) as $i) {
             $f = AssistantTools::run('fakta_unik', []);
-            $this->assertContains($f['fakta'], $all); // only fixed, sourced facts remain
+            $this->assertContains($f['fakta'], $all); // no SPPG rows either: only fixed, sourced facts remain
             $this->assertNotSame('', $f['sumber']);
         }
     }
