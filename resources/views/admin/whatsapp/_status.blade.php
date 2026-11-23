@@ -48,11 +48,17 @@
                     <dt class="col-sm-4">Kiriman hari ini</dt>
                     <dd class="col-sm-8">{{ $n['cap_used'] ?? 0 }} / {{ $n['daily_cap'] ?? '—' }}{{ $n['risk'] ? ' · risiko blokir ' . $n['risk'] : '' }}</dd>
                 @endif
-                <dt class="col-sm-4">Penerima pesan (poller)</dt>
+                {{-- Messages arrive by webhook (LARIKA_WEBHOOK_KEY set) or by the poller; either one is enough. --}}
+                @php $webhook = filled(config('services.larika.webhook_key')); @endphp
+                <dt class="col-sm-4">Penerima pesan</dt>
                 <dd class="col-sm-8">
-                    {!! $larika['poller'] ? '<span class="text-success">berjalan</span>' : '<span class="text-danger">tidak berjalan</span>' !!}
-                    · cek terakhir {{ $ago($larika['last_poll_at']) }}
-                    @unless ($larika['poller'])<div class="text-muted">Jalankan <code>php artisan whatsapp:larika-poll</code> di server (README "WhatsApp Larika").</div>@endunless
+                    @if ($webhook)
+                        <span class="text-success">webhook aktif</span>{{ $larika['poller'] ? ' · poller juga berjalan' : '' }}
+                    @else
+                        {!! $larika['poller'] ? '<span class="text-success">poller berjalan</span>' : '<span class="text-danger">tidak ada (webhook belum diisi, poller tidak berjalan)</span>' !!}
+                        · cek terakhir {{ $ago($larika['last_poll_at']) }}
+                        @unless ($larika['poller'])<div class="text-muted">Daftarkan webhook dengan <code>php artisan whatsapp:larika-webhook</code> (isi <code>LARIKA_WEBHOOK_KEY</code>), atau jalankan <code>php artisan whatsapp:larika-poll</code> di server (README "WhatsApp Larika").</div>@endunless
+                    @endif
                 </dd>
                 <dt class="col-sm-4">Event terakhir diterima</dt>
                 <dd class="col-sm-8 mb-0">{{ $ago($larika['last_event_at']) }}</dd>
