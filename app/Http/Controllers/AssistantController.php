@@ -222,7 +222,7 @@ TXT;
                 $lines[] = "- {$doc['title']}: {$doc['url']}";
             }
             if (! $docs) {
-                $lines[] = '- Tidak ada dokumen yang cocok. Sampaikan bahwa dokumen itu belum tersedia di daftar, lalu jelaskan prosedur permohonan di bawah.';
+                $lines[] = '- Tidak ada dokumen yang cocok di Daftar Informasi Publik. Bila yang ditanya angka/statistik/fasilitas/wilayah, coba dulu tool Portal Data (portal_cari_dataset, portal_baris, portal_titik, portal_wilayah, portal_geo) dan jawab dari sana; baru bila Portal Data juga tidak punya, sampaikan belum tersedia lalu jelaskan prosedur permohonan di bawah.';
             }
             if (! $docs || DocumentFinder::isSpecific($text)) {
                 $lines[] = '';

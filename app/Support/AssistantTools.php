@@ -77,6 +77,9 @@ class AssistantTools
     /** Runs one tool call; the result goes back to the model as JSON. */
     public static function run(string $name, array $args): array
     {
+        if (str_starts_with($name, 'portal_')) { // data portal tools live in PortalTools
+            return PortalTools::run($name, $args);
+        }
         $published = fn () => ServiceRequirement::where('is_published', true);
         $brief = fn ($r) => ['judul' => $r->title, 'slug' => $r->slug, 'instansi' => $r->agency, 'tautan' => route('service-requirements.show', $r->slug)];
 
@@ -136,7 +139,6 @@ class AssistantTools
             'daftar_instansi' => AgencyDirectory::list($args['kategori'] ?? null),
             'kontak_instansi' => AgencyDirectory::contact((string) ($args['instansi'] ?? '')) ?? self::web('Alamat kantor, nomor telepon/WhatsApp resmi dan jam layanan ' . mb_substr(trim((string) ($args['instansi'] ?? '')), 0, 100) . ' Kabupaten Empat Lawang. Hanya dari sumber yang menyebut instansi itu secara jelas; jangan menebak nomor.'),
             'cari_web' => self::web(mb_substr(trim((string) ($args['pertanyaan'] ?? '')), 0, 300)),
-            str_starts_with($name, 'portal_') => PortalTools::run($name, $args),
             default => ['error' => "Tool {$name} tidak ada."],
         };
     }

@@ -47,10 +47,10 @@ class PortalTools
             $fn('portal_wilayah', 'Data wilayah Empat Lawang: daftar kecamatan (jumlah desa, luas), daftar desa (kode Kemendagri, kecamatan, luas), atau profil lengkap satu desa (semua indikator, fasilitas, permukiman).',
                 ['jenis' => ['type' => 'string', 'enum' => ['kecamatan', 'desa', 'profil_desa']], 'kecamatan' => $s('saring desa per kecamatan'), 'nama_desa' => $s('cari desa dengan nama mengandung kata ini'),
                     'kode_desa' => $s('kode Kemendagri untuk profil_desa, mis. 16.11.01.2001')], ['jenis']),
-            $fn('portal_titik', 'Titik lokasi di Empat Lawang dengan koordinat: POI (fasilitas umum), daftar fasilitas per desa, atau pusat permukiman. Saring per kolom (mis. kecamatan, kode_desa, kategori) atau teks bebas; hasil memuat nama, desa, lat/lng. Kolom tepatnya ada di hasil (kolom) atau lewat portal_info_dataset.',
+            $fn('portal_titik', 'Titik lokasi di Empat Lawang dengan koordinat: POI (fasilitas umum), daftar fasilitas per desa, atau pusat permukiman. Saring per kolom (mis. kecamatan, kode_desa, kategori) atau teks bebas; hasil memuat nama, desa, lat/lng. Kolom tepatnya ada di hasil (kolom) atau lewat portal_info_dataset. Bila jenis poi kosong, coba juga jenis fasilitas sebelum menyimpulkan tidak ada.',
                 ['jenis' => ['type' => 'string', 'enum' => ['poi', 'fasilitas', 'permukiman']], 'filter' => ['type' => 'object', 'additionalProperties' => ['type' => 'string'], 'description' => 'kolom → nilai'],
                     'q' => $s('teks bebas, mis. "puskesmas"'), 'jumlah' => ['type' => 'integer', 'description' => '1–15, bawaan 10']], ['jenis']),
-            $fn('portal_geo', 'Lapisan peta Empat Lawang (tanpa bentuk poligon, hanya ringkasan atribut): batas desa, batas kecamatan, jalan (kelas arteri/kolektor/lokal/…), sungai, dan sebaran penduduk. Pakai untuk pertanyaan seperti berapa desa di sebuah kecamatan, luas wilayah, nama jalan/sungai.',
+            $fn('portal_geo', 'Lapisan peta Empat Lawang (tanpa bentuk poligon, hanya ringkasan atribut): batas desa, batas kecamatan, jalan (kelas arteri/kolektor/lokal/…), sungai, dan sebaran penduduk. Pakai untuk nama/kode wilayah, nama jalan/sungai. Untuk luas dan jumlah desa per kecamatan pakai portal_wilayah (jenis kecamatan), bukan lapisan ini.',
                 ['lapisan' => ['type' => 'string', 'enum' => ['desa', 'kecamatan', 'jalan', 'sungai', 'penduduk-grid']], 'nama' => $s('saring nama mengandung kata ini'), 'jumlah' => ['type' => 'integer', 'description' => '1–15, bawaan 10']], ['lapisan']),
             $fn('portal_pembaruan', 'Riwayat pembaruan API dan data Portal Data (terbaru di atas): kapan data terakhir diperbarui dan apa yang berubah.'),
             $fn('portal_survei', 'Ringkasan survei kepuasan pengguna Portal Data.'),
@@ -82,8 +82,9 @@ class PortalTools
         return self::get('/api/v1/datasets', array_filter(['q' => $q, 'group' => $group]), fn ($j) => [
             'jumlah' => $j['count'] ?? count($j['result'] ?? []),
             'dataset' => array_map(fn ($d) => array_filter([
-                'nama' => $d['name'] ?? null, 'judul' => $d['title'] ?? null, 'sumber' => $d['source'] ?? null,
-                'topik' => $d['group'] ?? null, 'spasial' => $d['spatial'] ?? null, 'tahun' => $d['year'] ?? ($d['period'] ?? null),
+                // live portal: organization / period / unit (CKAN-like); source / year kept as fallbacks
+                'nama' => $d['name'] ?? null, 'judul' => $d['title'] ?? null, 'sumber' => $d['organization'] ?? ($d['source'] ?? null),
+                'topik' => $d['group'] ?? null, 'spasial' => $d['spatial'] ?? null, 'periode' => $d['period'] ?? ($d['year'] ?? null), 'satuan' => $d['unit'] ?? null,
             ]), array_slice($j['result'] ?? [], 0, 30)),
         ]);
     }
@@ -91,8 +92,11 @@ class PortalTools
     private static function meta(array $m): array
     {
         return array_filter([
-            'nama' => $m['name'] ?? null, 'judul' => $m['title'] ?? null, 'deskripsi' => isset($m['description']) ? mb_strimwidth((string) $m['description'], 0, 400, '…') : null,
-            'sumber' => $m['source'] ?? null, 'lisensi' => $m['license'] ?? null, 'jumlah_baris' => $m['rows'] ?? null,
+            'nama' => $m['name'] ?? null, 'judul' => $m['title'] ?? null,
+            'catatan' => ($text = $m['notes'] ?? ($m['description'] ?? null)) ? mb_strimwidth((string) $text, 0, 500, '…') : null,
+            'sumber' => $m['organization'] ?? ($m['source'] ?? null), 'periode' => $m['period'] ?? null, 'satuan' => $m['unit'] ?? null,
+            'frekuensi' => $m['frequency'] ?? null, 'pembaruan_sumber' => $m['source_last_update'] ?? null,
+            'lisensi' => $m['license'] ?? null, 'jumlah_baris' => $m['rows'] ?? null,
             'kolom' => array_map(fn ($f) => array_filter(['id' => $f['id'] ?? null, 'label' => $f['label'] ?? ($f['title'] ?? null), 'tipe' => $f['type'] ?? null]), $m['fields'] ?? []),
         ]);
     }
@@ -114,11 +118,13 @@ class PortalTools
     private static function points(string $kind, array $filter, string $q, int $n): array
     {
         $n = min(max($n, 1), self::MAX_ROWS);
-
-        return self::get("/api/v1/{$kind}", self::query($filter, $q, $n), fn ($j) => [
+        $found = self::get("/api/v1/{$kind}", self::query($filter, $q, $n), fn ($j) => [
             'lapisan' => $kind, 'total' => $j['total'] ?? count($j['records'] ?? []), 'ditampilkan' => min($n, count($j['records'] ?? [])),
             'baris' => array_slice($j['records'] ?? [], 0, $n),
         ]);
+
+        // POI (mapped points) misses many village facilities that PODES lists by name: try those before saying "none".
+        return $kind === 'poi' && ($found['total'] ?? null) === 0 ? self::points('fasilitas', $filter, $q, $n) : $found;
     }
 
     /** GeoJSON layers without geometry: feature count + the properties of the first matches. */
@@ -139,12 +145,19 @@ class PortalTools
 
     private static function rows(string $dataset, array $filter, string $q, int $n): array
     {
-        $query = self::query($filter, $q, $n);
+        $n = min(max($n, 1), self::MAX_ROWS);
+        // The API has no sort: fetch the matches and put the newest year first, so "angka terakhir" is not 2015.
+        $query = ['limit' => 1000] + self::query($filter, $q, $n);
 
-        return self::get('/api/v1/datasets/' . rawurlencode($dataset) . '/records', $query, fn ($j) => [
-            'dataset' => $j['dataset'] ?? $dataset, 'total' => $j['total'] ?? null, 'ditampilkan' => count($j['records'] ?? []),
-            'kolom' => array_column($j['fields'] ?? [], 'id'), 'baris' => $j['records'] ?? [],
-        ]);
+        return self::get('/api/v1/datasets/' . rawurlencode($dataset) . '/records', $query, function ($j) use ($dataset, $n) {
+            $rows = $j['records'] ?? [];
+            if ($rows && array_key_exists('tahun', $rows[0])) {
+                usort($rows, fn ($a, $b) => ($b['tahun'] ?? 0) <=> ($a['tahun'] ?? 0));
+            }
+
+            return ['dataset' => $j['dataset'] ?? $dataset, 'total' => $j['total'] ?? null, 'ditampilkan' => min($n, count($rows)),
+                'urutan' => isset($rows[0]['tahun']) ? 'tahun terbaru dulu' : null, 'kolom' => array_column($j['fields'] ?? [], 'id'), 'baris' => array_slice($rows, 0, $n)];
+        });
     }
 
     private static function region(string $kind, string $kecamatan, string $name, string $code): array
