@@ -276,6 +276,10 @@
                 <i class="fas fa-clipboard-list"></i> Persyaratan Layanan
             </a>
 
+            <a href="{{ route('admin.agencies.index') }}" class="menu-item {{ request()->routeIs('admin.agencies.*') ? 'active' : '' }}">
+                <i class="fas fa-building"></i> Perangkat Daerah
+            </a>
+
             <a href="{{ route('admin.sppg.index') }}" class="menu-item {{ request()->routeIs('admin.sppg.*') ? 'active' : '' }}">
                 <i class="fas fa-utensils"></i> SPPG (MBG)
             </a>

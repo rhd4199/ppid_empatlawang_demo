@@ -101,6 +101,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->parameters(['persyaratan-layanan' => 'id'])
         ->names('service-requirements');
 
+    // Perangkat daerah (OPD) — public pages /instansi
+    Route::post('/instansi/{id}/toggle-status', [App\Http\Controllers\Admin\AgencyController::class, 'toggleStatus'])->name('agencies.toggle-status');
+    Route::resource('instansi', App\Http\Controllers\Admin\AgencyController::class)
+        ->except(['show'])
+        ->parameters(['instansi' => 'id'])
+        ->names('agencies');
+
     // SPPG (dapur Makan Bergizi Gratis) — public page /mbg
     Route::get('/laporan-warga', [App\Http\Controllers\Admin\CitizenReportController::class, 'index'])->name('citizen-reports.index');
     Route::put('/laporan-warga/{report}', [App\Http\Controllers\Admin\CitizenReportController::class, 'update'])->name('citizen-reports.update');
