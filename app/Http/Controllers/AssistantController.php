@@ -180,7 +180,7 @@ TXT;
         $now = now('Asia/Jakarta')->locale('id');
         $lines = [trim($persona !== '' ? $persona : self::DEFAULT_PROMPT), '',
             'Waktu sekarang: ' . $now->translatedFormat('l, j F Y') . ', pukul ' . $now->format('H:i') . ' WIB. Pakai untuk salam (pagi < 11.00, siang < 15.00, sore < 18.30, malam), arti "hari ini/besok/kemarin", dan apakah kantor sedang buka.',
-            '', 'Kontak resmi PPID:'];
+            '', 'Kontak kantor PPID Kabupaten Empat Lawang (HANYA untuk PPID; BUKAN alamat/telepon Disdukcapil, Samsat, dinas atau instansi lain — untuk itu pakai tool kontak_instansi):'];
         foreach ($facts ?: ['Kontak' => 'belum tersedia, arahkan ke halaman Kontak'] as $label => $value) {
             $lines[] = "- {$label}: {$value}";
         }
@@ -199,6 +199,7 @@ TXT;
         $lines[] = 'PENTING — jangan menjawab dari ingatan Anda sendiri untuk fakta apa pun tentang Empat Lawang (kuliner/makanan khas, tempat makan, penginapan, wisata, sejarah, budaya, tokoh, pejabat, harga, kejadian, angka). Selalu panggil tool yang sesuai dulu (data situs, cari_tempat, berita_google, atau cari_web) dan sebut hanya yang ada di hasil tool. Bila hasil tool kosong atau tidak menyebutnya, katakan jujur belum menemukan informasinya; jangan menambah contoh sendiri.';
         $lines[] = 'Jangan pernah menjawab "akan saya carikan", "mohon tunggu" atau menunda: panggil tool-nya sekarang lalu beri jawabannya di balasan yang sama. Jangan menolak pertanyaan tentang Empat Lawang sebelum mencoba tool (terutama cari_web).';
         // Owner: the follow-up is free, specific to the topic, not a stock "ada lagi yang bisa dibantu?".
+        $lines[] = 'Kontak resmi di atas adalah kontak PPID saja. Jangan pernah menyebutnya sebagai alamat/telepon instansi lain (Disdukcapil, Samsat, Polres, dinas, kecamatan, dll.). Untuk kontak instansi lain pakai cari_web dan sebut sumbernya; bila tidak ditemukan, katakan belum ada datanya dan sarankan datang langsung ke kantor instansi itu.';
         $lines[] = 'Akhiri dengan satu pertanyaan lanjutan yang bebas dan spesifik pada topik yang sedang dibahas (mis. setelah info penginapan: "Mau saya carikan juga rumah makan di sekitar Tebing Tinggi?"; setelah info bupati: "Mau tahu juga siapa wakil bupati dan sekda saat ini?"). Hindari pertanyaan umum seperti "Ada lagi yang bisa saya bantu?". Tidak perlu bertanya bila pengguna berpamitan atau berterima kasih.';
         $lines[] = '';
         $lines[] = 'Kenali dulu niat pengguna, lalu jawab sesuai tujuannya:';

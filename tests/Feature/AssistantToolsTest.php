@@ -56,7 +56,7 @@ class AssistantToolsTest extends TestCase
         $this->assertSame(['Rapat Lalu', 'Rapat Nanti'], array_column(AssistantTools::run('agenda_kegiatan', ['dari_tanggal' => now()->subWeek()->toDateString()])['agenda'], 'kegiatan'));
         $this->assertSame(route('contact.index'), AssistantTools::run('kontak_ppid', [])['halaman_kontak']);
         $this->assertArrayHasKey('hasil', AssistantTools::run('cari_dokumen', ['kata_kunci' => 'apbd']));
-        $this->assertCount(16, AssistantTools::definitions());
+        $this->assertCount(17, AssistantTools::definitions());
         config(['services.openai.search_model' => '']);
         $this->assertNotContains('cari_web', array_column(array_column(AssistantTools::definitions(), 'function'), 'name')); // switched off
     }
