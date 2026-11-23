@@ -270,7 +270,7 @@
         const message = input.value.trim();
         if (!message || busy) return;
         document.getElementById('smSuggest')?.remove();
-        add(message, 'user');
+        const asked = add(message, 'user').parentElement; // the user's row: the reply is read from here down
         remember(message, 'user');
         input.value = '';
         busy = true; sync();
@@ -298,7 +298,9 @@
         pending.removeAttribute('aria-label');
         fill(pending, reply);
         remember(reply, 'bot');
-        box.scrollTop = box.scrollHeight;
+        // Long replies: put the question at the top so the answer is read from its start, not its end
+        // (short ones simply end at the bottom: scrollTop is capped).
+        box.scrollTop += asked.getBoundingClientRect().top - box.getBoundingClientRect().top - 8;
         busy = false; sync();
         input.focus();
     });
