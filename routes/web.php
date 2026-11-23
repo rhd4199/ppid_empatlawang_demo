@@ -43,18 +43,18 @@ Route::resource('event', EventController::class)->only(['index'])->names('events
 Route::resource('pengadaan', ProcurementController::class)->only(['index'])->names('procurements');
 
 Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index');
-Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/kontak', [ContactController::class, 'store'])->middleware(['throttle:5,1', 'human'])->name('contact.store');
 
 Route::get('/permohonan-informasi', [InformationRequestController::class, 'create'])->name('request.create');
-Route::post('/permohonan-informasi', [InformationRequestController::class, 'store'])->name('request.store');
+Route::post('/permohonan-informasi', [InformationRequestController::class, 'store'])->middleware(['throttle:5,1', 'human'])->name('request.store');
 Route::get('/cek-status-permohonan', [InformationRequestController::class, 'checkStatus'])->name('request.status');
 
 Route::get('/cuaca', [App\Http\Controllers\WeatherController::class, 'show'])->middleware('throttle:60,1')->name('weather.show');
 Route::get('/bencana', [App\Http\Controllers\DisasterController::class, 'show'])->middleware('throttle:60,1')->name('disaster.show');
-Route::post('/sapa-madani/chat', [App\Http\Controllers\AssistantController::class, 'chat'])->middleware('throttle:20,1')->name('assistant.chat');
+Route::post('/sapa-madani/chat', [App\Http\Controllers\AssistantController::class, 'chat'])->middleware('throttle:assistant')->name('assistant.chat');
 
 Route::get('/pengajuan-keberatan', [ComplaintController::class, 'create'])->name('complaint.create');
-Route::post('/pengajuan-keberatan', [ComplaintController::class, 'store'])->name('complaint.store');
+Route::post('/pengajuan-keberatan', [ComplaintController::class, 'store'])->middleware(['throttle:5,1', 'human'])->name('complaint.store');
 
 // No public sign-up: every account is an admin, so /register let anyone into /admin.
 Auth::routes(['register' => false]);

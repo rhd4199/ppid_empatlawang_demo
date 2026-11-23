@@ -402,6 +402,7 @@
                                 </div>
                             </div>
                             <div class="col-12 mt-4">
+                                @include('partials.human-check')
                                 <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-lg hover-scale transition-all d-flex align-items-center justify-content-center" id="submit-btn">
                                     <span>Kirim Pesan Sekarang</span>
                                     <i class="fas fa-paper-plane ms-2"></i>
@@ -511,6 +512,7 @@
                     $('#form-message .icon-status').removeClass('bg-danger text-white').addClass('bg-success text-white').html('<i class="fas fa-check"></i>');
                     
                     $('#contact-form')[0].reset();
+                    if (window.turnstile) turnstile.reset(); // a token works once
                     btn.prop('disabled', false).html(originalContent);
                     
                     $('html, body').animate({ scrollTop: $("#form-message").offset().top - 150 }, 500);
@@ -525,6 +527,7 @@
                     $('#form-message .icon-status').removeClass('bg-success text-white').addClass('bg-danger text-white').html('<i class="fas fa-times"></i>');
                     
                     btn.prop('disabled', false).html(originalContent);
+                    if (window.turnstile) turnstile.reset();
                 }
             });
         });

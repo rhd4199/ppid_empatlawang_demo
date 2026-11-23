@@ -91,6 +91,7 @@
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="reset" class="btn btn-light me-md-2">Reset</button>
+                            @include('partials.human-check')
                             <button type="submit" class="btn btn-primary px-5"><i class="fas fa-paper-plane me-2"></i> Kirim Permohonan</button>
                         </div>
                     </form>

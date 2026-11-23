@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias(['human' => \App\Http\Middleware\HumanCheck::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // API clients get JSON errors (401/404/422) even without an Accept header.

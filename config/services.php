@@ -50,6 +50,12 @@ return [
         'url' => env('DATA_PORTAL_URL', 'https://dev-keruani-empatlawang-portal-155c99caa1.larika.id'),
     ],
 
+    // Cloudflare Turnstile for public forms (HumanCheck). Both empty = only honeypot + throttle.
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         // gpt-4.1-mini follows "use the tools, don't answer from memory"; gpt-4o-mini invented local facts (2026-11-23).
