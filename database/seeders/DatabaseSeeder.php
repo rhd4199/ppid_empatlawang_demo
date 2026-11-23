@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             EventSeeder::class,
             ProcurementSeeder::class,
             SppgUnitSeeder::class,
+            AgencySeeder::class,
         ]);
     }
 }

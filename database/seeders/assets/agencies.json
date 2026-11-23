@@ -1,0 +1,1960 @@
+[
+ {
+  "slug": "sekretariat-daerah",
+  "category": "sekretariat",
+  "name": "Sekretariat Daerah Kabupaten Empat Lawang",
+  "short_name": "Setda",
+  "keywords": "setda, pemda, bupati",
+  "description": "Membantu Bupati menyusun kebijakan dan mengoordinasikan administrasi pelaksanaan tugas perangkat daerah serta pelayanan administratif. Fungsinya meliputi perumusan kebijakan daerah, koordinasi tugas perangkat daerah, pemantauan dan evaluasi kebijakan, serta pelayanan administratif dan pembinaan ASN.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Fauzan Khoiri, A.P., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/sekretariat-daerah",
+    "title": "Sekretariat Daerah | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas, fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1hGAieO6dOglhFqJyCQmWl4d7oUDd_qM_/view",
+    "title": "2025 - LKJIP SETDA (tertaut dari halaman Setda empatlawangkab.go.id)",
+    "accessed": "2026-11-23",
+    "used_for": "kepala (Sekda), ditandatangani Februari 2026"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 1
+ },
+ {
+  "slug": "sekretariat-dprd",
+  "category": "sekretariat",
+  "name": "Sekretariat DPRD Kabupaten Empat Lawang",
+  "short_name": "Setwan",
+  "keywords": "dprd, dewan, sekwan",
+  "description": "Menyelenggarakan administrasi kesekretariatan dan keuangan DPRD, memfasilitasi rapat DPRD, serta menyediakan dan mengoordinasikan tenaga ahli yang diperlukan DPRD dalam melaksanakan hak dan fungsinya.",
+  "address": "Gedung DPRD Kabupaten Empat Lawang, Jl. Pembangunan, Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Zaina Lupiana",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/sekretariat-dprd",
+    "title": "Sekretariat DPRD | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas, fungsi"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Dewan_Perwakilan_Rakyat_Daerah_Kabupaten_Empat_Lawang",
+    "title": "Wikipedia — DPRD Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "alamat gedung DPRD (1 sumber, tidak terverifikasi)"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 2
+ },
+ {
+  "slug": "dinas-pendidikan-kebudayaan",
+  "category": "dinas",
+  "name": "Dinas Pendidikan dan Kebudayaan Kabupaten Empat Lawang",
+  "short_name": "Disdikbud",
+  "keywords": "disdik, sekolah, guru, pendidikan, ppdb, spmb",
+  "description": "Membantu Bupati melaksanakan kewenangan daerah di bidang pendidikan dan kebudayaan, meliputi pembinaan PAUD, pendidikan dasar (SD/SMP), pendidikan nonformal, guru dan tenaga kependidikan, serta kebudayaan.",
+  "address": "Komplek Perkantoran Pemerintah Daerah Kab. Empat Lawang, Jl. Lintas Sumatera Km 3,5, Talang Banyu, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 7320082",
+    "label": "Telepon & Faks",
+    "verified": true
+   }
+  ],
+  "emails": [
+   {
+    "address": "diknas4_lawang@yahoo.com",
+    "verified": true
+   }
+  ],
+  "website": "https://disdikbud.empatlawangkab.go.id",
+  "social": {},
+  "service_hours": null,
+  "head_name": "Sefza Doris, S.Kom., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-pendidikan-dan-kebudayaan",
+    "title": "Dinas Pendidikan dan Kebudayaan | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://disdikbud.empatlawangkab.go.id/?page_id=40",
+    "title": "Kontak - Disdikbud Empat Lawang (situs resmi OPD)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon/faks, email"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 3
+ },
+ {
+  "slug": "dinas-kesehatan",
+  "category": "dinas",
+  "name": "Dinas Kesehatan Kabupaten Empat Lawang",
+  "short_name": "Dinkes",
+  "keywords": "puskesmas, kesehatan, str, sip, imunisasi",
+  "description": "Melaksanakan kewenangan daerah di bidang kesehatan: pencegahan dan pengendalian penyakit, surveilans dan penanggulangan KLB, perbaikan gizi, pelayanan kesehatan dasar dan rujukan, perizinan tenaga dan sarana kesehatan, pengawasan farmasi serta promosi kesehatan.",
+  "address": "Komplek Perkantoran Pemda Talang Banyu Km 3,5, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 7320070",
+    "label": "Telp/Fax Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [
+   {
+    "address": "dinkesempatlawang@yahoo.co.id",
+    "verified": true
+   }
+  ],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Dery Kurniawan, S.K.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-kesehatan",
+    "title": "Halaman SKPD Dinas Kesehatan — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1PQVZ674x5ZtBJYsrBJF2GGsTkAjyauOn/view",
+    "title": "Renstra Dinas Kesehatan 2024-2026 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon, email"
+   },
+   {
+    "url": "https://farmalkes.kemkes.go.id/dinkes",
+    "title": "Daftar Dinkes — Ditjen Farmalkes Kemenkes",
+    "accessed": "2026-11-23",
+    "used_for": "alamat & telepon (cocok)"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1YZ-0oJq__Yi0KQNujJBJZY3848YJtf5p/view",
+    "title": "Rencana Aksi Dinkes 2025",
+    "accessed": "2026-11-23",
+    "used_for": "kepala (Plt. Jan 2025)"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 4
+ },
+ {
+  "slug": "dinas-pupr",
+  "category": "dinas",
+  "name": "Dinas Pekerjaan Umum dan Penataan Ruang Kabupaten Empat Lawang",
+  "short_name": "Dinas PUPR",
+  "keywords": "pu, jalan, jembatan, irigasi, tata ruang",
+  "description": "Melaksanakan urusan pemerintahan daerah bidang pekerjaan umum dan penataan ruang, meliputi bina marga (jalan dan jembatan), cipta karya, sumber daya air, dan penataan ruang, termasuk pembinaan konstruksi serta operasi dan pemeliharaan.",
+  "address": "Jl. Lintas Sumatera Km 3,5, Talang Banyu, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 7321145",
+    "label": "Telepon/Faks",
+    "verified": true
+   }
+  ],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Eko Purwanto",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-pupr",
+    "title": "Dinas Pekerjaan Umum dan Penataan Ruang | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1FdFvOfIikFBHEUYIDsNhXx-kp5KhpDru/view",
+    "title": "LKjIP Dinas PUPR Kab. Empat Lawang 2025 (sampul, OCR)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon/faks"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 5
+ },
+ {
+  "slug": "dinas-perkim",
+  "category": "dinas",
+  "name": "Dinas Perumahan Rakyat dan Kawasan Permukiman serta Pertanahan Kabupaten Empat Lawang",
+  "short_name": "Dinas Perkim",
+  "keywords": "rumah, rtlh, pertanahan, permukiman",
+  "description": "Melaksanakan urusan pemerintahan daerah bidang perumahan rakyat, kawasan permukiman (penanganan permukiman kumuh, prasarana-sarana-utilitas umum, rumah pascabencana/relokasi), serta pertanahan seperti penyediaan dan sertifikasi tanah pemerintah dan penyelesaian konflik pertanahan.",
+  "address": "Jl. Noerdin Pandji, Poros Tebing Tinggi-Pendopo, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Delly Septian Perdana",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-perkim",
+    "title": "Dinas Perumahan dan Kawasan Permukiman | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1AKvzr0z-jg2RKlT5F1jXoBGEncZAV2HF/view",
+    "title": "Rancangan Akhir Renstra DPRKPP Kab. Empat Lawang 2024-2026 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "nama resmi, alamat"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 6
+ },
+ {
+  "slug": "dinas-sosial",
+  "category": "dinas",
+  "name": "Dinas Sosial Kabupaten Empat Lawang",
+  "short_name": "Dinsos",
+  "keywords": "bansos, pkh, dtks, dtsen, kis pbi, disabilitas",
+  "description": "Melaksanakan urusan pemerintahan yang menjadi kewenangan daerah di bidang kesejahteraan sosial, meliputi koordinasi, pembinaan, dan pengawasan program serta kegiatan kesejahteraan sosial di Kabupaten Empat Lawang.",
+  "address": "Jl. Guru-guru, Komplek Perkantoran Talang Banyu, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 21630",
+    "label": "Telp/Fax Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [
+   {
+    "address": "sosialdinsos@yahoo.com",
+    "verified": true
+   }
+  ],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-sosial",
+    "title": "Halaman SKPD Dinas Sosial — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1-gmAf7QSk4FnANLHbYzb7nb_uVjGFh7J/view",
+    "title": "SK Kadinsos No. 460/03.b/KEP/Dinsos/I/2022 tentang Standar Pelayanan Publik (kop surat; PDF ditautkan dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon, email"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1JMG5AldFXRWvtRcN_QlEygl-Xy2M8496/view",
+    "title": "LKjIP Dinas Sosial 2020 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "telepon (cocok), alamat lama"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 7
+ },
+ {
+  "slug": "dinas-kependudukan-pencatatan-sipil",
+  "category": "dinas",
+  "name": "Dinas Kependudukan dan Pencatatan Sipil Kabupaten Empat Lawang",
+  "short_name": "Disdukcapil",
+  "keywords": "dukcapil, capil, ktp, kk, akta, kia, pindah datang",
+  "description": "Menyusun dan melaksanakan kebijakan daerah di bidang administrasi kependudukan: pelayanan pendaftaran penduduk dan pencatatan sipil, pengelolaan Sistem Informasi Administrasi Kependudukan, serta perlindungan data pribadi penduduk.",
+  "address": "Jl. Guru-guru, Talang Banyu, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 21350",
+    "label": "Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Idul Adha",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/disdukcapil",
+    "title": "Halaman SKPD Disdukcapil — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1PbzGBLpD_clvYr_AjrbjxiwCnKMKmLT9/view",
+    "title": "Perjanjian Kinerja Disdukcapil 2025 (kop formulir lampiran)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 8
+ },
+ {
+  "slug": "dinas-tenaga-kerja-transmigrasi",
+  "category": "dinas",
+  "name": "Dinas Transmigrasi dan Tenaga Kerja Kabupaten Empat Lawang",
+  "short_name": "Distransnaker",
+  "keywords": "disnaker, nakertrans, kartu kuning, ak1, pencari kerja, transmigrasi",
+  "description": "Merencanakan dan mengatur penempatan tenaga kerja dan transmigrasi, menyelenggarakan pelatihan tenaga kerja, memperluas kesempatan kerja, membantu penyelesaian perselisihan hubungan industrial, serta mengawasi pelaksanaan peraturan ketenagakerjaan.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Sumardi, S.IP., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/disnakertrans",
+    "title": "Halaman SKPD Distransnaker — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1RU3ypLmYAc_PEWjcgDH-_abgY8-3ZCUM/view",
+    "title": "Perjanjian Kinerja 2026, LKjIP 2025 (30-01-2026), DPA 2026 Distransnaker",
+    "accessed": "2026-11-23",
+    "used_for": "kepala dinas"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/190443/perbupnomor31tahun2021.pdf",
+    "title": "Perbup Empat Lawang No. 31 Tahun 2021 (SOTK Distransnaker)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 9
+ },
+ {
+  "slug": "dinas-lingkungan-hidup",
+  "category": "dinas",
+  "name": "Dinas Lingkungan Hidup Kabupaten Empat Lawang",
+  "short_name": "DLH",
+  "keywords": "dlh, sampah, lingkungan, amdal",
+  "description": "Membantu Bupati dalam penyelenggaraan pemerintahan daerah di bidang lingkungan hidup.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dlhd",
+    "title": "Halaman SKPD DLHD — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/300497/Perbup%20Nomor%2015%20Tahun%202022.pdf",
+    "title": "Perbup Empat Lawang No. 15 Tahun 2022 (SOTK DLH)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 10
+ },
+ {
+  "slug": "dinas-pemberdayaan-perempuan-perlindungan-anak",
+  "category": "dinas",
+  "name": "Dinas Pemberdayaan Perempuan dan Perlindungan Anak Kabupaten Empat Lawang",
+  "short_name": "DP3A",
+  "keywords": "p3a, perempuan, anak, kekerasan",
+  "description": "Menyelenggarakan urusan pemerintahan di bidang pemberdayaan perempuan dan perlindungan anak: kebijakan kualitas hidup perempuan, pemenuhan hak anak, perlindungan perempuan dan perlindungan khusus anak, termasuk pembinaan UPTD dan lembaga terkait.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Ice Apra Listiana",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dpmdp3a",
+    "title": "Halaman SKPD DP3A — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/190445/perbupnomor33tahun2021.pdf",
+    "title": "Perbup Empat Lawang No. 33 Tahun 2021 (SOTK DP3A)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur, UPTD PPA"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 11
+ },
+ {
+  "slug": "dinas-pengendalian-penduduk-kb",
+  "category": "dinas",
+  "name": "Dinas Pengendalian Penduduk dan Keluarga Berencana Kabupaten Empat Lawang",
+  "short_name": "DPPKB",
+  "keywords": "kb, keluarga berencana, stunting",
+  "description": "Merumuskan dan melaksanakan kebijakan daerah di bidang pengendalian penduduk, keluarga berencana dan keluarga sejahtera, termasuk pelayanan KB, distribusi alat dan obat kontrasepsi, pendayagunaan penyuluh KB, serta advokasi dan KIE.",
+  "address": "Jl. Lintas Sumatera Km. 3,5, Talang Banyu, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 7320033",
+    "label": "Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dppkb",
+    "title": "Halaman SKPD DPPKB — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1Con6oIS3rtFcjlZLZYWPPEeS8g2p03fS/view",
+    "title": "SK IKU DPPKB 2021 dan 2020 (kop surat)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 12
+ },
+ {
+  "slug": "dinas-pemberdayaan-masyarakat-desa",
+  "category": "dinas",
+  "name": "Dinas Pemberdayaan Masyarakat dan Desa Kabupaten Empat Lawang",
+  "short_name": "DPMD",
+  "keywords": "pmd, desa, dana desa, bumdes",
+  "description": "Membantu Bupati menyelenggarakan urusan pemerintahan bidang pemberdayaan masyarakat, pemerintahan desa dan kelurahan, serta pembangunan kawasan perdesaan.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-pemberdayaan-masyarakat-dan-desa",
+    "title": "Dinas Pemberdayaan Masyarakat dan Desa | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/297741/Perbup%20Empat%20Lawang%20No%2050%20Tahun_2022_dpmd.pdf",
+    "title": "Perbup Empat Lawang No. 50 Tahun 2022 tentang SOTK Dinas Pemberdayaan Masyarakat dan Desa",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 13
+ },
+ {
+  "slug": "dinas-penanaman-modal-ptsp",
+  "category": "dinas",
+  "name": "Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu Kabupaten Empat Lawang",
+  "short_name": "DPMPTSP",
+  "keywords": "perizinan, izin, nib, oss, pbg, investasi",
+  "description": "Menyelenggarakan pelayanan perizinan dan nonperizinan secara terpadu satu pintu serta urusan penanaman modal: promosi dan fasilitas/insentif investasi, peta potensi investasi, pengendalian pelaksanaan penanaman modal, dan pengelolaan data perizinan.",
+  "address": null,
+  "address_verified": false,
+  "phones": [
+   {
+    "number": "(0702) 21445",
+    "label": "Telp/Fax",
+    "verified": false
+   }
+  ],
+  "emails": [
+   {
+    "address": "dpmptspkab.empatlawang@gmail.com",
+    "verified": false
+   }
+  ],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dpmptsp",
+    "title": "Halaman SKPD DPMPTSP — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://dpmptsp.empatlawangkab.go.id/upload/spp/4d2b0b1005aa8e9c66627ac93a364e6a_SPP%20Pelayanan%20Perizinan.pdf",
+    "title": "SPP Pelayanan Perizinan DPMPTSP (hanya terbaca lewat indeks pencarian)",
+    "accessed": "2026-11-23",
+    "used_for": "telepon, email (belum terverifikasi)"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 14
+ },
+ {
+  "slug": "dinas-perhubungan",
+  "category": "dinas",
+  "name": "Dinas Perhubungan Kabupaten Empat Lawang",
+  "short_name": "Dishub",
+  "keywords": "kir, uji kendaraan, terminal, angkutan",
+  "description": "Membantu Bupati melaksanakan urusan pemerintahan bidang perhubungan: kebijakan dan standar teknis perhubungan, lalu lintas dan angkutan jalan, pengujian kendaraan bermotor angkutan umum dan barang, serta pengawasan perizinan di bidang perhubungan.",
+  "address": "Jl. Lingkar Poros, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-perhubungan",
+    "title": "Dinas Perhubungan | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/15_Mt1o6T5omsSrhAbD5q3aOC0DZHjJXJ/view",
+    "title": "LKjIP Dinas Perhubungan Kab. Empat Lawang 2024 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 15
+ },
+ {
+  "slug": "dinas-kominfo",
+  "category": "dinas",
+  "name": "Dinas Komunikasi, Informatika, Statistik dan Persandian Kabupaten Empat Lawang",
+  "short_name": "Diskominfo-SP",
+  "keywords": "kominfo, diskominfo, statistik, persandian, internet",
+  "description": "Unsur pelaksana urusan pemerintahan di bidang komunikasi dan informatika, statistik, dan persandian: perumusan kebijakan teknis, bimbingan teknis, pelayanan umum dan pengawasan di bidang komunikasi dan informatika, serta pembinaan unit pelaksana teknis dinas.",
+  "address": "Kompleks Perkantoran Pemerintah Kabupaten Empat Lawang, Jl. Lintas Sumatera Km. 3, Kel. Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [],
+  "emails": [
+   {
+    "address": "diskominfo@empatlawangkab.go.id",
+    "verified": true
+   },
+   {
+    "address": "kominfo4lawang@gmail.com",
+    "verified": true
+   }
+  ],
+  "website": "https://kominfo.empatlawangkab.go.id",
+  "social": {},
+  "service_hours": null,
+  "head_name": "Sumitro Sukma Bahagia, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-kominfo",
+    "title": "Halaman SKPD Dinas Kominfo — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://kominfo.empatlawangkab.go.id/",
+    "title": "Situs resmi Diskominfo-SP (footer)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, email, website"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1D-f3GVCEejbutrSDvmlbAkEqY6PazR7Z/view",
+    "title": "Renja 2026 Diskominfo-SP (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat versi lain, email gmail, kepala"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 16
+ },
+ {
+  "slug": "dinas-koperasi-ukm",
+  "category": "dinas",
+  "name": "Dinas Koperasi, Usaha Kecil dan Menengah Kabupaten Empat Lawang",
+  "short_name": "Diskop UKM",
+  "keywords": null,
+  "description": "Merumuskan kebijakan teknis dan menyelenggarakan urusan pemerintahan di bidang koperasi serta usaha kecil dan menengah: pembinaan kelembagaan dan usaha koperasi, pengesahan badan hukum koperasi, fasilitasi pembiayaan dan simpan pinjam, serta peningkatan SDM koperasi dan UKM.",
+  "address": "Jl. H. Noerdin Pandji (Poros Tebing Tinggi–Pendopo) KM 3,5, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Siskawati",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-koperasi-usaha-kecil-dan-menengah",
+    "title": "Halaman SKPD Dinas Koperasi Usaha Kecil dan Menengah — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1kPQC9tVsnikEo_oKpflc5s8_2YPatWNr/view",
+    "title": "Renja 2025 Diskop UKM (sampul) + LAKIP 2018",
+    "accessed": "2026-11-23",
+    "used_for": "alamat"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 17
+ },
+ {
+  "slug": "dinas-perindustrian-perdagangan",
+  "category": "dinas",
+  "name": "Dinas Perindustrian dan Perdagangan Kabupaten Empat Lawang",
+  "short_name": "Disperindag",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan daerah di bidang perindustrian dan perdagangan: pembinaan dan pengembangan usaha industri dan perdagangan, pengawasan serta pelayanan umum di bidang tersebut, termasuk pengelolaan UPTD Pasar Tebing Tinggi dan Pasar Pendopo.",
+  "address": "Jl. Noerdin Pandji Km 9, Lintas Pendopo, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 21374",
+    "label": "Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Sofian Haris",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-perdagangan",
+    "title": "Dinas Perindustrian dan Perdagangan | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1JgIzHVBOtXRJg50t4GrwtlyDlMrXJt9i/view",
+    "title": "LKjIP Disperindag Kab. Empat Lawang 2025 (kop bagan struktur organisasi)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon, UPTD pasar"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 18
+ },
+ {
+  "slug": "dinas-pertanian",
+  "category": "dinas",
+  "name": "Dinas Pertanian Kabupaten Empat Lawang",
+  "short_name": "Distan",
+  "keywords": null,
+  "description": "Melaksanakan urusan pemerintahan daerah bidang tanaman pangan dan hortikultura, perkebunan, peternakan dan kesehatan hewan, penyuluhan, serta prasarana dan sarana pertanian, termasuk perizinan dan pelayanan umum di bidang pertanian.",
+  "address": "Jl. Poros Tebing Tinggi-Pendopo Km 7,5, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 21625",
+    "label": "Telepon/Faks",
+    "verified": true
+   },
+   {
+    "number": "(0702) 21007",
+    "label": "Telepon/Faks",
+    "verified": true
+   }
+  ],
+  "emails": [
+   {
+    "address": "pertanian4lawang@gmail.com",
+    "verified": true
+   }
+  ],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Hendra Lezi, S.P.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-pertanian",
+    "title": "Dinas Pertanian | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://satudata.pertanian.go.id/assets/docs/publikasi/459a5c158056f9609999fb69a5488e02.pdf",
+    "title": "Daftar Alamat Kantor Lingkup Pertanian Pusat dan Daerah Tahun 2025 (Pusdatin Kementan)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon, email"
+   },
+   {
+    "url": "https://ppid.pertanian.go.id/doc/1/Buku_Daftar_Alamat_2023.pdf",
+    "title": "Buku Daftar Alamat Kantor Lingkup Pertanian 2023 (Kementan)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon, email (sama)"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 19
+ },
+ {
+  "slug": "dinas-ketahanan-pangan",
+  "category": "dinas",
+  "name": "Dinas Ketahanan Pangan Kabupaten Empat Lawang",
+  "short_name": "DKP",
+  "keywords": null,
+  "description": "Membantu Bupati menyelenggarakan urusan pemerintahan di bidang pangan: menyusun rencana, program dan kebijakan ketahanan pangan serta mengoordinasikan pengendalian, pengawasan dan evaluasinya.",
+  "address": "Jl. Nurdin Panji KM 8, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 21729",
+    "label": "Telp/Fax Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [
+   {
+    "address": "dkp4lawang@gmail.com",
+    "verified": true
+   }
+  ],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-ketahanan-pangan",
+    "title": "Halaman SKPD Dinas Ketahanan Pangan — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1bjtS8B325aN3GQKsSmqCvUdTDQE3eJS4/view",
+    "title": "SK AKIP Dinas Ketahanan Pangan 2023 (kop surat)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat"
+   },
+   {
+    "url": "https://ppid.pertanian.go.id/doc/1/Buku_Daftar_Alamat_2023.pdf",
+    "title": "Buku Daftar Alamat Kantor Lingkup Pertanian 2023 — Kementan",
+    "accessed": "2026-11-23",
+    "used_for": "telepon, email, alamat (KM 10)"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 20
+ },
+ {
+  "slug": "dinas-perikanan",
+  "category": "dinas",
+  "name": "Dinas Perikanan Kabupaten Empat Lawang",
+  "short_name": "Diskan",
+  "keywords": null,
+  "description": "Membantu Bupati melaksanakan urusan pemerintahan daerah di bidang perikanan budidaya, perikanan tangkap, serta pengolahan dan pemasaran hasil perikanan, termasuk pembinaan UPTD perikanan.",
+  "address": "Jl. Lintas Pendopo, Desa Lampar Baru, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [],
+  "emails": [
+   {
+    "address": "diskan.empatlawang@gmail.com",
+    "verified": true
+   }
+  ],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-perikanan",
+    "title": "Dinas Perikanan | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1LLXY4oZc95796nV2hf6IpwuOWN-Jkskn/view",
+    "title": "LKjIP Dinas Perikanan Kab. Empat Lawang 2025 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, email"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1O0Fg0P-gYfylrAgkniLfJDZjQ8qshUhY/view",
+    "title": "Renja Dinas Perikanan Kab. Empat Lawang 2026 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, email (sama)"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 21
+ },
+ {
+  "slug": "dinas-pariwisata",
+  "category": "dinas",
+  "name": "Dinas Pariwisata Kabupaten Empat Lawang",
+  "short_name": "Dispar",
+  "keywords": null,
+  "description": "Membantu Bupati melaksanakan urusan pemerintahan bidang pariwisata dan ekonomi kreatif: merumuskan kebijakan teknis, menyelenggarakan pelayanan umum, serta membina pelaksanaan tugas di bidang pariwisata dan ekonomi kreatif.",
+  "address": "Jl. Noerdin Panji Km. 7, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [],
+  "emails": [
+   {
+    "address": "dispar4lawang@gmail.com",
+    "verified": false
+   }
+  ],
+  "website": "https://dispar.empatlawangkab.go.id",
+  "social": {
+   "instagram": "https://www.instagram.com/pesona.disparempatlawang/"
+  },
+  "service_hours": null,
+  "head_name": "Wawan Ismawan, S.Hut.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-pariwisata",
+    "title": "Dinas Pariwisata | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://dispar.empatlawangkab.go.id/index.php/kontak-kami/",
+    "title": "Kontak Kami - Dispar Empat Lawang (situs resmi OPD)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, email, akun medsos"
+   },
+   {
+    "url": "https://dispar.empatlawangkab.go.id/index.php/profil/tugas-pokok-dan-fungsi/",
+    "title": "Tugas Pokok dan Fungsi - Dispar Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "tugas (Perbup 69/2016)"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 22
+ },
+ {
+  "slug": "dinas-pemuda-olahraga",
+  "category": "dinas",
+  "name": "Dinas Kepemudaan dan Olahraga Kabupaten Empat Lawang",
+  "short_name": "Dispora",
+  "keywords": null,
+  "description": "Melaksanakan urusan pemerintahan daerah bidang kepemudaan dan olahraga: pemberdayaan dan pengembangan kepemimpinan pemuda, pembudayaan olahraga, peningkatan prestasi olahraga, serta pembinaan kelembagaan dan industri olahraga.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-pemuda-dan-olahraga-2",
+    "title": "Dinas Kepemudaan dan Olahraga | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/12GSOeyCXtPKGnzYSGB7CcApQJ6XYLPSc/view",
+    "title": "LKjIP Dinas Kepemudaan dan Olahraga Kab. Empat Lawang 2024",
+    "accessed": "2026-11-23",
+    "used_for": "nama resmi (cek kop: tidak ada kontak)"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 23
+ },
+ {
+  "slug": "dinas-perpustakaan-kearsipan",
+  "category": "dinas",
+  "name": "Dinas Perpustakaan dan Kearsipan Kabupaten Empat Lawang",
+  "short_name": "Dispusip",
+  "keywords": "perpustakaan, arsip",
+  "description": "Membantu Bupati menyelenggarakan pemerintahan daerah di bidang perpustakaan dan kearsipan daerah, termasuk pelayanan perpustakaan dan pengelolaan arsip daerah.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-perpustakaan-dan-kearsipan",
+    "title": "Dinas Perpustakaan dan Kearsipan | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/274762/Perbup%20Empat%20Lawang%20No%2024%20Tahun%202022.pdf",
+    "title": "Perbup Empat Lawang No. 24 Tahun 2022 tentang SOTK Dinas Perpustakaan dan Kearsipan",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 24
+ },
+ {
+  "slug": "dinas-pemadam-kebakaran",
+  "category": "dinas",
+  "name": "Dinas Pemadam Kebakaran dan Penyelamatan Kabupaten Empat Lawang",
+  "short_name": "Damkar",
+  "keywords": "damkar, pemadam, kebakaran",
+  "description": "Membantu Bupati menyusun kebijakan, mengoordinasikan, mengawasi, dan membina pelaksanaan pelayanan umum di bidang pemadaman kebakaran dan penyelamatan.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Fajar Bayu Dewanto, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/dinas-damkar-dan-penyelamatan",
+    "title": "Halaman SKPD Dinas Damkar dan Penyelamatan — empatlawangkab.go.id",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi, daftar dokumen"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/169229/perbup%20nomor%2011%20tahun%202021.pdf",
+    "title": "Perbup Empat Lawang No. 11 Tahun 2021 (SOTK Damkar)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas"
+   },
+   {
+    "url": "https://peraturan.bpk.go.id/Download/179916/PERDA_4_2021.pdf",
+    "title": "Perda Kab. Empat Lawang No. 4 Tahun 2021 (susunan perangkat daerah)",
+    "accessed": "2026-11-23",
+    "used_for": "nomenklatur resmi"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 25
+ },
+ {
+  "slug": "bappeda",
+  "category": "badan",
+  "name": "Badan Perencanaan Pembangunan Daerah, Penelitian dan Pengembangan Kabupaten Empat Lawang",
+  "short_name": "Bappeda Litbang",
+  "keywords": null,
+  "description": "Melaksanakan urusan pemerintahan daerah bidang perencanaan pembangunan serta penelitian dan pengembangan: mengoordinasikan penyusunan dan sinkronisasi rencana pembangunan daerah dengan anggaran, serta memantau, mengevaluasi, dan mengendalikan pelaksanaannya.",
+  "address": "Jl. Lintas Sumatera, Talang Banyu, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Hj. Evi Ferlina Susanti, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/bappeda",
+    "title": "Badan Perencanaan Pembangunan Daerah | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1lNE9TnFWh3xvvz6Q-EgD7Le4XI6nSrG6/view",
+    "title": "Renstra Bappeda dan Litbang Kab. Empat Lawang 2024-2026",
+    "accessed": "2026-11-23",
+    "used_for": "nama resmi, alamat"
+   },
+   {
+    "url": "https://bappeda.empatlawangkab.go.id/web/index",
+    "title": "Subdomain Bappeda (diretas)",
+    "accessed": "2026-11-23",
+    "used_for": "cek website"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 26
+ },
+ {
+  "slug": "bpkad",
+  "category": "badan",
+  "name": "Badan Pengelolaan Keuangan dan Aset Daerah Kabupaten Empat Lawang",
+  "short_name": "BPKAD",
+  "keywords": "keuangan, aset, apbd",
+  "description": "Melaksanakan urusan pemerintahan bidang keuangan dan aset daerah: penyusunan dan pengelolaan APBD, perbendaharaan, akuntansi dan pelaporan keuangan daerah, serta pengelolaan barang milik daerah.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Iwan Mike Wijaya, S.T., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/bpkad",
+    "title": "Badan Pengelola Keuangan dan Aset Daerah | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/17yfYIxfAL-DgizRlFROnsx23s30NgcU_/view",
+    "title": "LKjIP BPKAD Kab. Empat Lawang 2025",
+    "accessed": "2026-11-23",
+    "used_for": "nama resmi (tanpa kop alamat)"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 27
+ },
+ {
+  "slug": "badan-pendapatan-daerah",
+  "category": "badan",
+  "name": "Badan Pendapatan Daerah Kabupaten Empat Lawang",
+  "short_name": "Bapenda",
+  "keywords": "pajak daerah, pbb, bphtb, retribusi",
+  "description": "Menyelenggarakan urusan pemerintahan daerah bidang keuangan sub-urusan pajak daerah, retribusi daerah, dan pendapatan daerah lainnya, termasuk pelayanan PBB-P2, BPHTB, pajak reklame, dan pajak daerah lain.",
+  "address": "Jl. Lintas Sumatera Km 3,5, Talang Banyu, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": "https://bapenda.empatlawangkab.go.id",
+  "social": {},
+  "service_hours": null,
+  "head_name": "Kuswinarto, S.E., M.Si.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/bp2rd",
+    "title": "Badan Pendapatan Daerah | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://bapenda.empatlawangkab.go.id/about/",
+    "title": "Profil - Website Badan Pendapatan Daerah Kabupaten Empat Lawang (situs resmi OPD)",
+    "accessed": "2026-11-23",
+    "used_for": "kepala, tupoksi, layanan"
+   },
+   {
+    "url": "https://drive.google.com/file/d/14XM6Io0f0Oij5BY4DFLaqjRbKivBnSXT/view",
+    "title": "LKjIP Bapenda Kab. Empat Lawang 2025 (sampul)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 28
+ },
+ {
+  "slug": "bkpsdm",
+  "category": "badan",
+  "name": "Badan Kepegawaian dan Pengembangan Sumber Daya Manusia Kabupaten Empat Lawang",
+  "short_name": "BKPSDM",
+  "keywords": "bkd, kepegawaian, asn, pns, pppk, cpns",
+  "description": "Membantu Bupati mengelola administrasi kepegawaian daerah: formasi dan pengadaan pegawai, mutasi dan kenaikan pangkat, kesejahteraan dan pembinaan disiplin, pendidikan dan pelatihan, izin/tugas belajar, cuti, hingga pensiun dan pemberhentian.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Soleha Apriani, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/bkpsdm",
+    "title": "Badan Kepegawaian dan Pengembangan SDM | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1m8qlwCf84yeukr-ytsvm0jPOO-3MpsLs/view",
+    "title": "LKjIP BKPSDM Kab. Empat Lawang 2023",
+    "accessed": "2026-11-23",
+    "used_for": "nama resmi (tanpa kop alamat)"
+   },
+   {
+    "url": "https://bkpsdm.empatlawangkab.go.id/",
+    "title": "Probe subdomain BKPSDM dan OPD lain",
+    "accessed": "2026-11-23",
+    "used_for": "cek website"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 29
+ },
+ {
+  "slug": "bpbd",
+  "category": "badan",
+  "name": "Badan Penanggulangan Bencana Daerah Kabupaten Empat Lawang",
+  "short_name": "BPBD",
+  "keywords": "bencana, banjir, longsor",
+  "description": "Unsur pendukung Bupati di bidang penanggulangan bencana: mengoordinasikan, mengomandoi, dan melaksanakan penanggulangan bencana pada tahap prabencana, tanggap darurat, dan pascabencana bersama perangkat daerah, instansi vertikal, dan lembaga terkait.",
+  "address": "Jl. Lintas Sumatera Km 4, Talang Banyu, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 21113",
+    "label": "Kantor",
+    "verified": true
+   }
+  ],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Zulfitri",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/bpbd",
+    "title": "Badan Penanggulangan Bencana Daerah | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://gis.bnpb.go.id/server/rest/services/Hosted/Data_Kontak_BPBD_Kabkot_Agust2024/FeatureServer/0",
+    "title": "Data Kontak BPBD Kab/Kota Agustus 2024 (BNPB GIS)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, telepon"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1bj5vyd7tXReg6Q-HuxBzmaKdbKur0L98/view",
+    "title": "Rencana Aksi BPBD Kab. Empat Lawang 2023 (kop)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat (cocok)"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 30
+ },
+ {
+  "slug": "badan-kesbangpol",
+  "category": "badan",
+  "name": "Badan Kesatuan Bangsa dan Politik Kabupaten Empat Lawang",
+  "short_name": "Kesbangpol",
+  "keywords": "ormas, skt, politik",
+  "description": "Membantu Bupati melaksanakan urusan pemerintahan bidang kesatuan bangsa dan politik dalam negeri, meliputi ideologi dan wawasan kebangsaan, kewaspadaan nasional dan penanganan konflik, serta politik dalam negeri.",
+  "address": "Kompleks Perkantoran Pemerintah Daerah, Jl. Noerdin Panji Km 7,5, Kec. Tebing Tinggi, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/badan-kesatuan-bangsa-dan-politik",
+    "title": "Badan Kesatuan Bangsa dan Politik | Pemerintah Kabupaten Empat Lawang (halaman SKPD)",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas & fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1b-2z2mmLtqsbHMY-MNz_I1DOdtIZz8sJ/view",
+    "title": "LKjIP Kesbangpol Kab. Empat Lawang 2023 (bagian sarana prasarana)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 31
+ },
+ {
+  "slug": "inspektorat",
+  "category": "lainnya",
+  "name": "Inspektorat Daerah Kabupaten Empat Lawang",
+  "short_name": "Inspektorat",
+  "keywords": "pengawasan, pengaduan asn, itda",
+  "description": "Membantu Bupati mengawasi pelaksanaan urusan pemerintahan dan pembinaan penyelenggaraan pemerintahan daerah. Kegiatannya meliputi perumusan kebijakan pengawasan, pemeriksaan tugas perangkat daerah (administrasi umum, kepegawaian, keuangan, perlengkapan, kegiatan rutin dan pembangunan) serta pengujian dan penilaian laporan berkala perangkat daerah.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Yulius Sugiantara, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/inspektorat",
+    "title": "Inspektorat | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas, fungsi"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 32
+ },
+ {
+  "slug": "satpol-pp",
+  "category": "lainnya",
+  "name": "Satuan Polisi Pamong Praja Kabupaten Empat Lawang",
+  "short_name": "Satpol PP",
+  "keywords": "pol pp, satpol, ketertiban, trantib",
+  "description": "Menyelenggarakan ketenteraman dan ketertiban umum, perlindungan masyarakat, serta menegakkan Peraturan Daerah, Peraturan Bupati dan Keputusan Bupati, termasuk berkoordinasi dengan Polri, PPNS dan aparat penegak hukum lain.",
+  "address": "Jl. Lintas Sumatera KM 1,5, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Mgs. Nawawi",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/satpol-pp",
+    "title": "Satpol PP | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas, fungsi"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1Vl78W7FHcPolQX7UGlUFD4LQmhLT92CK/view",
+    "title": "Renstra Satpol PP 2018-2023 (tertaut dari halaman Satpol PP empatlawangkab.go.id)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat (kop dokumen resmi)"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 33
+ },
+ {
+  "slug": "rsud",
+  "category": "lainnya",
+  "name": "Rumah Sakit Umum Daerah Kabupaten Empat Lawang",
+  "short_name": "RSUD Empat Lawang",
+  "keywords": "rumah sakit, igd",
+  "description": "Rumah sakit umum daerah kelas C berstatus BLUD milik Pemkab Empat Lawang yang memberikan pelayanan kesehatan perorangan bermutu dan terjangkau: pelayanan medis, keperawatan, penunjang medis, rujukan, serta IGD 24 jam, rawat jalan dan rawat inap.",
+  "address": "Jl. H. Noerdin Pandji KM 5, Kel. Tanjung Kupang, Kec. Tebing Tinggi, Kabupaten Empat Lawang 31453",
+  "address_verified": true,
+  "phones": [
+   {
+    "number": "(0702) 7321500",
+    "label": "Kantor",
+    "verified": true
+   },
+   {
+    "number": "0813-6667-5755",
+    "label": "WA & Call Center IGD 24 Jam",
+    "verified": true
+   },
+   {
+    "number": "0813-7399-4818",
+    "label": "WhatsApp Layanan Pengaduan",
+    "verified": true
+   }
+  ],
+  "emails": [],
+  "website": "https://rsud.empatlawangkab.go.id",
+  "social": {
+   "instagram": "https://www.instagram.com/rsudempatlawang"
+  },
+  "service_hours": "IGD 24 jam",
+  "head_name": "dr. Devy Andrianty, M.M.",
+  "latitude": -3.6382305,
+  "longitude": 103.0765044,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/rsud",
+    "title": "Rumah Sakit Umum Daerah | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, tugas, fungsi"
+   },
+   {
+    "url": "https://rsud.empatlawangkab.go.id/profil/identitas-rs/",
+    "title": "Identitas RS, Layanan Pengaduan, Beranda — situs resmi RSUD",
+    "accessed": "2026-11-23",
+    "used_for": "alamat, direktur, WA IGD, WA pengaduan, Instagram"
+   },
+   {
+    "url": "https://sirs.kemkes.go.id/fo/home/dashboard_rs",
+    "title": "RS Online Kemenkes — RS Umum Daerah Kabupaten Empat Lawang (kode 1611042)",
+    "accessed": "2026-11-22",
+    "used_for": "alamat, telepon, kelas C, koordinat"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1E5aKZbFng_mMFOMrwY2XAnTWD-J0qjuE/view",
+    "title": "Renstra RSUD Tebing Tinggi (tertaut dari halaman RSUD empatlawangkab.go.id)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat kop, kode pos 31453"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1mlanLFvTS9btaf0Gw_QfDQZHMt_UsRHa/view",
+    "title": "LKjIP RSUD 2024 (tertaut dari halaman RSUD empatlawangkab.go.id)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat kop, direktur"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 34
+ },
+ {
+  "slug": "kecamatan-tebing-tinggi",
+  "category": "kecamatan",
+  "name": "Kecamatan Tebing Tinggi",
+  "short_name": "Kec. Tebing Tinggi",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan ibu kota kabupaten, termasuk membina kelurahan. Wilayah: 20 desa dan 6 kelurahan (Jayaloka, Kelumpang Jaya, Pancur Mas, Pasar Tebing Tinggi, Tanjung Kupang, Tanjung Makmur), ibu kota Kelurahan Pasar Tebing Tinggi.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Sapardina Joli, S.Sos.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/tebing-tinggi",
+    "title": "Tebing Tinggi | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1L53_zd8NJ1DFKWbyBWNeNh4p_fH0TnpB/view",
+    "title": "Tupoksi Kec. Tebing Tinggi — Perbup Empat Lawang No. 78 Tahun 2016 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "dasar tugas kecamatan & kelurahan"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Daftar_kecamatan_dan_kelurahan_di_Kabupaten_Empat_Lawang",
+    "title": "Wikipedia — Tebing Tinggi",
+    "accessed": "2026-11-23",
+    "used_for": "jumlah desa/kelurahan, ibu kota"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 35
+ },
+ {
+  "slug": "kecamatan-talang-padang",
+  "category": "kecamatan",
+  "name": "Kecamatan Talang Padang",
+  "short_name": "Kec. Talang Padang",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 13 desa, ibu kota Desa Lampar Baru (menurut Wikipedia).",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "M. Rahman, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/talang-padang",
+    "title": "Talang Padang | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1c6P1jSpm-jHUQG_IyHLfntkoVxRdDfli/view",
+    "title": "LKjIP Kecamatan Talang Padang 2024 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "13 desa, tugas"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Talang_Padang,_Empat_Lawang",
+    "title": "Wikipedia — Talang Padang",
+    "accessed": "2026-11-23",
+    "used_for": "13 desa, ibu kota"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 36
+ },
+ {
+  "slug": "kecamatan-pasemah-air-keruh",
+  "category": "kecamatan",
+  "name": "Kecamatan Pasemah Air Keruh",
+  "short_name": "Kec. Paiker",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 15 desa, ibu kota Desa Nanjungan (kode pos 31595 menurut Wikipedia).",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Susanto",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/pasemah-air-keruh",
+    "title": "Pasemah Air Keruh | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Pasemah_Air_Keruh,_Empat_Lawang",
+    "title": "Wikipedia — Pasemah Air Keruh",
+    "accessed": "2026-11-23",
+    "used_for": "15 desa, ibu kota, kode pos"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 37
+ },
+ {
+  "slug": "kecamatan-ulu-musi",
+  "category": "kecamatan",
+  "name": "Kecamatan Ulu Musi",
+  "short_name": "Kec. Ulu Musi",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 14 desa, ibu kota Desa Padang Tepong.",
+  "address": "Jl. Raya Padang Tepong, Kec. Ulu Musi, Kabupaten Empat Lawang 31594",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Mawardi, S.E., M.M.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/ulu-musi",
+    "title": "Ulu Musi | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1FKWhf2_VfMhc1iZ3jWlTTEF5xLoXsrr7/view",
+    "title": "Struktur Organisasi Kantor Camat Ulu Musi (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat (kop) dan kode pos"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1qnh03MD2yJmbPEzfjJPGXAmaGkHlFpGB/view",
+    "title": "LKjIP Kecamatan Ulu Musi 2025 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "14 desa, camat (ttd Desember 2025)"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1Vknitf39GXuvj9VCaL9XqYUbxBm-2-P6/view",
+    "title": "Renstra Kecamatan Ulu Musi 2024-2026 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "camat"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Ulu_Musi,_Empat_Lawang",
+    "title": "Wikipedia — Ulu Musi",
+    "accessed": "2026-11-23",
+    "used_for": "14 desa, ibu kota Padang Tepong"
+   }
+  ],
+  "confidence": "high",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 38
+ },
+ {
+  "slug": "kecamatan-pendopo",
+  "category": "kecamatan",
+  "name": "Kecamatan Pendopo",
+  "short_name": "Kec. Pendopo",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 16 desa dan 3 kelurahan (Pendopo, Beruge Ilir, Pagar Tengah), ibu kota Kelurahan Pendopo.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Dodi Suhendra",
+  "latitude": -3.793175,
+  "longitude": 102.953541,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/pendopo",
+    "title": "Pendopo | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1GzjbMZsIKIQcyxJ-PJN5iFr9Cb7gXKzN/view",
+    "title": "Renja Kecamatan Pendopo 2022 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "tugas"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Daftar_kecamatan_dan_kelurahan_di_Kabupaten_Empat_Lawang",
+    "title": "Wikipedia — Pendopo",
+    "accessed": "2026-11-23",
+    "used_for": "jumlah desa/kelurahan, ibu kota"
+   },
+   {
+    "url": "https://www.openstreetmap.org/node/7659646366",
+    "title": "OpenStreetMap — Kantor Camat Pendopo",
+    "accessed": "2026-11-23",
+    "used_for": "koordinat"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 39
+ },
+ {
+  "slug": "kecamatan-pendopo-barat",
+  "category": "kecamatan",
+  "name": "Kecamatan Pendopo Barat",
+  "short_name": "Kec. Pendopo Barat",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 10 desa, ibu kota Desa Lingge.",
+  "address": "Jl. Lintas Pendopo–Talang Padang, Kec. Pendopo Barat, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/pendopo-barat",
+    "title": "Pendopo Barat | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1hZM_C68JVXZV7iX3MWB9U5H3BIpq4UaQ/view",
+    "title": "LKjIP Kecamatan Pendopo Barat 2021 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "alamat (kop)"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Pendopo_Barat,_Empat_Lawang",
+    "title": "Wikipedia — Pendopo Barat",
+    "accessed": "2026-11-23",
+    "used_for": "10 desa, ibu kota Lingge"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 40
+ },
+ {
+  "slug": "kecamatan-lintang-kanan",
+  "category": "kecamatan",
+  "name": "Kecamatan Lintang Kanan",
+  "short_name": "Kec. Lintang Kanan",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan (pemerintahan, pelayanan umum, pemberdayaan masyarakat dan desa). Wilayah: 16 desa, ibu kota Desa Babatan.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Rustam Efendi, S.E.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/lintang-kanan",
+    "title": "Lintang Kanan | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/149Z4cFoIBN7hEsJRBuWHrSKnYmulsHk8/view",
+    "title": "LKJIP Kecamatan Lintang Kanan 2025 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "tugas (Perbup 78/2016), 16 desa, ibu kota Babatan, camat (ttd 15-03-2026)"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Lintang_Kanan,_Empat_Lawang",
+    "title": "Wikipedia — Lintang Kanan",
+    "accessed": "2026-11-23",
+    "used_for": "jumlah desa, ibu kota (cocok)"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 41
+ },
+ {
+  "slug": "kecamatan-muara-pinang",
+  "category": "kecamatan",
+  "name": "Kecamatan Muara Pinang",
+  "short_name": "Kec. Muara Pinang",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 22 desa, ibu kota Desa Muara Pinang Baru (kode pos 31592 menurut Wikipedia).",
+  "address": "Desa Muara Pinang Baru, Kec. Muara Pinang, Kabupaten Empat Lawang",
+  "address_verified": true,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/muara-pinang",
+    "title": "Muara Pinang | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1zv2dvYOwGmZkjCWzmkC4gQpSNi_XsDWX/view",
+    "title": "Renstra Perubahan 2018-2023 Kecamatan Muara Pinang (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "lokasi gedung kantor camat (Desa Muara Pinang Baru), tugas"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Muara_Pinang,_Empat_Lawang",
+    "title": "Wikipedia — Muara Pinang",
+    "accessed": "2026-11-23",
+    "used_for": "22 desa, ibu kota, kode pos"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 42
+ },
+ {
+  "slug": "kecamatan-sikap-dalam",
+  "category": "kecamatan",
+  "name": "Kecamatan Sikap Dalam",
+  "short_name": "Kec. Sikap Dalam",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 11 desa, ibu kota Desa Karang Gede.",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": "Sarni, S.H.",
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/sikap-dalam",
+    "title": "Sikap Dalam | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Sikap_Dalam,_Empat_Lawang",
+    "title": "Wikipedia — Sikap Dalam",
+    "accessed": "2026-11-23",
+    "used_for": "11 desa, ibu kota Karang Gede"
+   }
+  ],
+  "confidence": "low",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 43
+ },
+ {
+  "slug": "kecamatan-saling",
+  "category": "kecamatan",
+  "name": "Kecamatan Saling",
+  "short_name": "Kec. Saling",
+  "keywords": null,
+  "description": "Melaksanakan kewenangan pemerintahan yang dilimpahkan Bupati dan tugas umum pemerintahan di wilayah kecamatan. Wilayah: 10 desa, ibu kota Desa Suka Kaya (kode pos 31457 menurut Wikipedia).",
+  "address": null,
+  "address_verified": false,
+  "phones": [],
+  "emails": [],
+  "website": null,
+  "social": {},
+  "service_hours": null,
+  "head_name": null,
+  "latitude": null,
+  "longitude": null,
+  "sources": [
+   {
+    "url": "https://empatlawangkab.go.id/saling",
+    "title": "Saling | Pemerintah Kabupaten Empat Lawang",
+    "accessed": "2026-11-23",
+    "used_for": "nama, daftar dokumen"
+   },
+   {
+    "url": "https://drive.google.com/file/d/1zh2wAjnrr_h97PV9OFCUtTXhIHL4vEVL/view",
+    "title": "Renstra Kecamatan Saling 2024-2026 (tertaut dari halaman resmi)",
+    "accessed": "2026-11-23",
+    "used_for": "tempat penandatanganan Suka Kaya, camat 2024"
+   },
+   {
+    "url": "https://id.wikipedia.org/wiki/Saling,_Empat_Lawang",
+    "title": "Wikipedia — Saling",
+    "accessed": "2026-11-23",
+    "used_for": "10 desa, ibu kota, kode pos"
+   },
+   {
+    "url": "https://www.openstreetmap.org/way/999343852",
+    "title": "OpenStreetMap — Kantor Camat Saling",
+    "accessed": "2026-11-23",
+    "used_for": "koordinat"
+   }
+  ],
+  "confidence": "medium",
+  "checked_at": "2026-11-23",
+  "is_published": true,
+  "order": 44
+ }
+]
