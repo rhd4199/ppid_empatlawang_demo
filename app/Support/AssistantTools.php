@@ -11,6 +11,7 @@ use App\Models\Procurement;
 use App\Models\ServiceRequirement;
 use App\Models\SppgUnit;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -24,6 +25,9 @@ class AssistantTools
 {
     /** Tool rounds per answer (each round = one more OpenAI call). */
     public const MAX_ROUNDS = 4;
+
+    /** Seconds a web-search answer is reused for the same question (news/officials change, so hours, not days). */
+    private const WEB_TTL = 6 * 3600;
 
     /** cari_web is offered (a search model is configured). */
     public static function webSearchOn(): bool
@@ -155,12 +159,17 @@ class AssistantTools
 
     /**
      * Public-web lookup by an OpenAI search model (answer + cited URLs). Never throws: a failure becomes an error the
-     * model must report honestly. Costs one more OpenAI call, bounded by MAX_ROUNDS.
+     * model must report honestly. Costs one more OpenAI call, bounded by MAX_ROUNDS; an answer is cached WEB_TTL
+     * per question (case/space-insensitive), failures are not.
      */
     private static function web(string $query): array
     {
         if ($query === '' || (string) config('services.openai.search_model') === '' || ! config('services.openai.key')) {
             return ['error' => 'Pencarian web tidak tersedia.'];
+        }
+        $key = 'assistant:web:' . md5(mb_strtolower(preg_replace('/\s+/u', ' ', $query)));
+        if (is_array($cached = Cache::get($key))) {
+            return $cached;
         }
         try {
             // Responses API + built-in web_search (the old *-search-preview chat models were retired).
@@ -181,8 +190,11 @@ class AssistantTools
         $sources = $content->flatMap(fn ($c) => $c['annotations'] ?? [])->where('type', 'url_citation')
             ->map(fn ($c) => ['judul' => $c['title'] ?? '', 'url' => $c['url'] ?? ''])->unique('url')->take(5)->values()->all();
 
-        return ['jawaban' => trim($content->pluck('text')->implode("\n")), 'sumber' => $sources,
+        $result = ['jawaban' => trim($content->pluck('text')->implode("\n")), 'sumber' => $sources,
             'catatan' => 'Dari web publik, bukan data resmi PPID. Sebut nama situs sumbernya saja (tanpa tautan) dan bahwa informasi bisa belum terbaru.'];
+        Cache::put($key, $result, self::WEB_TTL);
+
+        return $result;
     }
 
     /**

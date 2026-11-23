@@ -134,6 +134,7 @@ TXT;
                     'model' => config('services.openai.model'),
                     'max_tokens' => (int) config('services.openai.max_tokens'),
                     'temperature' => 0.2, // factual service answers, little invention
+                    'prompt_cache_key' => 'sapa-madani', // same tools + static system prompt prefix on every call → cached input tokens
                     'messages' => $messages,
                     'tools' => $tools ? [...AssistantTools::definitions(), ReportDesk::TOOL, ...($person ? [CitizenMemory::TOOL] : [])] : null,
                 ]))->throw()->json('choices.0.message');
@@ -202,11 +203,10 @@ TXT;
             'Standar Layanan – Pengaduan' => route('standard-service.index') . '#pengaduan',
         ];
 
-        // Owner: the model must know the current time (greetings, "hari ini", office hours, "besok").
-        $now = now('Asia/Jakarta')->locale('id');
+        // Static part first, per-request part (time, matching documents) last: OpenAI prompt caching reuses an
+        // identical prefix, so anything that changes every minute must not sit near the top.
         $lines = [trim($persona !== '' ? $persona : self::DEFAULT_PROMPT), '',
-            'Waktu sekarang: ' . $now->translatedFormat('l, j F Y') . ', pukul ' . $now->format('H:i') . ' WIB. Pakai untuk salam (pagi < 11.00, siang < 15.00, sore < 18.30, malam), arti "hari ini/besok/kemarin", dan apakah kantor sedang buka.',
-            '', 'Kontak kantor PPID Kabupaten Empat Lawang (HANYA untuk PPID; BUKAN alamat/telepon Disdukcapil, Samsat, dinas atau instansi lain — untuk itu pakai tool kontak_instansi):'];
+            'Kontak kantor PPID Kabupaten Empat Lawang (HANYA untuk PPID; BUKAN alamat/telepon Disdukcapil, Samsat, dinas atau instansi lain — untuk itu pakai tool kontak_instansi):'];
         foreach ($facts ?: ['Kontak' => 'belum tersedia, arahkan ke halaman Kontak'] as $label => $value) {
             $lines[] = "- {$label}: {$value}";
         }
@@ -238,6 +238,11 @@ TXT;
             . 'Kanal resmi — jalan/fasilitas rusak dan pelayanan publik: ' . AssistantComplaint::LAPOR . '. Penyalahgunaan wewenang, pungli, korupsi, pelanggaran ASN/pejabat: ' . AssistantComplaint::INSPEKTORAT . '; ' . AssistantComplaint::OMBUDSMAN . '; atau SP4N-LAPOR!. '
             . 'Jangan arahkan pengaduan ke Permohonan Informasi atau Pengajuan Keberatan (keberatan hanya untuk permohonan informasi yang ditolak/tidak ditanggapi).';
         $lines[] = '5. Tanya persyaratan/cara mengurus layanan instansi lain (KTP-el, KK, akta, SIM, STNK, balik nama, sertifikat tanah, izin usaha, mutasi ASN): ini boleh dijawab walau bukan layanan PPID, tetapi hanya dari data Persyaratan Layanan: blok "Data Persyaratan Layanan" di bawah (bila ada) atau tool cari_persyaratan / detail_persyaratan / daftar_persyaratan (pakai tool bila blok itu kosong atau kurang rinci). Bila layanan yang cocok hanya kebetulan dari kata kunci dan namanya tidak disebut pengguna (mis. "cara bikin kue" → izin PIRT), konfirmasi dulu: "Apakah yang Bapak/Ibu maksud persyaratan …?" sebelum memberi rinciannya; bila jelas (mis. "syarat KTP hilang"), langsung jawab. Sebut instansinya dan beri tautannya; bila tidak ditemukan, jangan mengarang: arahkan ke halaman "Persyaratan Layanan" dan ke instansi yang melayani.';
+
+        // Owner: the model must know the current time (greetings, "hari ini", office hours, "besok").
+        $now = now('Asia/Jakarta')->locale('id');
+        $lines[] = '';
+        $lines[] = 'Waktu sekarang: ' . $now->translatedFormat('l, j F Y') . ', pukul ' . $now->format('H:i') . ' WIB. Pakai untuk salam (pagi < 11.00, siang < 15.00, sore < 18.30, malam), arti "hari ini/besok/kemarin", dan apakah kantor sedang buka.';
 
         $text = mb_strtolower($message);
         $lines = [...$lines, ...$this->requirementFacts($text)];

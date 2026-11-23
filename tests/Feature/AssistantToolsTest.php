@@ -79,6 +79,26 @@ class AssistantToolsTest extends TestCase
 
         $this->assertArrayHasKey('error', AssistantTools::run('cari_web', ['pertanyaan' => 'x'])); // API failure never throws
         $this->assertArrayHasKey('error', AssistantTools::run('cari_web', ['pertanyaan' => '  ']));
+
+        // same question again (other case/spacing): from the cache, no third request; the failure was not cached
+        $this->assertSame($ok, AssistantTools::run('cari_web', ['pertanyaan' => 'Kapolres   TERBARU']));
+        Http::assertSentCount(2);
+    }
+
+    public function test_system_prompt_starts_with_the_static_part_for_prompt_caching(): void
+    {
+        config(['services.openai.key' => 'sk-test']);
+        Http::fake(['api.openai.com/*' => Http::response(['choices' => [['message' => ['role' => 'assistant', 'content' => 'Halo']]]])]);
+        $this->travelTo(now('Asia/Jakarta')->setTime(9, 0));
+        app(AssistantController::class)->answer('halo');
+        $this->travelTo(now('Asia/Jakarta')->setTime(15, 37));
+        app(AssistantController::class)->answer('jam layanan');
+
+        [$a, $b] = Http::recorded()->map(fn ($pair) => $pair[0]['messages'][0]['content'])->values()->all();
+        $prefix = strspn($a ^ $b, "\0"); // identical leading bytes
+        $this->assertGreaterThan(0.8 * strlen($a), $prefix, 'time/date must sit at the end of the system prompt');
+        $this->assertStringContainsString('pukul 15:37', $b);
+        Http::assertSent(fn (Request $r) => $r['prompt_cache_key'] === 'sapa-madani');
     }
 
     public function test_openai_runs_tool_calls_then_answers_in_whatsapp_format(): void
