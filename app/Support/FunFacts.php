@@ -22,10 +22,40 @@ class FunFacts
     /** @return array{fakta: string, sumber: string, jumlah_fakta: int} */
     public static function random(): array
     {
+        // Owner: a random fact from any of our data, e.g. a statistic. Mostly a random Portal Data dataset (its newest
+        // rows, phrased by the AI); otherwise a ready fact from our own tables or the fixed list.
+        if (mt_rand(1, 100) <= 70 && $stat = self::statistic()) {
+            return $stat;
+        }
         $facts = [...self::FIXED, ...self::fromData()];
         [$fact, $source] = $facts[array_rand($facts)];
 
-        return ['fakta' => $fact, 'sumber' => $source, 'jumlah_fakta' => count($facts)];
+        return ['fakta' => $fact, 'sumber' => $source];
+    }
+
+    /** Newest rows of a random Portal Data dataset; null when the portal is unreachable. */
+    public static function statistic(): ?array
+    {
+        $catalog = PortalTools::enabled() ? PortalTools::run('portal_katalog', []) : [];
+        $datasets = array_merge(...array_values($catalog['topik'] ?? [[]]));
+        // skip reference tables (codes) that make no fun fact
+        $datasets = array_values(array_filter($datasets, fn ($d) => ! empty($d['dataset']) && ! str_contains(mb_strtolower($d['judul'] ?? ''), 'referensi')));
+        for ($try = 0; $try < 2 && $datasets; $try++) {
+            $d = $datasets[array_rand($datasets)];
+            $rows = PortalTools::run('portal_baris', ['dataset' => $d['dataset'], 'jumlah' => 4]);
+            if (! empty($rows['baris'])) {
+                return [
+                    'jenis' => 'statistik',
+                    'dataset' => $d['judul'] ?? $d['dataset'],
+                    'periode' => $d['periode'] ?? null,
+                    'data_terbaru' => $rows['baris'],
+                    'sumber' => 'Portal Data Empat Lawang',
+                    'petunjuk' => 'Ubah data ini menjadi SATU fakta menarik yang singkat dan benar (sebut angka, tahun, dan wilayahnya persis seperti di data; jangan menambah angka lain).',
+                ];
+            }
+        }
+
+        return null;
     }
 
     /** Facts from live/local data; each one is skipped when its source is unavailable. */
