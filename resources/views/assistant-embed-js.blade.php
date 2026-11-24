@@ -63,6 +63,7 @@
         box.hidden = false;
         requestAnimationFrame(function () { box.classList.add('smx-open'); });
         document.documentElement.classList.add('smx-lock');
+        fit();
         sync(true);
     }
     function close() {
@@ -72,6 +73,17 @@
         setTimeout(function () { if (!isOpen()) box.hidden = true; }, 200);
         sync(false);
     }
+    // phones: the keyboard shrinks only the visual viewport, so the browser pans the page and the header scrolls away;
+    // pin the box to the visual viewport instead (header stays, the input rides above the keyboard)
+    var vv = window.visualViewport;
+    function fit() {
+        if (!box) return;
+        var phone = window.matchMedia('(max-width:767.98px)').matches;
+        box.style.top = phone && vv ? vv.offsetTop + 'px' : '';
+        box.style.height = phone && vv ? vv.height + 'px' : '';
+        box.style.bottom = phone && vv ? 'auto' : '';
+    }
+    if (vv) { vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); }
     function toggle() { isOpen() ? close() : open(); }
     function sync(on) {
         document.querySelectorAll('.smx-fab,[data-sapa-madani]').forEach(function (b) { b.setAttribute('aria-expanded', String(on)); });
