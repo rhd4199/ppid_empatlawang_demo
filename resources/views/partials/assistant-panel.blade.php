@@ -117,6 +117,9 @@
             border: 0; border-radius: 0; box-shadow: none; transform: translateY(16px); transform-origin: bottom center;
         }
         .sm-panel.is-open { transform: none; }
+        /* the input follows the last bubble (not pinned to the bottom); long chats still scroll inside .sm-body */
+        .sm-panel { background: #f8fafc; }
+        .sm-body { flex: 0 1 auto; }
         .sm-head { padding-top: calc(14px + env(safe-area-inset-top)); }
         .sm-note { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
         .sm-form input { font-size: 16px; } /* < 16px makes iOS zoom in on focus */
