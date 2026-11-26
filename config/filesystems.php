@@ -48,15 +48,31 @@ return [
         ],
 
         // "public" drives every upload in the app (Storage::disk('public'),
-        // ->store($path, 'public')). Backed by IDCloudHost S3-compatible
-        // storage when S3_ENDPOINT is set; otherwise (local dev/preview) or
-        // with PUBLIC_DISK_DRIVER=local it falls back to storage/app/public
-        // served at /storage (run `php artisan storage:link`). No 'url' key:
-        // storage_url() makes it absolute from the current request host.
-        'public' => env('PUBLIC_DISK_DRIVER', env('S3_ENDPOINT') ? 's3' : 'local') === 'local' ? [
+        // ->store($path, 'public')). Backed by Cloudflare R2 when
+        // CLOUDFLARE_R2_ACCOUNT_ID is set (served from CLOUDFLARE_R2_PUBLIC_URL),
+        // else IDCloudHost S3-compatible storage when S3_ENDPOINT is set;
+        // otherwise (local dev/preview) or with PUBLIC_DISK_DRIVER=local it
+        // falls back to storage/app/public served at /storage (run
+        // `php artisan storage:link`). Local: no 'url' key, storage_url()
+        // makes it absolute from the current request host.
+        // Existing local files → R2/S3: `php artisan storage:push-public`.
+        'public' => env('PUBLIC_DISK_DRIVER', env('CLOUDFLARE_R2_ACCOUNT_ID') || env('S3_ENDPOINT') ? 's3' : 'local') === 'local' ? [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ] : (env('CLOUDFLARE_R2_ACCOUNT_ID') ? [
+            'driver' => 's3',
+            'key' => env('CLOUDFLARE_R2_ACCESS_KEY_ID'),
+            'secret' => env('CLOUDFLARE_R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('CLOUDFLARE_R2_BUCKET_NAME'),
+            'endpoint' => 'https://'.env('CLOUDFLARE_R2_ACCOUNT_ID').'.r2.cloudflarestorage.com',
+            'url' => env('CLOUDFLARE_R2_PUBLIC_URL'),
+            'root' => env('CLOUDFLARE_R2_ROOT_DIR'),
+            'use_path_style_endpoint' => true,
+            // R2 has no object ACLs: public access comes from the bucket's public domain
             'throw' => false,
             'report' => false,
         ] : [
@@ -71,7 +87,7 @@ return [
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
-        ],
+        ]),
 
     ],
 
