@@ -627,7 +627,7 @@
         </div>
         <div class="footer-bottom text-center">
             <div class="container">
-                <p class="mb-0">&copy; {{ date('Y') }} PPID Kabupaten Empat Lawang. All Rights Reserved.</p>
+                <p class="mb-0">&copy; {{ date('Y') }} PPID Kabupaten Empat Lawang &middot; Empat Lawang Digital Ecosystem - Diskominfo-SP Empat Lawang</p>
                 <a href="https://www.bmkg.go.id" target="_blank" rel="noopener" class="bmkg-chip text-decoration-none mt-2" data-bmkg-chip hidden></a>
             </div>
         </div>

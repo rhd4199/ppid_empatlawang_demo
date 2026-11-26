@@ -81,7 +81,7 @@
                 </div>
                 
                 <div class="text-center mt-4">
-                    <p class="small text-muted">&copy; {{ date('Y') }} Pemerintah Kabupaten Empat Lawang. All rights reserved.</p>
+                    <p class="small text-muted">&copy; {{ date('Y') }} Empat Lawang Digital Ecosystem - Diskominfo-SP Empat Lawang</p>
                 </div>
             </div>
         </div>

@@ -394,6 +394,7 @@
         <!-- Page Content -->
         <main class="p-4" style="padding-top: calc(var(--header-height) + 1rem);">
             @yield('content')
+            <footer class="text-center text-muted small pt-4 pb-2">&copy; {{ date('Y') }} Empat Lawang Digital Ecosystem - Diskominfo-SP Empat Lawang</footer>
         </main>
     </div>
 
